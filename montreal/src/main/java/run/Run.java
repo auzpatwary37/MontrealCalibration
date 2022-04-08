@@ -83,10 +83,11 @@ public final class Run implements Callable<Integer> {
         
         });
     scenario.getTransitVehicles().getVehicleTypes().values().stream().forEach(vt -> {
-          VehicleCapacity vc = vt.getCapacity();
-          vc.setSeats(Integer.valueOf((int)Math.ceil(vc.getSeats().intValue() * this.scale.doubleValue())));
-          vc.setStandingRoom(Integer.valueOf((int)Math.ceil(vc.getStandingRoom().intValue() * this.scale.doubleValue())));
-        });
+    	vt.setPcuEquivalents(vt.getPcuEquivalents()*this.scale.doubleValue());
+        VehicleCapacity vc = vt.getCapacity();
+        vc.setSeats(Integer.valueOf((int)Math.ceil(vc.getSeats().intValue() * this.scale.doubleValue())));
+        vc.setStandingRoom(Integer.valueOf((int)Math.ceil(vc.getStandingRoom().intValue() * this.scale.doubleValue())));
+    });
     Controler controler = new Controler(scenario);
     controler.run();
     return Integer.valueOf(0);
