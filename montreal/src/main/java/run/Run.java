@@ -1,19 +1,27 @@
 package run;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.vehicles.VehicleCapacity;
-import org.matsim.vehicles.VehicleType;
 import picocli.CommandLine;
-import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 public final class Run implements Callable<Integer> {
@@ -51,6 +59,13 @@ public final class Run implements Callable<Integer> {
   @Option(names = {"--output"}, description = {"Result output directory"}, defaultValue = "output/")
   private String output;
   
+  @Option(names = {"--paramfile"}, description = {"Parameter file location"}, defaultValue = "src/main/resources/paramReaderTrial1.csv")
+  private String paramFile;
+  
+  @Option(names = {"--thread"}, description = {"Number of thread"}, defaultValue = "8")
+  private int thread;
+  
+  
   public static void main(String[] args) {
     (new CommandLine(new Run()))
       .setStopAtUnmatched(false)
@@ -68,8 +83,8 @@ public final class Run implements Callable<Integer> {
     config.network().setInputFile(this.networkFileLoc);
     config.transit().setTransitScheduleFile(this.tsFileLoc);
     config.transit().setVehiclesFile(this.tvFileLoc);
-    config.global().setNumberOfThreads(11);
-    config.qsim().setNumberOfThreads(10);
+    config.global().setNumberOfThreads(thread);
+    config.qsim().setNumberOfThreads(thread);
     config.controler().setLastIteration(this.maxIterations);
     addStrategy(config, "SubtourModeChoice", null, 0.1D, 0 * this.maxIterations);
     addStrategy(config, "ReRoute", null, 0.5D, 0 * this.maxIterations);
@@ -78,6 +93,10 @@ public final class Run implements Callable<Integer> {
     config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
     config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
     config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
+    
+    ParamReader pReader = new ParamReader(paramFile);
+    config = pReader.SetParamToConfig(config, pReader.getInitialParam());
+    
     Scenario scenario = ScenarioUtils.loadScenario(config);
     scenario.getTransitVehicles().getVehicleTypes().values().stream().forEach(vt -> {
         
@@ -88,6 +107,60 @@ public final class Run implements Callable<Integer> {
         vc.setSeats(Integer.valueOf((int)Math.ceil(vc.getSeats().intValue() * this.scale.doubleValue())));
         vc.setStandingRoom(Integer.valueOf((int)Math.ceil(vc.getStandingRoom().intValue() * this.scale.doubleValue())));
     });
+    
+    Set<Id<Person>> personIds = new HashSet<Id<Person>>(scenario.getPopulation().getPersons().keySet());
+    personIds.stream().forEach(p->{
+    	if(scenario.getPopulation().getPersons().get(p).getSelectedPlan().getPlanElements().stream().filter(pe -> pe instanceof Leg).findAny().isEmpty()) {
+    		scenario.getPopulation().getPersons().remove(p);
+    	}
+    });
+    
+   
+    
+    Map<String,Double> actDuration = new HashMap<>();
+    Map<String,Integer> actNum = new HashMap<>();
+    Set<String> actList = new HashSet<>();
+    scenario.getPopulation().getPersons().values().stream().forEach(p->{
+    	p.getSelectedPlan().getPlanElements().stream().filter(f-> f instanceof Activity).forEach(pe->{
+    		Activity act = ((Activity)pe);
+    		Double actDur = 0.;
+    		if(act.getEndTime().isDefined() && act.getStartTime().isDefined()) {
+    			actDur = act.getEndTime().seconds() - act.getStartTime().seconds();
+    		}
+    		double ad = actDur;
+    		if(actDur != 0.) {
+    			actDuration.compute(act.getType(), (k,v)->v==null?ad:ad+v);
+    			actNum.compute(act.getType(), (k,v)->v==null?1:v+1);
+    		}else {
+    			
+    		}
+    		
+    	});
+    });
+    
+    for(Entry<String, Double> a:actDuration.entrySet()){
+    	a.setValue(a.getValue()/actNum.get(a.getKey()));
+    	if(config.planCalcScore().getActivityParams(a.getKey())!=null) {
+    		config.planCalcScore().getActivityParams(a.getKey()).setTypicalDuration(a.getValue());
+    		config.planCalcScore().getActivityParams(a.getKey()).setMinimalDuration(a.getValue()*.25);
+    		
+    	}else {
+    		ActivityParams param = new ActivityParams();
+    		param.setTypicalDuration(a.getValue());
+    		param.setMinimalDuration(a.getValue()*.25);
+    		config.planCalcScore().addActivityParams(param);
+    	}
+    }
+    for(String actType:actList) {
+    	if(config.planCalcScore().getActivityParams(actType)==null) {
+    		ActivityParams param = new ActivityParams();
+    		param.setTypicalDuration(8*3600);
+    		param.setMinimalDuration(8*3600*.25);
+    		config.planCalcScore().addActivityParams(param);
+    		System.out.println("No start and end time was found for activity = "+actType+ " in the base population!! Inserting 8 hour as the typical duration.");
+    	}
+    }
+    
     Controler controler = new Controler(scenario);
     controler.run();
     return Integer.valueOf(0);
