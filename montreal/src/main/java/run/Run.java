@@ -143,6 +143,7 @@ public final class Run implements Callable<Integer> {
     		config.planCalcScore().getActivityParams(a.getKey()).setTypicalDuration(a.getValue());
     		config.planCalcScore().getActivityParams(a.getKey()).setMinimalDuration(a.getValue()*.25);
     		config.planCalcScore().getActivityParams(a.getKey()).setScoringThisActivityAtAll(true);
+
     	}else {
     		ActivityParams param = new ActivityParams();
     		param.setTypicalDuration(a.getValue());
@@ -156,6 +157,7 @@ public final class Run implements Callable<Integer> {
     		ActivityParams param = new ActivityParams();
     		param.setTypicalDuration(8*3600);
     		param.setMinimalDuration(8*3600*.25);
+    		param.setScoringThisActivityAtAll(true);
     		config.planCalcScore().addActivityParams(param);
     		param.setScoringThisActivityAtAll(true);
     		System.out.println("No start and end time was found for activity = "+actType+ " in the base population!! Inserting 8 hour as the typical duration.");
