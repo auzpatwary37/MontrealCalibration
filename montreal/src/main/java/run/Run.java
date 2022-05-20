@@ -25,6 +25,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 public final class Run implements Callable<Integer> {
+	
   public static final String COLOR = "@|bold,fg(81) ";
    
   private static final Logger log = LogManager.getLogger(Run.class);
@@ -32,7 +33,7 @@ public final class Run implements Callable<Integer> {
   @Option(names = {"--config"}, description = {"Optional Path to config file to load."}, defaultValue = "config.xml")
   private String config;
   
-  @Option(names = {"--plan"}, description = {"Optional Path to plan file to load."}, defaultValue = "prepared_plan.xml.gz")
+  @Option(names = {"--plan"}, description = {"Optional Path to plan file to load."}, defaultValue = "prepared_population.xml.gz")
   private String planFile;
   
   @Option(names = {"--network"}, description = {"Optional Path to network file to load."}, defaultValue = "montreal_network.xml.gz")
@@ -53,16 +54,16 @@ public final class Run implements Callable<Integer> {
   @Option(names = {"--household"}, description = {"Optional Path to household file to load."}, defaultValue = "montreal_households.xml.gz")
   private String householdFileLoc;
   
-  @Option(names = {"--scale"}, description = {"Scale of simulation"}, defaultValue = "0.5")
+  @Option(names = {"--scale"}, description = {"Scale of simulation"}, defaultValue = "0.05")
   private Double scale;
   
   @Option(names = {"--output"}, description = {"Result output directory"}, defaultValue = "output/")
   private String output;
   
-  @Option(names = {"--paramfile"}, description = {"Parameter file location"}, defaultValue = "src/main/resources/paramReaderTrial1.csv")
+  @Option(names = {"--paramfile"}, description = {"Parameter file location"}, defaultValue = "paramReaderTrial1.csv")
   private String paramFile;
   
-  @Option(names = {"--thread"}, description = {"Number of thread"}, defaultValue = "8")
+  @Option(names = {"--thread"}, description = {"Number of thread"}, defaultValue = "40")
   private int thread;
   
   
@@ -98,9 +99,7 @@ public final class Run implements Callable<Integer> {
     config = pReader.SetParamToConfig(config, pReader.getInitialParam());
     
     Scenario scenario = ScenarioUtils.loadScenario(config);
-    scenario.getTransitVehicles().getVehicleTypes().values().stream().forEach(vt -> {
-        
-        });
+   
     scenario.getTransitVehicles().getVehicleTypes().values().stream().forEach(vt -> {
     	vt.setPcuEquivalents(vt.getPcuEquivalents()*this.scale.doubleValue());
         VehicleCapacity vc = vt.getCapacity();
@@ -143,11 +142,12 @@ public final class Run implements Callable<Integer> {
     	if(config.planCalcScore().getActivityParams(a.getKey())!=null) {
     		config.planCalcScore().getActivityParams(a.getKey()).setTypicalDuration(a.getValue());
     		config.planCalcScore().getActivityParams(a.getKey()).setMinimalDuration(a.getValue()*.25);
-    		
+    		config.planCalcScore().getActivityParams(a.getKey()).setScoringThisActivityAtAll(true);
     	}else {
     		ActivityParams param = new ActivityParams();
     		param.setTypicalDuration(a.getValue());
     		param.setMinimalDuration(a.getValue()*.25);
+    		param.setScoringThisActivityAtAll(true);
     		config.planCalcScore().addActivityParams(param);
     	}
     }
@@ -157,6 +157,7 @@ public final class Run implements Callable<Integer> {
     		param.setTypicalDuration(8*3600);
     		param.setMinimalDuration(8*3600*.25);
     		config.planCalcScore().addActivityParams(param);
+    		param.setScoringThisActivityAtAll(true);
     		System.out.println("No start and end time was found for activity = "+actType+ " in the base population!! Inserting 8 hour as the typical duration.");
     	}
     }
