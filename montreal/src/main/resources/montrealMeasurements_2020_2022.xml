@@ -18376,21 +18376,8 @@
         </LinkIds>
     </Measurement>
     <Measurement MeasurementId="8772___WB___out" MeasurementType="linkVolume">
-        <Volumes>
-            <Volume PCUVolume="704.0" SD="0.0" TimeBeanId="12"/>
-            <Volume PCUVolume="770.0" SD="0.0" TimeBeanId="13"/>
-            <Volume PCUVolume="430.0" SD="0.0" TimeBeanId="16"/>
-            <Volume PCUVolume="982.0" SD="0.0" TimeBeanId="17"/>
-            <Volume PCUVolume="904.0" SD="0.0" TimeBeanId="18"/>
-            <Volume PCUVolume="297.0" SD="0.0" TimeBeanId="7"/>
-            <Volume PCUVolume="327.0" SD="0.0" TimeBeanId="19"/>
-            <Volume PCUVolume="871.0" SD="0.0" TimeBeanId="8"/>
-            <Volume PCUVolume="784.0" SD="0.0" TimeBeanId="9"/>
-            <Volume PCUVolume="332.0" SD="0.0" TimeBeanId="10"/>
-        </Volumes>
-        <LinkIds>
-            <LinkId Id="Delete"/>
-        </LinkIds>
+        <Volumes/>
+        <LinkIds/>
     </Measurement>
     <Measurement MeasurementId="460___WB___in" MeasurementType="linkVolume">
         <Volumes>
@@ -30920,21 +30907,8 @@
         </LinkIds>
     </Measurement>
     <Measurement MeasurementId="8772___EB___in" MeasurementType="linkVolume">
-        <Volumes>
-            <Volume PCUVolume="685.0" SD="0.0" TimeBeanId="12"/>
-            <Volume PCUVolume="673.0" SD="0.0" TimeBeanId="13"/>
-            <Volume PCUVolume="343.5" SD="0.0" TimeBeanId="16"/>
-            <Volume PCUVolume="667.0" SD="0.0" TimeBeanId="17"/>
-            <Volume PCUVolume="579.0" SD="0.0" TimeBeanId="18"/>
-            <Volume PCUVolume="258.0" SD="0.0" TimeBeanId="7"/>
-            <Volume PCUVolume="234.0" SD="0.0" TimeBeanId="19"/>
-            <Volume PCUVolume="680.0" SD="0.0" TimeBeanId="8"/>
-            <Volume PCUVolume="625.0" SD="0.0" TimeBeanId="9"/>
-            <Volume PCUVolume="310.0" SD="0.0" TimeBeanId="10"/>
-        </Volumes>
-        <LinkIds>
-            <LinkId Id="Delete"/>
-        </LinkIds>
+        <Volumes/>
+        <LinkIds/>
     </Measurement>
     <Measurement MeasurementId="1277___NB___in" MeasurementType="linkVolume">
         <Volumes>

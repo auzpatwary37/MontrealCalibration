@@ -16,6 +16,8 @@ import java.util.Set;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.Tuple;
 
 import ust.hk.praisehk.metamodelcalibration.measurements.Measurement;
@@ -30,7 +32,7 @@ public static void main(String[] args) {
 	for(int i = 0;i<24;i++) {
 		timeBean.put(Integer.toString(i), new Tuple<>((i-1)*3600.,i*3600.));
 	}
-	
+	Network net = NetworkUtils.readNetwork("src\\main\\resources\\montreal_network.xml.gz");
 //	timeBean.put("AADT", new Tuple<Double,Double>(0.,24*3600.));
 	
 	Measurements m = Measurements.createMeasurements(timeBean);
@@ -69,6 +71,10 @@ public static void main(String[] args) {
 			Measurement mm = m.createAnadAddMeasurement(stationId, MeasurementType.linkVolume);
 			List<Id<Link>> linkList = new ArrayList<>();
 			linkList.add(Id.createLinkId(matchedLink));
+			if(!net.getLinks().containsKey(Id.createLinkId(matchedLink))) {
+				System.out.println("Link Id "+matchedLink+" not found!!!");
+				continue;
+			}
 			mm.setAttribute(Measurement.linkListAttributeName,linkList);
 			
 			timeBean.entrySet().forEach(t->{
