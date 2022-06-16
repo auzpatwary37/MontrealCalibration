@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +34,7 @@ public static void main(String[] args) {
 	}
 	Network net = NetworkUtils.readNetwork("src\\main\\resources\\montreal_network.xml.gz");
 //	timeBean.put("AADT", new Tuple<Double,Double>(0.,24*3600.));
-	
+	Map<Id<Link>,Set<Measurement>> linkToM = new HashMap<>();
 	Measurements m = Measurements.createMeasurements(timeBean);
 	Set<String> timeBeanUnique = new HashSet<>();
 	
@@ -60,6 +60,7 @@ public static void main(String[] args) {
 		BufferedReader bf = new BufferedReader(new FileReader(new File(stationFileName)));
 		bf.readLine();//get rid of the header
 		String line = null;
+		int rep = 0;
 		while((line = bf.readLine())!=null) {
 			String[] part = line.split(",");
 			String intersectionId = part[0];
@@ -75,6 +76,7 @@ public static void main(String[] args) {
 				System.out.println("Link Id "+matchedLink+" not found!!!");
 				continue;
 			}
+			
 			mm.setAttribute(Measurement.linkListAttributeName,linkList);
 			
 			timeBean.entrySet().forEach(t->{
@@ -120,8 +122,17 @@ public static void main(String[] args) {
 				}
 			});
 			
+			if(!linkToM.containsKey(Id.createLinkId(matchedLink))) {
+				linkToM.put(Id.createLinkId(matchedLink), new HashSet<>());
+				linkToM.get(Id.createLinkId(matchedLink)).add(mm);
+			}else {
+				Set<Measurement> mms = linkToM.get(Id.createLinkId(matchedLink));
+				linkToM.get(Id.createLinkId(matchedLink)).add(mm);
+				rep++;
+			}
+			
 		}
-		
+		System.out.println("Total repetation = "+rep);
 		bf.close();
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
@@ -135,5 +146,38 @@ public static void main(String[] args) {
 	}
 	new MeasurementsWriter(m).write("src\\main\\resources\\montrealMeasurements_2020_2022.xml");
 	System.out.println("Total Measurements = "+m.getMeasurements().size());
+
+//	Counts<Link> con = new Counts<Link>();
+//	m.getMeasurements().values().forEach(mm->{
+//		Count<Link> c = con.createAndAddCount(((List<Id<Link>>)mm.getAttributes().get(Measurement.linkListAttributeName)).get(0), mm.getId().toString());
+//		mm.getVolumes().entrySet().forEach(v->{
+//			c.createVolume(Integer.parseInt(v.getKey()), v.getValue());
+//		});
+//		
+//	});
+//	new CountsWriter(con).write("src\\main\\resources\\countsMontreal_2020_2022.xml");
+	
+	try {
+		FileWriter fw = new FileWriter(new File("src\\main\\resources\\problems.csv"));
+		linkToM.entrySet().forEach(e->{
+			if(e.getValue().size()>1) {
+				try {
+					fw.append(e.getKey().toString());
+					for(Measurement mme:e.getValue()) {
+						fw.append(","+mme.getId().toString());
+					}
+					fw.append("\n");
+					fw.flush();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		fw.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 }
 }
