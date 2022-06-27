@@ -6,11 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.matsim.api.core.v01.Coord;
@@ -19,6 +21,9 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.collections.Tuple;
+import org.matsim.counts.Count;
+import org.matsim.counts.Counts;
+import org.matsim.counts.CountsWriter;
 
 import ust.hk.praisehk.metamodelcalibration.measurements.Measurement;
 import ust.hk.praisehk.metamodelcalibration.measurements.MeasurementType;
@@ -29,11 +34,11 @@ public class StationGeneration {
 public static void main(String[] args) {
 	
 	Map<String,Tuple<Double,Double>> timeBean = new HashMap<>();
-	for(int i = 0;i<24;i++) {
-		timeBean.put(Integer.toString(i), new Tuple<>((i-1)*3600.,i*3600.));
-	}
+//	for(int i = 0;i<24;i++) {
+//		timeBean.put(Integer.toString(i), new Tuple<>((i-1)*3600.,i*3600.));
+//	}
 	Network net = NetworkUtils.readNetwork("src\\main\\resources\\montreal_network.xml.gz");
-//	timeBean.put("AADT", new Tuple<Double,Double>(0.,24*3600.));
+	timeBean.put("AADT", new Tuple<Double,Double>(0.,24*3600.));
 	Map<Id<Link>,Set<Measurement>> linkToM = new HashMap<>();
 	Measurements m = Measurements.createMeasurements(timeBean);
 	Set<String> timeBeanUnique = new HashSet<>();
@@ -55,7 +60,9 @@ public static void main(String[] args) {
 		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	}
-	String stationFileName = "src/main/resources/linkMatching_mael_cleaned.csv";
+	String stationFileName = "src/main/resources/linkMatching_mael_cleanedJune27.csv";
+	Map<Id<Link>,Measurement> linkBasedMeasurements = new HashMap<>();
+	Map<Id<Link>,Map<String,List<Map<String,Double>>>> countsPerLinkPerTimePerDate = new HashMap<>();
 	try {
 		BufferedReader bf = new BufferedReader(new FileReader(new File(stationFileName)));
 		bf.readLine();//get rid of the header
@@ -65,21 +72,35 @@ public static void main(String[] args) {
 			String[] part = line.split(",");
 			String intersectionId = part[0];
 			String stationId = part[0]+"___"+part[1]+"___"+part[2];// intersectionId, 
+//			if(stationId.equals("416___SB___in")) {
+//				System.out.println("debug!!!");
+//			}
 			Coord coord = new Coord(Double.parseDouble(part[3]),Double.parseDouble(part[4]));
 			String matchedLink = part[5];
 			matchedLink = matchedLink.replaceAll("[\\[\\]]", "");
 			//System.out.println("Matched Link - "+matchedLink);
 			Measurement mm = m.createAnadAddMeasurement(stationId, MeasurementType.linkVolume);
 			List<Id<Link>> linkList = new ArrayList<>();
-			linkList.add(Id.createLinkId(matchedLink));
-			if(!net.getLinks().containsKey(Id.createLinkId(matchedLink))) {
-				System.out.println("Link Id "+matchedLink+" not found!!!");
-				continue;
+			Id<Link> lId = Id.createLinkId(matchedLink);
+			linkList.add(lId);
+			if(!linkBasedMeasurements.containsKey(lId)) {
+				linkBasedMeasurements.put(lId, mm);
+				if(!net.getLinks().containsKey(Id.createLinkId(matchedLink))) {
+					System.out.println("Link Id "+matchedLink+" not found!!!");
+					continue;
+				}
+				mm.setAttribute(Measurement.linkListAttributeName,linkList);
+				
+			}else {
+				m.removeMeasurement(mm.getId());
+				mm = linkBasedMeasurements.get(lId);
+				
 			}
 			
-			mm.setAttribute(Measurement.linkListAttributeName,linkList);
 			
-			timeBean.entrySet().forEach(t->{
+			
+			
+			for(Entry<String, Tuple<Double, Double>> t:timeBean.entrySet()){
 				Map<String,Double>volume = new HashMap<>();
 				if(dataSets.get(intersectionId)!=null) {
 				for(DirectionalData data:dataSets.get(intersectionId)) {
@@ -109,18 +130,29 @@ public static void main(String[] args) {
 					}
 					
 				}
+				if(!countsPerLinkPerTimePerDate.containsKey(lId))countsPerLinkPerTimePerDate.put(lId, new HashMap<>());
+				if(!countsPerLinkPerTimePerDate.get(lId).containsKey(t.getKey()))countsPerLinkPerTimePerDate.get(lId).put(t.getKey(), new ArrayList<>());
+				countsPerLinkPerTimePerDate.get(lId).get(t.getKey()).add(volume);
+
 				double val = 0;
-				for(double d:volume.values()) {
-					val+=d;
+				int counter = 0;
+				for(Map<String,Double> v:countsPerLinkPerTimePerDate.get(lId).get(t.getKey())) {
+					for(double d:v.values()) {
+						val+=d;
+						counter++;
+					}
 				}
-				if(volume.size()!=0) {
-					val = val/volume.size();
+				
+				
+				
+				if(counter!=0) {
+					val = val/counter;
 					mm.putVolume(t.getKey(), val);
 					timeBeanUnique.add(t.getKey());
 				}
 				
 				}
-			});
+			}
 			
 			if(!linkToM.containsKey(Id.createLinkId(matchedLink))) {
 				linkToM.put(Id.createLinkId(matchedLink), new HashSet<>());
@@ -130,7 +162,7 @@ public static void main(String[] args) {
 				linkToM.get(Id.createLinkId(matchedLink)).add(mm);
 				rep++;
 			}
-			
+				
 		}
 		System.out.println("Total repetation = "+rep);
 		bf.close();
@@ -144,7 +176,7 @@ public static void main(String[] args) {
 	for(String t:new HashSet<>(m.getTimeBean().keySet())) {
 		if(!timeBeanUnique.contains(t))m.getTimeBean().remove(t);
 	}
-	new MeasurementsWriter(m).write("src\\main\\resources\\montrealMeasurements_2020_2022.xml");
+	new MeasurementsWriter(m).write("src\\main\\resources\\montrealMeasurements_2020_2022AADT.xml");
 	System.out.println("Total Measurements = "+m.getMeasurements().size());
 
 //	Counts<Link> con = new Counts<Link>();
@@ -155,22 +187,35 @@ public static void main(String[] args) {
 //		});
 //		
 //	});
-//	new CountsWriter(con).write("src\\main\\resources\\countsMontreal_2020_2022.xml");
+//	new CountsWriter(con).write("src\\main\\resources\\countsMontreal_2020_2022AADT.xml");
 	
 	try {
 		FileWriter fw = new FileWriter(new File("src\\main\\resources\\problems.csv"));
 		linkToM.entrySet().forEach(e->{
 			if(e.getValue().size()>1) {
-				try {
-					fw.append(e.getKey().toString());
-					for(Measurement mme:e.getValue()) {
-						fw.append(","+mme.getId().toString());
+				boolean rep = false;
+				List<String> sId = new ArrayList<>();
+				for(Measurement mId:e.getValue()) {
+					String s = mId.getId().toString().split("___")[0];
+					if(!sId.contains(s)) {
+						sId.add(s);
+					}else {
+						rep = true;
+						break;
 					}
-					fw.append("\n");
-					fw.flush();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				}
+				if(rep == true) {
+					try {
+						fw.append(e.getKey().toString());
+						for(Measurement mme:e.getValue()) {
+							fw.append(","+mme.getId().toString());
+						}
+						fw.append("\n");
+						fw.flush();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
