@@ -34,11 +34,11 @@ public class StationGeneration {
 public static void main(String[] args) {
 	
 	Map<String,Tuple<Double,Double>> timeBean = new HashMap<>();
-//	for(int i = 0;i<24;i++) {
-//		timeBean.put(Integer.toString(i), new Tuple<>((i-1)*3600.,i*3600.));
-//	}
+	for(int i = 0;i<24;i++) {
+		timeBean.put(Integer.toString(i), new Tuple<>((i-1)*3600.,i*3600.));
+	}
 	Network net = NetworkUtils.readNetwork("src\\main\\resources\\montreal_network.xml.gz");
-	timeBean.put("AADT", new Tuple<Double,Double>(0.,24*3600.));
+	//timeBean.put("AADT", new Tuple<Double,Double>(0.,24*3600.));
 	Map<Id<Link>,Set<Measurement>> linkToM = new HashMap<>();
 	Measurements m = Measurements.createMeasurements(timeBean);
 	Set<String> timeBeanUnique = new HashSet<>();
@@ -60,7 +60,7 @@ public static void main(String[] args) {
 		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	}
-	String stationFileName = "src/main/resources/linkMatching_mael_cleanedJune27.csv";
+	String stationFileName = "src/main/resources/linkMatching_mael_cleanedJune28.csv";
 	Map<Id<Link>,Measurement> linkBasedMeasurements = new HashMap<>();
 	Map<Id<Link>,Map<String,List<Map<String,Double>>>> countsPerLinkPerTimePerDate = new HashMap<>();
 	try {
@@ -176,18 +176,18 @@ public static void main(String[] args) {
 	for(String t:new HashSet<>(m.getTimeBean().keySet())) {
 		if(!timeBeanUnique.contains(t))m.getTimeBean().remove(t);
 	}
-	new MeasurementsWriter(m).write("src\\main\\resources\\montrealMeasurements_2020_2022AADT.xml");
+	new MeasurementsWriter(m).write("src\\main\\resources\\montrealMeasurements_2020_2022.xml");
 	System.out.println("Total Measurements = "+m.getMeasurements().size());
 
-//	Counts<Link> con = new Counts<Link>();
-//	m.getMeasurements().values().forEach(mm->{
-//		Count<Link> c = con.createAndAddCount(((List<Id<Link>>)mm.getAttributes().get(Measurement.linkListAttributeName)).get(0), mm.getId().toString());
-//		mm.getVolumes().entrySet().forEach(v->{
-//			c.createVolume(Integer.parseInt(v.getKey()), v.getValue());
-//		});
-//		
-//	});
-//	new CountsWriter(con).write("src\\main\\resources\\countsMontreal_2020_2022AADT.xml");
+	Counts<Link> con = new Counts<Link>();
+	m.getMeasurements().values().forEach(mm->{
+		Count<Link> c = con.createAndAddCount(((List<Id<Link>>)mm.getAttributes().get(Measurement.linkListAttributeName)).get(0), mm.getId().toString());
+		mm.getVolumes().entrySet().forEach(v->{
+			c.createVolume(Integer.parseInt(v.getKey()), v.getValue());
+		});
+		
+	});
+	new CountsWriter(con).write("src\\main\\resources\\countsMontreal_2020_2022.xml");
 	
 	try {
 		FileWriter fw = new FileWriter(new File("src\\main\\resources\\problems.csv"));

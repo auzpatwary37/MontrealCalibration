@@ -60,7 +60,63 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="428483890001f" cs_id="10045___WB___in">
+	<count loc_id="431914040005r" cs_id="10045___NB___in">
+		<volume h="1" val="17.0" />
+		<volume h="2" val="15.6" />
+		<volume h="3" val="5.8" />
+		<volume h="4" val="9.0" />
+		<volume h="5" val="16.0" />
+		<volume h="6" val="45.7" />
+		<volume h="7" val="121.1" />
+		<volume h="8" val="204.6" />
+		<volume h="9" val="192.7" />
+		<volume h="10" val="167.3" />
+		<volume h="11" val="167.1" />
+		<volume h="12" val="217.3" />
+		<volume h="13" val="209.0" />
+		<volume h="14" val="197.9" />
+		<volume h="15" val="216.8" />
+		<volume h="16" val="280.6" />
+		<volume h="17" val="314.7" />
+		<volume h="18" val="222.6" />
+		<volume h="19" val="122.3" />
+		<volume h="20" val="85.5" />
+		<volume h="21" val="73.1" />
+		<volume h="22" val="61.2" />
+		<volume h="23" val="42.6" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="431914040005f" cs_id="10045___SB___out">
+		<volume h="1" val="12.4" />
+		<volume h="2" val="16.4" />
+		<volume h="3" val="14.2" />
+		<volume h="4" val="18.0" />
+		<volume h="5" val="30.4" />
+		<volume h="6" val="66.5" />
+		<volume h="7" val="152.0" />
+		<volume h="8" val="240.3" />
+		<volume h="9" val="198.7" />
+		<volume h="10" val="165.0" />
+		<volume h="11" val="167.7" />
+		<volume h="12" val="169.9" />
+		<volume h="13" val="195.5" />
+		<volume h="14" val="199.3" />
+		<volume h="15" val="184.6" />
+		<volume h="16" val="191.4" />
+		<volume h="17" val="212.5" />
+		<volume h="18" val="154.6" />
+		<volume h="19" val="88.3" />
+		<volume h="20" val="55.5" />
+		<volume h="21" val="46.0" />
+		<volume h="22" val="48.4" />
+		<volume h="23" val="34.2" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="428483890002f" cs_id="10045___WB___in">
 		<volume h="1" val="26.0" />
 		<volume h="2" val="24.0" />
 		<volume h="3" val="18.0" />
@@ -1472,42 +1528,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="1650966290006r" cs_id="1111___EB___in">
-		<volume h="7" val="3.0" />
-		<volume h="8" val="10.0" />
-		<volume h="9" val="10.5" />
-		<volume h="10" val="5.5" />
-		<volume h="11" val="17.0" />
-		<volume h="12" val="10.5" />
-		<volume h="13" val="10.5" />
-		<volume h="14" val="25.0" />
-		<volume h="15" val="25.0" />
-		<volume h="16" val="10.0" />
-		<volume h="17" val="14.5" />
-		<volume h="18" val="14.0" />
-		<volume h="19" val="0.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="1650966290006f" cs_id="1111___EB___out">
-		<volume h="7" val="78.5" />
-		<volume h="8" val="70.5" />
-		<volume h="9" val="74.5" />
-		<volume h="10" val="61.5" />
-		<volume h="11" val="99.0" />
-		<volume h="12" val="68.5" />
-		<volume h="13" val="82.5" />
-		<volume h="14" val="152.0" />
-		<volume h="15" val="159.0" />
-		<volume h="16" val="87.5" />
-		<volume h="17" val="94.0" />
-		<volume h="18" val="96.5" />
-		<volume h="19" val="10.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="203001340005f" cs_id="1111___NB___in">
 		<volume h="7" val="314.0" />
 		<volume h="8" val="950.0" />
@@ -1564,42 +1584,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="231.0" />
 		<volume h="18" val="296.0" />
 		<volume h="19" val="78.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4793045410002f" cs_id="1114___NB___out">
-		<volume h="7" val="54.0" />
-		<volume h="8" val="138.5" />
-		<volume h="9" val="185.5" />
-		<volume h="10" val="139.5" />
-		<volume h="11" val="230.0" />
-		<volume h="12" val="218.5" />
-		<volume h="13" val="237.0" />
-		<volume h="14" val="259.0" />
-		<volume h="15" val="350.0" />
-		<volume h="16" val="255.5" />
-		<volume h="17" val="385.0" />
-		<volume h="18" val="343.5" />
-		<volume h="19" val="142.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4563276650002r" cs_id="1114___SB___in">
-		<volume h="7" val="55.0" />
-		<volume h="8" val="152.0" />
-		<volume h="9" val="194.0" />
-		<volume h="10" val="97.5" />
-		<volume h="11" val="104.0" />
-		<volume h="12" val="181.0" />
-		<volume h="13" val="168.5" />
-		<volume h="14" val="113.0" />
-		<volume h="15" val="121.0" />
-		<volume h="16" val="80.0" />
-		<volume h="17" val="138.5" />
-		<volume h="18" val="166.0" />
-		<volume h="19" val="64.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -1829,6 +1813,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4793045410002f" cs_id="1120___NB___out">
+		<volume h="7" val="54.0" />
+		<volume h="8" val="138.5" />
+		<volume h="9" val="185.5" />
+		<volume h="10" val="139.5" />
+		<volume h="11" val="230.0" />
+		<volume h="12" val="218.5" />
+		<volume h="13" val="237.0" />
+		<volume h="14" val="259.0" />
+		<volume h="15" val="350.0" />
+		<volume h="16" val="255.5" />
+		<volume h="17" val="385.0" />
+		<volume h="18" val="343.5" />
+		<volume h="19" val="142.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4793045410002r" cs_id="1120___SB___in">
 		<volume h="7" val="102.0" />
 		<volume h="8" val="240.0" />
@@ -1842,6 +1844,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="226.0" />
 		<volume h="17" val="249.0" />
 		<volume h="18" val="238.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4563276650002r" cs_id="1120___SB___out">
+		<volume h="7" val="55.0" />
+		<volume h="8" val="152.0" />
+		<volume h="9" val="194.0" />
+		<volume h="10" val="97.5" />
+		<volume h="11" val="104.0" />
+		<volume h="12" val="181.0" />
+		<volume h="13" val="168.5" />
+		<volume h="14" val="113.0" />
+		<volume h="15" val="121.0" />
+		<volume h="16" val="80.0" />
+		<volume h="17" val="138.5" />
+		<volume h="18" val="166.0" />
+		<volume h="19" val="64.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -2361,42 +2381,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4526894280003f" cs_id="1134___NB___out">
-		<volume h="7" val="430.0" />
-		<volume h="8" val="428.25" />
-		<volume h="9" val="602.75" />
-		<volume h="10" val="582.25" />
-		<volume h="11" val="636.0" />
-		<volume h="12" val="663.75" />
-		<volume h="13" val="632.0" />
-		<volume h="14" val="646.25" />
-		<volume h="15" val="670.5" />
-		<volume h="16" val="676.0" />
-		<volume h="17" val="690.0" />
-		<volume h="18" val="621.75" />
-		<volume h="19" val="2.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4526894270001f" cs_id="1134___SB___in">
-		<volume h="7" val="739.0" />
-		<volume h="8" val="571.25" />
-		<volume h="9" val="653.25" />
-		<volume h="10" val="528.0" />
-		<volume h="11" val="585.75" />
-		<volume h="12" val="514.5" />
-		<volume h="13" val="450.25" />
-		<volume h="14" val="396.75" />
-		<volume h="15" val="460.0" />
-		<volume h="16" val="457.5" />
-		<volume h="17" val="424.0" />
-		<volume h="18" val="452.0" />
-		<volume h="19" val="7.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="3290010130004f" cs_id="1134___SB___out">
 		<volume h="7" val="708.0" />
 		<volume h="8" val="1124.0" />
@@ -2793,6 +2777,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4526894280003f" cs_id="1144___NB___in">
+		<volume h="7" val="430.0" />
+		<volume h="8" val="428.25" />
+		<volume h="9" val="602.75" />
+		<volume h="10" val="582.25" />
+		<volume h="11" val="636.0" />
+		<volume h="12" val="663.75" />
+		<volume h="13" val="632.0" />
+		<volume h="14" val="646.25" />
+		<volume h="15" val="670.5" />
+		<volume h="16" val="676.0" />
+		<volume h="17" val="690.0" />
+		<volume h="18" val="621.75" />
+		<volume h="19" val="2.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4520620440001f" cs_id="1144___NB___out">
 		<volume h="8" val="16.5" />
 		<volume h="9" val="14.5" />
@@ -2823,6 +2825,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="8.5" />
 		<volume h="18" val="15.5" />
 		<volume h="19" val="6.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4526894270001f" cs_id="1144___SB___out">
+		<volume h="7" val="739.0" />
+		<volume h="8" val="571.25" />
+		<volume h="9" val="653.25" />
+		<volume h="10" val="528.0" />
+		<volume h="11" val="585.75" />
+		<volume h="12" val="514.5" />
+		<volume h="13" val="450.25" />
+		<volume h="14" val="396.75" />
+		<volume h="15" val="460.0" />
+		<volume h="16" val="457.5" />
+		<volume h="17" val="424.0" />
+		<volume h="18" val="452.0" />
+		<volume h="19" val="7.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -3729,21 +3749,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="5463663000005f" cs_id="1180___EB___out">
-		<volume h="7" val="27.75" />
-		<volume h="8" val="114.75" />
-		<volume h="9" val="142.0" />
-		<volume h="10" val="63.75" />
-		<volume h="12" val="183.0" />
-		<volume h="13" val="171.5" />
-		<volume h="16" val="133.0" />
-		<volume h="17" val="345.0" />
-		<volume h="18" val="330.25" />
-		<volume h="19" val="134.75" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="1600916440013f" cs_id="1180___NB___in">
 		<volume h="7" val="105.25" />
 		<volume h="8" val="402.75" />
@@ -3800,21 +3805,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="436.25" />
 		<volume h="18" val="459.0" />
 		<volume h="19" val="144.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="5463663000005r" cs_id="1180___WB___in">
-		<volume h="7" val="72.0" />
-		<volume h="8" val="304.5" />
-		<volume h="9" val="229.0" />
-		<volume h="10" val="82.75" />
-		<volume h="12" val="154.5" />
-		<volume h="13" val="143.5" />
-		<volume h="16" val="100.75" />
-		<volume h="17" val="183.75" />
-		<volume h="18" val="190.0" />
-		<volume h="19" val="85.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -3969,36 +3959,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4605615880001r" cs_id="1182___NB___out">
-		<volume h="7" val="67.75" />
-		<volume h="8" val="288.75" />
-		<volume h="9" val="316.5" />
-		<volume h="10" val="113.25" />
-		<volume h="12" val="303.5" />
-		<volume h="13" val="320.0" />
-		<volume h="16" val="356.75" />
-		<volume h="17" val="679.75" />
-		<volume h="18" val="570.5" />
-		<volume h="19" val="280.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4605615880001f" cs_id="1182___SB___in">
-		<volume h="7" val="206.0" />
-		<volume h="8" val="456.0" />
-		<volume h="9" val="385.0" />
-		<volume h="10" val="148.75" />
-		<volume h="12" val="191.75" />
-		<volume h="13" val="201.0" />
-		<volume h="16" val="165.75" />
-		<volume h="17" val="308.75" />
-		<volume h="18" val="287.25" />
-		<volume h="19" val="84.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="3605862490004f" cs_id="1182___SB___out">
 		<volume h="7" val="257.0" />
 		<volume h="8" val="563.0" />
@@ -4119,6 +4079,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4605615880001r" cs_id="1185___NB___in">
+		<volume h="7" val="67.75" />
+		<volume h="8" val="288.75" />
+		<volume h="9" val="316.5" />
+		<volume h="10" val="113.25" />
+		<volume h="12" val="303.5" />
+		<volume h="13" val="320.0" />
+		<volume h="16" val="356.75" />
+		<volume h="17" val="679.75" />
+		<volume h="18" val="570.5" />
+		<volume h="19" val="280.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4522671420001r" cs_id="1185___NB___out">
 		<volume h="7" val="59.0" />
 		<volume h="8" val="262.0" />
@@ -4145,6 +4120,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="334.5" />
 		<volume h="18" val="294.0" />
 		<volume h="19" val="88.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4605615880001f" cs_id="1185___SB___out">
+		<volume h="7" val="206.0" />
+		<volume h="8" val="456.0" />
+		<volume h="9" val="385.0" />
+		<volume h="10" val="148.75" />
+		<volume h="12" val="191.75" />
+		<volume h="13" val="201.0" />
+		<volume h="16" val="165.75" />
+		<volume h="17" val="308.75" />
+		<volume h="18" val="287.25" />
+		<volume h="19" val="84.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -6210,40 +6200,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="271859640008f" cs_id="12843___NB___out">
-		<volume h="7" val="48.0" />
-		<volume h="8" val="162.5" />
-		<volume h="9" val="77.25" />
-		<volume h="10" val="87.0" />
-		<volume h="11" val="70.0" />
-		<volume h="12" val="88.75" />
-		<volume h="13" val="94.0" />
-		<volume h="14" val="103.75" />
-		<volume h="15" val="120.5" />
-		<volume h="16" val="141.0" />
-		<volume h="17" val="166.0" />
-		<volume h="18" val="132.25" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="271859640008r" cs_id="12843___SB___in">
-		<volume h="7" val="118.25" />
-		<volume h="8" val="295.0" />
-		<volume h="9" val="203.25" />
-		<volume h="10" val="149.0" />
-		<volume h="11" val="152.25" />
-		<volume h="12" val="186.5" />
-		<volume h="13" val="178.0" />
-		<volume h="14" val="159.75" />
-		<volume h="15" val="175.75" />
-		<volume h="16" val="228.5" />
-		<volume h="17" val="219.0" />
-		<volume h="18" val="183.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="4314357790010f" cs_id="12843___WB___in">
 		<volume h="7" val="117.0" />
 		<volume h="8" val="158.0" />
@@ -6312,6 +6268,23 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="271859640008f" cs_id="12913___NB___in">
+		<volume h="7" val="48.0" />
+		<volume h="8" val="162.5" />
+		<volume h="9" val="77.25" />
+		<volume h="10" val="87.0" />
+		<volume h="11" val="70.0" />
+		<volume h="12" val="88.75" />
+		<volume h="13" val="94.0" />
+		<volume h="14" val="103.75" />
+		<volume h="15" val="120.5" />
+		<volume h="16" val="141.0" />
+		<volume h="17" val="166.0" />
+		<volume h="18" val="132.25" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="1026010580002f" cs_id="12913___NB___out">
 		<volume h="7" val="101.5" />
 		<volume h="8" val="164.0" />
@@ -6342,6 +6315,23 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="229.5" />
 		<volume h="17" val="213.5" />
 		<volume h="18" val="163.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="271859640008r" cs_id="12913___SB___out">
+		<volume h="7" val="118.25" />
+		<volume h="8" val="295.0" />
+		<volume h="9" val="203.25" />
+		<volume h="10" val="149.0" />
+		<volume h="11" val="152.25" />
+		<volume h="12" val="186.5" />
+		<volume h="13" val="178.0" />
+		<volume h="14" val="159.75" />
+		<volume h="15" val="175.75" />
+		<volume h="16" val="228.5" />
+		<volume h="17" val="219.0" />
+		<volume h="18" val="183.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -7069,23 +7059,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="1648312870011f" cs_id="13213___EB___out">
-		<volume h="7" val="257.5" />
-		<volume h="8" val="364.5" />
-		<volume h="9" val="314.0" />
-		<volume h="10" val="297.5" />
-		<volume h="11" val="267.5" />
-		<volume h="12" val="294.75" />
-		<volume h="13" val="329.25" />
-		<volume h="14" val="336.75" />
-		<volume h="15" val="343.5" />
-		<volume h="16" val="330.0" />
-		<volume h="17" val="350.75" />
-		<volume h="18" val="308.25" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="1648313100002r" cs_id="13213___NB___in">
 		<volume h="7" val="225.0" />
 		<volume h="8" val="372.5" />
@@ -7154,23 +7127,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="1648312870011r" cs_id="13213___WB___in">
-		<volume h="7" val="301.5" />
-		<volume h="8" val="464.75" />
-		<volume h="9" val="491.25" />
-		<volume h="10" val="472.0" />
-		<volume h="11" val="442.5" />
-		<volume h="12" val="464.0" />
-		<volume h="13" val="508.75" />
-		<volume h="14" val="538.0" />
-		<volume h="15" val="592.25" />
-		<volume h="16" val="682.5" />
-		<volume h="17" val="710.0" />
-		<volume h="18" val="661.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="1648312870010r" cs_id="13213___WB___out">
 		<volume h="7" val="154.0" />
 		<volume h="8" val="274.5" />
@@ -7188,19 +7144,19 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="1648312870014f" cs_id="13215___EB___out">
-		<volume h="7" val="214.25" />
-		<volume h="8" val="343.0" />
-		<volume h="9" val="280.5" />
-		<volume h="10" val="254.5" />
-		<volume h="11" val="248.0" />
-		<volume h="12" val="303.5" />
-		<volume h="13" val="318.5" />
-		<volume h="14" val="322.5" />
-		<volume h="15" val="346.5" />
-		<volume h="16" val="313.75" />
-		<volume h="17" val="370.5" />
-		<volume h="18" val="297.75" />
+	<count loc_id="1648312870011f" cs_id="13215___EB___in">
+		<volume h="7" val="257.5" />
+		<volume h="8" val="364.5" />
+		<volume h="9" val="314.0" />
+		<volume h="10" val="297.5" />
+		<volume h="11" val="267.5" />
+		<volume h="12" val="294.75" />
+		<volume h="13" val="329.25" />
+		<volume h="14" val="336.75" />
+		<volume h="15" val="343.5" />
+		<volume h="16" val="330.0" />
+		<volume h="17" val="350.75" />
+		<volume h="18" val="308.25" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -7273,19 +7229,36 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="1648312870014r" cs_id="13215___WB___in">
-		<volume h="7" val="538.5" />
-		<volume h="8" val="661.75" />
-		<volume h="9" val="771.75" />
-		<volume h="10" val="768.25" />
-		<volume h="11" val="722.0" />
-		<volume h="12" val="685.25" />
-		<volume h="13" val="745.5" />
-		<volume h="14" val="752.25" />
-		<volume h="15" val="814.5" />
-		<volume h="16" val="844.25" />
-		<volume h="17" val="835.25" />
-		<volume h="18" val="830.5" />
+	<count loc_id="1648312870011r" cs_id="13215___WB___out">
+		<volume h="7" val="301.5" />
+		<volume h="8" val="464.75" />
+		<volume h="9" val="491.25" />
+		<volume h="10" val="472.0" />
+		<volume h="11" val="442.5" />
+		<volume h="12" val="464.0" />
+		<volume h="13" val="508.75" />
+		<volume h="14" val="538.0" />
+		<volume h="15" val="592.25" />
+		<volume h="16" val="682.5" />
+		<volume h="17" val="710.0" />
+		<volume h="18" val="661.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="1648312870014f" cs_id="13218___EB___in">
+		<volume h="7" val="214.25" />
+		<volume h="8" val="343.0" />
+		<volume h="9" val="280.5" />
+		<volume h="10" val="254.5" />
+		<volume h="11" val="248.0" />
+		<volume h="12" val="303.5" />
+		<volume h="13" val="318.5" />
+		<volume h="14" val="322.5" />
+		<volume h="15" val="346.5" />
+		<volume h="16" val="313.75" />
+		<volume h="17" val="370.5" />
+		<volume h="18" val="297.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -7388,6 +7361,23 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="895.0" />
 		<volume h="17" val="836.0" />
 		<volume h="18" val="931.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="1648312870014r" cs_id="13218___WB___out">
+		<volume h="7" val="538.5" />
+		<volume h="8" val="661.75" />
+		<volume h="9" val="771.75" />
+		<volume h="10" val="768.25" />
+		<volume h="11" val="722.0" />
+		<volume h="12" val="685.25" />
+		<volume h="13" val="745.5" />
+		<volume h="14" val="752.25" />
+		<volume h="15" val="814.5" />
+		<volume h="16" val="844.25" />
+		<volume h="17" val="835.25" />
+		<volume h="18" val="830.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -8331,6 +8321,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4595877930000f" cs_id="1374___EB___in">
+		<volume h="7" val="893.5" />
+		<volume h="8" val="1232.5" />
+		<volume h="9" val="1223.75" />
+		<volume h="10" val="902.75" />
+		<volume h="11" val="1147.0" />
+		<volume h="12" val="1202.0" />
+		<volume h="13" val="1142.5" />
+		<volume h="14" val="1195.5" />
+		<volume h="15" val="1272.0" />
+		<volume h="16" val="1321.75" />
+		<volume h="17" val="1616.75" />
+		<volume h="18" val="1513.75" />
+		<volume h="19" val="520.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="514238840000f" cs_id="1374___EB___out">
 		<volume h="7" val="969.5" />
 		<volume h="8" val="1065.0" />
@@ -8429,6 +8437,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="1058.0" />
 		<volume h="17" val="1181.0" />
 		<volume h="18" val="912.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4535118940000f" cs_id="1374___WB___out">
+		<volume h="7" val="1078.75" />
+		<volume h="8" val="1891.5" />
+		<volume h="9" val="1430.25" />
+		<volume h="10" val="804.0" />
+		<volume h="11" val="1031.0" />
+		<volume h="12" val="967.5" />
+		<volume h="13" val="1014.75" />
+		<volume h="14" val="1020.5" />
+		<volume h="15" val="1064.0" />
+		<volume h="16" val="869.5" />
+		<volume h="17" val="1143.5" />
+		<volume h="18" val="966.0" />
+		<volume h="19" val="416.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -8754,21 +8780,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4600118560004f" cs_id="1385___EB___out">
-		<volume h="7" val="40.25" />
-		<volume h="8" val="290.75" />
-		<volume h="9" val="358.0" />
-		<volume h="10" val="113.25" />
-		<volume h="12" val="262.0" />
-		<volume h="13" val="299.75" />
-		<volume h="16" val="304.25" />
-		<volume h="17" val="648.25" />
-		<volume h="18" val="426.25" />
-		<volume h="19" val="152.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="4542759320002r" cs_id="1385___NB___in">
 		<volume h="7" val="9.0" />
 		<volume h="8" val="49.0" />
@@ -8825,21 +8836,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="42.5" />
 		<volume h="18" val="42.5" />
 		<volume h="19" val="17.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4542759280005f" cs_id="1385___WB___in">
-		<volume h="7" val="138.75" />
-		<volume h="8" val="638.0" />
-		<volume h="9" val="384.25" />
-		<volume h="10" val="121.75" />
-		<volume h="12" val="230.5" />
-		<volume h="13" val="240.0" />
-		<volume h="16" val="179.5" />
-		<volume h="17" val="317.75" />
-		<volume h="18" val="298.0" />
-		<volume h="19" val="114.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -8967,7 +8963,7 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="3937989740002f" cs_id="141___NB___in">
+	<count loc_id="4668957070000f" cs_id="141___NB___in">
 		<volume h="7" val="199.0" />
 		<volume h="8" val="946.0" />
 		<volume h="9" val="1223.0" />
@@ -9717,36 +9713,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="605146610000f" cs_id="1439___NB___out">
-		<volume h="7" val="35.0" />
-		<volume h="8" val="130.0" />
-		<volume h="9" val="134.25" />
-		<volume h="10" val="61.25" />
-		<volume h="12" val="124.75" />
-		<volume h="13" val="132.5" />
-		<volume h="16" val="133.0" />
-		<volume h="17" val="239.75" />
-		<volume h="18" val="185.75" />
-		<volume h="19" val="72.75" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="605146610000r" cs_id="1439___SB___in">
-		<volume h="7" val="47.75" />
-		<volume h="8" val="173.0" />
-		<volume h="9" val="172.0" />
-		<volume h="10" val="65.75" />
-		<volume h="12" val="114.0" />
-		<volume h="13" val="130.0" />
-		<volume h="16" val="89.0" />
-		<volume h="17" val="190.75" />
-		<volume h="18" val="168.0" />
-		<volume h="19" val="69.75" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="3707355270000r" cs_id="1439___SB___out">
 		<volume h="7" val="70.0" />
 		<volume h="8" val="275.0" />
@@ -10333,6 +10299,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="605146610000f" cs_id="1467___NB___in">
+		<volume h="7" val="35.0" />
+		<volume h="8" val="130.0" />
+		<volume h="9" val="134.25" />
+		<volume h="10" val="61.25" />
+		<volume h="12" val="124.75" />
+		<volume h="13" val="132.5" />
+		<volume h="16" val="133.0" />
+		<volume h="17" val="239.75" />
+		<volume h="18" val="185.75" />
+		<volume h="19" val="72.75" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="605146710000f" cs_id="1467___NB___out">
 		<volume h="7" val="17.0" />
 		<volume h="8" val="48.0" />
@@ -10363,6 +10344,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="605146610000r" cs_id="1467___SB___out">
+		<volume h="7" val="47.75" />
+		<volume h="8" val="173.0" />
+		<volume h="9" val="172.0" />
+		<volume h="10" val="65.75" />
+		<volume h="12" val="114.0" />
+		<volume h="13" val="130.0" />
+		<volume h="16" val="89.0" />
+		<volume h="17" val="190.75" />
+		<volume h="18" val="168.0" />
+		<volume h="19" val="69.75" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="3114209030005r" cs_id="1467___WB___in">
 		<volume h="7" val="69.5" />
 		<volume h="8" val="202.5" />
@@ -10389,6 +10385,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="253.0" />
 		<volume h="18" val="278.0" />
 		<volume h="19" val="98.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="5463663000005f" cs_id="1468___EB___in">
+		<volume h="7" val="27.75" />
+		<volume h="8" val="114.75" />
+		<volume h="9" val="142.0" />
+		<volume h="10" val="63.75" />
+		<volume h="12" val="183.0" />
+		<volume h="13" val="171.5" />
+		<volume h="16" val="133.0" />
+		<volume h="17" val="345.0" />
+		<volume h="18" val="330.25" />
+		<volume h="19" val="134.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -10479,6 +10490,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="192.0" />
 		<volume h="18" val="225.5" />
 		<volume h="19" val="98.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="5463663000005r" cs_id="1468___WB___out">
+		<volume h="7" val="72.0" />
+		<volume h="8" val="304.5" />
+		<volume h="9" val="229.0" />
+		<volume h="10" val="82.75" />
+		<volume h="12" val="154.5" />
+		<volume h="13" val="143.5" />
+		<volume h="16" val="100.75" />
+		<volume h="17" val="183.75" />
+		<volume h="18" val="190.0" />
+		<volume h="19" val="85.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -12558,6 +12584,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="228949860004r" cs_id="16525___NB___in">
+		<volume h="7" val="33.5" />
+		<volume h="8" val="142.5" />
+		<volume h="9" val="128.5" />
+		<volume h="10" val="54.0" />
+		<volume h="12" val="109.5" />
+		<volume h="13" val="131.75" />
+		<volume h="16" val="96.5" />
+		<volume h="17" val="230.75" />
+		<volume h="18" val="173.0" />
+		<volume h="19" val="50.25" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="228949860003r" cs_id="16525___NB___out">
 		<volume h="7" val="45.5" />
 		<volume h="8" val="197.0" />
@@ -12583,6 +12624,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="65.0" />
 		<volume h="17" val="163.5" />
 		<volume h="18" val="99.0" />
+		<volume h="19" val="39.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="228949860004f" cs_id="16525___SB___out">
+		<volume h="7" val="47.25" />
+		<volume h="8" val="165.75" />
+		<volume h="9" val="152.5" />
+		<volume h="10" val="48.0" />
+		<volume h="12" val="92.75" />
+		<volume h="13" val="93.0" />
+		<volume h="16" val="66.0" />
+		<volume h="17" val="136.0" />
+		<volume h="18" val="90.0" />
 		<volume h="19" val="39.0" />
 	</count>
 
@@ -12618,7 +12674,7 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="5881082830001f" cs_id="1671___EB___in">
+	<count loc_id="5881082830002f" cs_id="1671___EB___in">
 		<volume h="7" val="317.0" />
 		<volume h="8" val="544.0" />
 		<volume h="9" val="497.5" />
@@ -12703,7 +12759,7 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4532826330002f" cs_id="1671___SB___out">
+	<count loc_id="4532826330000f" cs_id="1671___SB___out">
 		<volume h="7" val="201.5" />
 		<volume h="8" val="376.0" />
 		<volume h="9" val="290.0" />
@@ -15415,24 +15471,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="1649747760006f" cs_id="2322___NB___out">
-		<volume h="7" val="46.5" />
-		<volume h="8" val="59.0" />
-		<volume h="9" val="72.0" />
-		<volume h="10" val="55.5" />
-		<volume h="11" val="49.5" />
-		<volume h="12" val="49.5" />
-		<volume h="13" val="59.0" />
-		<volume h="14" val="76.0" />
-		<volume h="15" val="96.0" />
-		<volume h="16" val="127.0" />
-		<volume h="17" val="118.0" />
-		<volume h="18" val="102.5" />
-		<volume h="19" val="0.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="4793045230000f" cs_id="2322___WB___in">
 		<volume h="7" val="49.0" />
 		<volume h="8" val="68.0" />
@@ -15482,23 +15520,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="811.0" />
 		<volume h="17" val="892.5" />
 		<volume h="18" val="1037.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="2006388430010f" cs_id="232___EB___out">
-		<volume h="7" val="471.25" />
-		<volume h="8" val="741.0" />
-		<volume h="9" val="1004.5" />
-		<volume h="10" val="830.25" />
-		<volume h="11" val="631.75" />
-		<volume h="12" val="672.0" />
-		<volume h="13" val="658.75" />
-		<volume h="14" val="672.5" />
-		<volume h="15" val="786.25" />
-		<volume h="16" val="881.25" />
-		<volume h="17" val="1049.75" />
-		<volume h="18" val="1106.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -15571,6 +15592,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="1650966290006r" cs_id="2336___EB___in">
+		<volume h="7" val="3.0" />
+		<volume h="8" val="10.0" />
+		<volume h="9" val="10.5" />
+		<volume h="10" val="5.5" />
+		<volume h="11" val="17.0" />
+		<volume h="12" val="10.5" />
+		<volume h="13" val="10.5" />
+		<volume h="14" val="25.0" />
+		<volume h="15" val="25.0" />
+		<volume h="16" val="10.0" />
+		<volume h="17" val="14.5" />
+		<volume h="18" val="14.0" />
+		<volume h="19" val="0.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="1650966290004r" cs_id="2336___EB___out">
 		<volume h="7" val="14.0" />
 		<volume h="8" val="50.0" />
@@ -15584,6 +15623,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="63.0" />
 		<volume h="17" val="64.0" />
 		<volume h="18" val="72.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="1649747760006f" cs_id="2336___NB___in">
+		<volume h="7" val="46.5" />
+		<volume h="8" val="59.0" />
+		<volume h="9" val="72.0" />
+		<volume h="10" val="55.5" />
+		<volume h="11" val="49.5" />
+		<volume h="12" val="49.5" />
+		<volume h="13" val="59.0" />
+		<volume h="14" val="76.0" />
+		<volume h="15" val="96.0" />
+		<volume h="16" val="127.0" />
+		<volume h="17" val="118.0" />
+		<volume h="18" val="102.5" />
+		<volume h="19" val="0.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -15618,6 +15675,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="144.0" />
 		<volume h="17" val="158.0" />
 		<volume h="18" val="183.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="1650966290006f" cs_id="2336___WB___out">
+		<volume h="7" val="78.5" />
+		<volume h="8" val="70.5" />
+		<volume h="9" val="74.5" />
+		<volume h="10" val="61.5" />
+		<volume h="11" val="99.0" />
+		<volume h="12" val="68.5" />
+		<volume h="13" val="82.5" />
+		<volume h="14" val="152.0" />
+		<volume h="15" val="159.0" />
+		<volume h="16" val="87.5" />
+		<volume h="17" val="94.0" />
+		<volume h="18" val="96.5" />
+		<volume h="19" val="10.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -16485,6 +16560,23 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="2006388430010f" cs_id="257___EB___in">
+		<volume h="7" val="471.25" />
+		<volume h="8" val="741.0" />
+		<volume h="9" val="1004.5" />
+		<volume h="10" val="830.25" />
+		<volume h="11" val="631.75" />
+		<volume h="12" val="672.0" />
+		<volume h="13" val="658.75" />
+		<volume h="14" val="672.5" />
+		<volume h="15" val="786.25" />
+		<volume h="16" val="881.25" />
+		<volume h="17" val="1049.75" />
+		<volume h="18" val="1106.75" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="2006388430011f" cs_id="257___EB___out">
 		<volume h="7" val="409.0" />
 		<volume h="8" val="694.0" />
@@ -16690,7 +16782,7 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="486809740008f" cs_id="269___WB___in">
+	<count loc_id="486809740008f" cs_id="270___EB___out">
 		<volume h="7" val="0.0" />
 		<volume h="8" val="0.0" />
 		<volume h="9" val="0.0" />
@@ -17410,6 +17502,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="5536321680002r" cs_id="2935___NB___in">
+		<volume h="7" val="107.0" />
+		<volume h="8" val="310.0" />
+		<volume h="9" val="216.5" />
+		<volume h="10" val="105.0" />
+		<volume h="12" val="161.75" />
+		<volume h="13" val="205.0" />
+		<volume h="16" val="114.0" />
+		<volume h="17" val="240.75" />
+		<volume h="18" val="212.5" />
+		<volume h="19" val="110.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="5536321680001r" cs_id="2935___NB___out">
 		<volume h="7" val="145.0" />
 		<volume h="8" val="381.5" />
@@ -17436,6 +17543,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="835.0" />
 		<volume h="18" val="783.5" />
 		<volume h="19" val="295.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="5536321680002f" cs_id="2935___SB___out">
+		<volume h="7" val="40.25" />
+		<volume h="8" val="130.75" />
+		<volume h="9" val="134.0" />
+		<volume h="10" val="55.75" />
+		<volume h="12" val="134.0" />
+		<volume h="13" val="132.75" />
+		<volume h="16" val="99.75" />
+		<volume h="17" val="237.25" />
+		<volume h="18" val="221.0" />
+		<volume h="19" val="82.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -17834,23 +17956,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4687462250001f" cs_id="3023___NB___out">
-		<volume h="7" val="23.0" />
-		<volume h="8" val="51.0" />
-		<volume h="9" val="43.0" />
-		<volume h="10" val="47.0" />
-		<volume h="11" val="35.5" />
-		<volume h="12" val="64.5" />
-		<volume h="13" val="92.0" />
-		<volume h="14" val="78.5" />
-		<volume h="15" val="144.0" />
-		<volume h="16" val="153.0" />
-		<volume h="17" val="167.5" />
-		<volume h="18" val="137.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="4524037410002f" cs_id="3023___WB___in">
 		<volume h="7" val="386.0" />
 		<volume h="8" val="729.0" />
@@ -18203,7 +18308,33 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4791462520006f" cs_id="310___NB___in">
+	<count loc_id="4791462520006f" cs_id="310___EB___in">
+		<volume h="7" val="40.5" />
+		<volume h="8" val="246.5" />
+		<volume h="9" val="209.5" />
+		<volume h="10" val="75.0" />
+		<volume h="16" val="159.0" />
+		<volume h="17" val="291.0" />
+		<volume h="18" val="305.0" />
+		<volume h="19" val="144.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4791462520009f" cs_id="310___EB___out">
+		<volume h="7" val="34.5" />
+		<volume h="8" val="249.0" />
+		<volume h="9" val="209.0" />
+		<volume h="10" val="81.0" />
+		<volume h="16" val="145.0" />
+		<volume h="17" val="228.5" />
+		<volume h="18" val="249.5" />
+		<volume h="19" val="142.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="135020510006f" cs_id="310___NB___in">
 		<volume h="7" val="23.0" />
 		<volume h="8" val="95.0" />
 		<volume h="9" val="98.0" />
@@ -18216,7 +18347,7 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4791462520009f" cs_id="310___NB___out">
+	<count loc_id="135020510009f" cs_id="310___NB___out">
 		<volume h="7" val="30.0" />
 		<volume h="8" val="91.5" />
 		<volume h="9" val="98.5" />
@@ -18225,32 +18356,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="183.0" />
 		<volume h="18" val="183.0" />
 		<volume h="19" val="72.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="135020510006f" cs_id="310___WB___in">
-		<volume h="7" val="1.5" />
-		<volume h="8" val="2.5" />
-		<volume h="9" val="5.5" />
-		<volume h="10" val="1.5" />
-		<volume h="16" val="2.0" />
-		<volume h="17" val="3.0" />
-		<volume h="18" val="7.0" />
-		<volume h="19" val="2.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="135020510009f" cs_id="310___WB___out">
-		<volume h="7" val="0.5" />
-		<volume h="8" val="3.5" />
-		<volume h="9" val="5.0" />
-		<volume h="10" val="1.5" />
-		<volume h="16" val="1.0" />
-		<volume h="17" val="1.5" />
-		<volume h="18" val="3.0" />
-		<volume h="19" val="1.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -18701,19 +18806,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4791462530002f" cs_id="318___WB___in">
-		<volume h="7" val="37.25" />
-		<volume h="8" val="189.75" />
-		<volume h="9" val="172.25" />
-		<volume h="10" val="72.0" />
-		<volume h="16" val="58.75" />
-		<volume h="17" val="145.0" />
-		<volume h="18" val="159.5" />
-		<volume h="19" val="80.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="342871200001f" cs_id="318___WB___out">
 		<volume h="7" val="43.5" />
 		<volume h="8" val="255.0" />
@@ -18960,32 +19052,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4654208230001r" cs_id="348___NB___out">
-		<volume h="7" val="108.5" />
-		<volume h="8" val="314.0" />
-		<volume h="9" val="411.25" />
-		<volume h="10" val="183.5" />
-		<volume h="16" val="298.0" />
-		<volume h="17" val="605.5" />
-		<volume h="18" val="538.25" />
-		<volume h="19" val="231.75" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4654208230001f" cs_id="348___SB___in">
-		<volume h="7" val="234.75" />
-		<volume h="8" val="764.75" />
-		<volume h="9" val="922.5" />
-		<volume h="10" val="361.25" />
-		<volume h="16" val="401.0" />
-		<volume h="17" val="806.0" />
-		<volume h="18" val="693.0" />
-		<volume h="19" val="325.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="48863660003f" cs_id="348___SB___out">
 		<volume h="7" val="215.5" />
 		<volume h="8" val="715.0" />
@@ -19008,6 +19074,19 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="263.0" />
 		<volume h="18" val="220.5" />
 		<volume h="19" val="98.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4791462530002f" cs_id="348___WB___out">
+		<volume h="7" val="37.25" />
+		<volume h="8" val="189.75" />
+		<volume h="9" val="172.25" />
+		<volume h="10" val="72.0" />
+		<volume h="16" val="58.75" />
+		<volume h="17" val="145.0" />
+		<volume h="18" val="159.5" />
+		<volume h="19" val="80.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -19217,6 +19296,19 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4654208230001r" cs_id="355___NB___in">
+		<volume h="7" val="108.5" />
+		<volume h="8" val="314.0" />
+		<volume h="9" val="411.25" />
+		<volume h="10" val="183.5" />
+		<volume h="16" val="298.0" />
+		<volume h="17" val="605.5" />
+		<volume h="18" val="538.25" />
+		<volume h="19" val="231.75" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4654208240001r" cs_id="355___NB___out">
 		<volume h="7" val="112.5" />
 		<volume h="8" val="371.0" />
@@ -19239,6 +19331,19 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="723.0" />
 		<volume h="18" val="618.0" />
 		<volume h="19" val="270.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4654208230001f" cs_id="355___SB___out">
+		<volume h="7" val="234.75" />
+		<volume h="8" val="764.75" />
+		<volume h="9" val="922.5" />
+		<volume h="10" val="361.25" />
+		<volume h="16" val="401.0" />
+		<volume h="17" val="806.0" />
+		<volume h="18" val="693.0" />
+		<volume h="19" val="325.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -20060,23 +20165,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="112.0" />
 		<volume h="17" val="161.5" />
 		<volume h="18" val="128.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="1649747760001f" cs_id="3816___NB___out">
-		<volume h="7" val="43.5" />
-		<volume h="8" val="57.5" />
-		<volume h="9" val="58.0" />
-		<volume h="10" val="59.0" />
-		<volume h="11" val="56.0" />
-		<volume h="12" val="66.0" />
-		<volume h="13" val="78.0" />
-		<volume h="14" val="51.5" />
-		<volume h="15" val="112.5" />
-		<volume h="16" val="119.5" />
-		<volume h="17" val="137.5" />
-		<volume h="18" val="139.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -21192,78 +21280,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4917812920000f" cs_id="445___EB___in">
-		<volume h="7" val="113.0" />
-		<volume h="8" val="208.25" />
-		<volume h="9" val="281.0" />
-		<volume h="10" val="274.5" />
-		<volume h="11" val="441.5" />
-		<volume h="12" val="333.75" />
-		<volume h="13" val="369.5" />
-		<volume h="14" val="558.0" />
-		<volume h="15" val="620.0" />
-		<volume h="16" val="415.5" />
-		<volume h="17" val="510.0" />
-		<volume h="18" val="468.75" />
-		<volume h="19" val="88.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4917812920001f" cs_id="445___EB___out">
-		<volume h="7" val="148.25" />
-		<volume h="8" val="291.0" />
-		<volume h="9" val="411.25" />
-		<volume h="10" val="387.5" />
-		<volume h="11" val="671.0" />
-		<volume h="12" val="448.75" />
-		<volume h="13" val="489.5" />
-		<volume h="14" val="862.0" />
-		<volume h="15" val="886.5" />
-		<volume h="16" val="539.0" />
-		<volume h="17" val="634.75" />
-		<volume h="18" val="528.25" />
-		<volume h="19" val="92.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="199377150013f" cs_id="445___NB___in">
-		<volume h="7" val="58.75" />
-		<volume h="8" val="136.75" />
-		<volume h="9" val="223.0" />
-		<volume h="10" val="164.5" />
-		<volume h="11" val="340.0" />
-		<volume h="12" val="194.25" />
-		<volume h="13" val="205.5" />
-		<volume h="14" val="421.0" />
-		<volume h="15" val="368.5" />
-		<volume h="16" val="196.0" />
-		<volume h="17" val="210.75" />
-		<volume h="18" val="128.25" />
-		<volume h="19" val="29.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4917812910001f" cs_id="445___NB___out">
-		<volume h="7" val="24.5" />
-		<volume h="8" val="38.5" />
-		<volume h="9" val="74.0" />
-		<volume h="10" val="47.5" />
-		<volume h="11" val="30.5" />
-		<volume h="12" val="46.0" />
-		<volume h="13" val="59.5" />
-		<volume h="14" val="54.0" />
-		<volume h="15" val="16.0" />
-		<volume h="16" val="26.75" />
-		<volume h="17" val="55.0" />
-		<volume h="18" val="71.0" />
-		<volume h="19" val="25.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="4524026630002r" cs_id="4525___EB___in">
 		<volume h="7" val="352.0" />
 		<volume h="8" val="610.0" />
@@ -21613,24 +21629,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4634548950000f" cs_id="4794___EB___out">
-		<volume h="7" val="37.0" />
-		<volume h="8" val="79.5" />
-		<volume h="9" val="151.5" />
-		<volume h="10" val="88.5" />
-		<volume h="11" val="137.0" />
-		<volume h="12" val="138.5" />
-		<volume h="13" val="121.0" />
-		<volume h="14" val="107.0" />
-		<volume h="15" val="139.0" />
-		<volume h="16" val="116.0" />
-		<volume h="17" val="188.5" />
-		<volume h="18" val="159.0" />
-		<volume h="19" val="71.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="4523793760002f" cs_id="4794___NB___in">
 		<volume h="7" val="151.0" />
 		<volume h="8" val="604.0" />
@@ -21687,24 +21685,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="1174.0" />
 		<volume h="18" val="1224.0" />
 		<volume h="19" val="469.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4634548950000r" cs_id="4794___WB___in">
-		<volume h="7" val="58.0" />
-		<volume h="8" val="137.5" />
-		<volume h="9" val="143.0" />
-		<volume h="10" val="104.5" />
-		<volume h="11" val="150.0" />
-		<volume h="12" val="161.5" />
-		<volume h="13" val="175.5" />
-		<volume h="14" val="200.0" />
-		<volume h="15" val="253.0" />
-		<volume h="16" val="196.5" />
-		<volume h="17" val="286.5" />
-		<volume h="18" val="256.5" />
-		<volume h="19" val="113.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -21784,6 +21764,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4634548950000f" cs_id="4860___EB___in">
+		<volume h="7" val="37.0" />
+		<volume h="8" val="79.5" />
+		<volume h="9" val="151.5" />
+		<volume h="10" val="88.5" />
+		<volume h="11" val="137.0" />
+		<volume h="12" val="138.5" />
+		<volume h="13" val="121.0" />
+		<volume h="14" val="107.0" />
+		<volume h="15" val="139.0" />
+		<volume h="16" val="116.0" />
+		<volume h="17" val="188.5" />
+		<volume h="18" val="159.0" />
+		<volume h="19" val="71.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4634548950001f" cs_id="4860___EB___out">
 		<volume h="7" val="34.0" />
 		<volume h="8" val="77.0" />
@@ -21801,6 +21799,23 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4687462250001f" cs_id="4860___NB___in">
+		<volume h="7" val="23.0" />
+		<volume h="8" val="51.0" />
+		<volume h="9" val="43.0" />
+		<volume h="10" val="47.0" />
+		<volume h="11" val="35.5" />
+		<volume h="12" val="64.5" />
+		<volume h="13" val="92.0" />
+		<volume h="14" val="78.5" />
+		<volume h="15" val="144.0" />
+		<volume h="16" val="153.0" />
+		<volume h="17" val="167.5" />
+		<volume h="18" val="137.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4634548950001r" cs_id="4860___WB___in">
 		<volume h="7" val="74.0" />
 		<volume h="8" val="125.0" />
@@ -21814,6 +21829,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="215.0" />
 		<volume h="17" val="276.0" />
 		<volume h="18" val="268.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4634548950000r" cs_id="4860___WB___out">
+		<volume h="7" val="58.0" />
+		<volume h="8" val="137.5" />
+		<volume h="9" val="143.0" />
+		<volume h="10" val="104.5" />
+		<volume h="11" val="150.0" />
+		<volume h="12" val="161.5" />
+		<volume h="13" val="175.5" />
+		<volume h="14" val="200.0" />
+		<volume h="15" val="253.0" />
+		<volume h="16" val="196.5" />
+		<volume h="17" val="286.5" />
+		<volume h="18" val="256.5" />
+		<volume h="19" val="113.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -21980,6 +22013,23 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="42.0" />
 		<volume h="17" val="37.0" />
 		<volume h="18" val="64.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="1649747760001f" cs_id="4963___NB___in">
+		<volume h="7" val="43.5" />
+		<volume h="8" val="57.5" />
+		<volume h="9" val="58.0" />
+		<volume h="10" val="59.0" />
+		<volume h="11" val="56.0" />
+		<volume h="12" val="66.0" />
+		<volume h="13" val="78.0" />
+		<volume h="14" val="51.5" />
+		<volume h="15" val="112.5" />
+		<volume h="16" val="119.5" />
+		<volume h="17" val="137.5" />
+		<volume h="18" val="139.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -22332,36 +22382,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="3299151320000f" cs_id="502___NB___out">
-		<volume h="7" val="71.75" />
-		<volume h="8" val="215.75" />
-		<volume h="9" val="284.75" />
-		<volume h="10" val="181.5" />
-		<volume h="12" val="425.25" />
-		<volume h="13" val="430.5" />
-		<volume h="16" val="234.75" />
-		<volume h="17" val="590.5" />
-		<volume h="18" val="611.25" />
-		<volume h="19" val="247.25" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="3299151320000r" cs_id="502___SB___in">
-		<volume h="7" val="200.0" />
-		<volume h="8" val="619.0" />
-		<volume h="9" val="819.0" />
-		<volume h="10" val="355.5" />
-		<volume h="12" val="658.25" />
-		<volume h="13" val="633.75" />
-		<volume h="16" val="322.25" />
-		<volume h="17" val="659.0" />
-		<volume h="18" val="732.0" />
-		<volume h="19" val="319.25" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="3296921080000r" cs_id="502___SB___out">
 		<volume h="7" val="190.0" />
 		<volume h="8" val="593.5" />
@@ -22403,6 +22423,78 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="139.0" />
 		<volume h="18" val="165.5" />
 		<volume h="19" val="62.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4917812920000f" cs_id="504___EB___in">
+		<volume h="7" val="113.0" />
+		<volume h="8" val="208.25" />
+		<volume h="9" val="281.0" />
+		<volume h="10" val="274.5" />
+		<volume h="11" val="441.5" />
+		<volume h="12" val="333.75" />
+		<volume h="13" val="369.5" />
+		<volume h="14" val="558.0" />
+		<volume h="15" val="620.0" />
+		<volume h="16" val="415.5" />
+		<volume h="17" val="510.0" />
+		<volume h="18" val="468.75" />
+		<volume h="19" val="88.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4917812920001f" cs_id="504___EB___out">
+		<volume h="7" val="148.25" />
+		<volume h="8" val="291.0" />
+		<volume h="9" val="411.25" />
+		<volume h="10" val="387.5" />
+		<volume h="11" val="671.0" />
+		<volume h="12" val="448.75" />
+		<volume h="13" val="489.5" />
+		<volume h="14" val="862.0" />
+		<volume h="15" val="886.5" />
+		<volume h="16" val="539.0" />
+		<volume h="17" val="634.75" />
+		<volume h="18" val="528.25" />
+		<volume h="19" val="92.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="199377150013f" cs_id="504___SB___in">
+		<volume h="7" val="58.75" />
+		<volume h="8" val="136.75" />
+		<volume h="9" val="223.0" />
+		<volume h="10" val="164.5" />
+		<volume h="11" val="340.0" />
+		<volume h="12" val="194.25" />
+		<volume h="13" val="205.5" />
+		<volume h="14" val="421.0" />
+		<volume h="15" val="368.5" />
+		<volume h="16" val="196.0" />
+		<volume h="17" val="210.75" />
+		<volume h="18" val="128.25" />
+		<volume h="19" val="29.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4917812910001f" cs_id="504___SB___out">
+		<volume h="7" val="24.5" />
+		<volume h="8" val="38.5" />
+		<volume h="9" val="74.0" />
+		<volume h="10" val="47.5" />
+		<volume h="11" val="30.5" />
+		<volume h="12" val="46.0" />
+		<volume h="13" val="59.5" />
+		<volume h="14" val="54.0" />
+		<volume h="15" val="16.0" />
+		<volume h="16" val="26.75" />
+		<volume h="17" val="55.0" />
+		<volume h="18" val="71.0" />
+		<volume h="19" val="25.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -23098,6 +23190,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4600118560004f" cs_id="5643___EB___in">
+		<volume h="7" val="40.25" />
+		<volume h="8" val="290.75" />
+		<volume h="9" val="358.0" />
+		<volume h="10" val="113.25" />
+		<volume h="12" val="262.0" />
+		<volume h="13" val="299.75" />
+		<volume h="16" val="304.25" />
+		<volume h="17" val="648.25" />
+		<volume h="18" val="426.25" />
+		<volume h="19" val="152.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4600118560007f" cs_id="5643___EB___out">
 		<volume h="7" val="28.5" />
 		<volume h="8" val="308.5" />
@@ -23154,6 +23261,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="296.0" />
 		<volume h="18" val="267.0" />
 		<volume h="19" val="100.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4542759280005f" cs_id="5643___WB___out">
+		<volume h="7" val="138.75" />
+		<volume h="8" val="638.0" />
+		<volume h="9" val="384.25" />
+		<volume h="10" val="121.75" />
+		<volume h="12" val="230.5" />
+		<volume h="13" val="240.0" />
+		<volume h="16" val="179.5" />
+		<volume h="17" val="317.75" />
+		<volume h="18" val="298.0" />
+		<volume h="19" val="114.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -23218,21 +23340,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4804216020000r" cs_id="566___SB___out">
-		<volume h="7" val="0.0" />
-		<volume h="8" val="0.0" />
-		<volume h="9" val="0.0" />
-		<volume h="10" val="0.0" />
-		<volume h="12" val="0.0" />
-		<volume h="13" val="0.5" />
-		<volume h="16" val="0.0" />
-		<volume h="17" val="0.0" />
-		<volume h="18" val="0.0" />
-		<volume h="19" val="0.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="4520650690000f" cs_id="566___WB___in">
 		<volume h="7" val="387.0" />
 		<volume h="8" val="1019.0" />
@@ -23274,21 +23381,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="91.5" />
 		<volume h="18" val="73.5" />
 		<volume h="19" val="28.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="199377090003f" cs_id="568___EB___out">
-		<volume h="7" val="19.5" />
-		<volume h="8" val="44.5" />
-		<volume h="9" val="101.75" />
-		<volume h="10" val="33.5" />
-		<volume h="12" val="64.25" />
-		<volume h="13" val="80.25" />
-		<volume h="16" val="26.75" />
-		<volume h="17" val="102.25" />
-		<volume h="18" val="97.5" />
-		<volume h="19" val="35.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -23639,38 +23731,32 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4539981950000f" cs_id="574___NB___out">
-		<volume h="7" val="100.0" />
-		<volume h="8" val="224.16666666666666" />
-		<volume h="9" val="308.0" />
-		<volume h="10" val="215.0" />
-		<volume h="11" val="367.5" />
-		<volume h="12" val="397.0" />
-		<volume h="13" val="449.5" />
-		<volume h="14" val="410.5" />
-		<volume h="15" val="498.0" />
-		<volume h="16" val="334.0" />
-		<volume h="17" val="615.3333333333334" />
-		<volume h="18" val="613.3333333333334" />
-		<volume h="19" val="250.0" />
+	<count loc_id="3299151320000f" cs_id="574___NB___in">
+		<volume h="7" val="71.75" />
+		<volume h="8" val="215.75" />
+		<volume h="9" val="284.75" />
+		<volume h="10" val="181.5" />
+		<volume h="12" val="425.25" />
+		<volume h="13" val="430.5" />
+		<volume h="16" val="234.75" />
+		<volume h="17" val="590.5" />
+		<volume h="18" val="611.25" />
+		<volume h="19" val="247.25" />
 	</count>
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4539981950000r" cs_id="574___SB___in">
-		<volume h="7" val="228.0" />
-		<volume h="8" val="581.8333333333334" />
-		<volume h="9" val="819.1666666666666" />
-		<volume h="10" val="456.0" />
-		<volume h="11" val="556.0" />
-		<volume h="12" val="642.0" />
-		<volume h="13" val="642.1666666666666" />
-		<volume h="14" val="697.0" />
-		<volume h="15" val="608.0" />
-		<volume h="16" val="438.1666666666667" />
-		<volume h="17" val="641.1666666666666" />
-		<volume h="18" val="713.6666666666666" />
-		<volume h="19" val="301.75" />
+	<count loc_id="3299151320000r" cs_id="574___SB___out">
+		<volume h="7" val="200.0" />
+		<volume h="8" val="619.0" />
+		<volume h="9" val="819.0" />
+		<volume h="10" val="355.5" />
+		<volume h="12" val="658.25" />
+		<volume h="13" val="633.75" />
+		<volume h="16" val="322.25" />
+		<volume h="17" val="659.0" />
+		<volume h="18" val="732.0" />
+		<volume h="19" val="319.25" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -23716,36 +23802,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="542.5" />
 		<volume h="18" val="639.5" />
 		<volume h="19" val="243.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4638869460001r" cs_id="575___NB___out">
-		<volume h="7" val="78.0" />
-		<volume h="8" val="188.0" />
-		<volume h="9" val="272.0" />
-		<volume h="10" val="142.75" />
-		<volume h="12" val="297.75" />
-		<volume h="13" val="376.0" />
-		<volume h="16" val="220.0" />
-		<volume h="17" val="540.5" />
-		<volume h="18" val="592.5" />
-		<volume h="19" val="238.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4638869460001f" cs_id="575___SB___in">
-		<volume h="7" val="41.0" />
-		<volume h="8" val="172.25" />
-		<volume h="9" val="317.0" />
-		<volume h="10" val="123.0" />
-		<volume h="12" val="191.0" />
-		<volume h="13" val="199.5" />
-		<volume h="16" val="103.5" />
-		<volume h="17" val="217.0" />
-		<volume h="18" val="226.0" />
-		<volume h="19" val="124.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -23825,7 +23881,7 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4520690300000f" cs_id="577___WB___in">
+	<count loc_id="4520952560000f" cs_id="577___WB___in">
 		<volume h="7" val="586.5" />
 		<volume h="8" val="1042.0" />
 		<volume h="9" val="858.5" />
@@ -23851,6 +23907,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="664.0" />
 		<volume h="18" val="673.0" />
 		<volume h="19" val="272.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="199377090003f" cs_id="579___EB___in">
+		<volume h="7" val="19.5" />
+		<volume h="8" val="44.5" />
+		<volume h="9" val="101.75" />
+		<volume h="10" val="33.5" />
+		<volume h="12" val="64.25" />
+		<volume h="13" val="80.25" />
+		<volume h="16" val="26.75" />
+		<volume h="17" val="102.25" />
+		<volume h="18" val="97.5" />
+		<volume h="19" val="35.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -24170,24 +24241,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4365239350000f" cs_id="595___EB___in">
-		<volume h="7" val="401.75" />
-		<volume h="8" val="479.75" />
-		<volume h="9" val="502.5" />
-		<volume h="10" val="402.25" />
-		<volume h="11" val="460.0" />
-		<volume h="12" val="376.0" />
-		<volume h="13" val="332.75" />
-		<volume h="14" val="655.5" />
-		<volume h="15" val="782.0" />
-		<volume h="16" val="468.25" />
-		<volume h="17" val="511.0" />
-		<volume h="18" val="441.5" />
-		<volume h="19" val="79.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="3089016230002f" cs_id="595___NB___in">
 		<volume h="7" val="116.16666666666667" />
 		<volume h="8" val="272.3333333333333" />
@@ -24443,62 +24496,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="431914040005r" cs_id="5979___NB___out">
-		<volume h="1" val="17.0" />
-		<volume h="2" val="15.6" />
-		<volume h="3" val="5.8" />
-		<volume h="4" val="9.0" />
-		<volume h="5" val="16.0" />
-		<volume h="6" val="45.7" />
-		<volume h="7" val="121.1" />
-		<volume h="8" val="204.6" />
-		<volume h="9" val="192.7" />
-		<volume h="10" val="167.3" />
-		<volume h="11" val="167.1" />
-		<volume h="12" val="217.3" />
-		<volume h="13" val="209.0" />
-		<volume h="14" val="197.9" />
-		<volume h="15" val="216.8" />
-		<volume h="16" val="280.6" />
-		<volume h="17" val="314.7" />
-		<volume h="18" val="222.6" />
-		<volume h="19" val="122.3" />
-		<volume h="20" val="85.5" />
-		<volume h="21" val="73.1" />
-		<volume h="22" val="61.2" />
-		<volume h="23" val="42.6" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="431914040005f" cs_id="5979___SB___in">
-		<volume h="1" val="12.4" />
-		<volume h="2" val="16.4" />
-		<volume h="3" val="14.2" />
-		<volume h="4" val="18.0" />
-		<volume h="5" val="30.4" />
-		<volume h="6" val="66.5" />
-		<volume h="7" val="152.0" />
-		<volume h="8" val="240.3" />
-		<volume h="9" val="198.7" />
-		<volume h="10" val="165.0" />
-		<volume h="11" val="167.7" />
-		<volume h="12" val="169.9" />
-		<volume h="13" val="195.5" />
-		<volume h="14" val="199.3" />
-		<volume h="15" val="184.6" />
-		<volume h="16" val="191.4" />
-		<volume h="17" val="212.5" />
-		<volume h="18" val="154.6" />
-		<volume h="19" val="88.3" />
-		<volume h="20" val="55.5" />
-		<volume h="21" val="46.0" />
-		<volume h="22" val="48.4" />
-		<volume h="23" val="34.2" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="431914040007f" cs_id="5979___SB___out">
 		<volume h="1" val="16.75" />
 		<volume h="2" val="26.75" />
@@ -24613,6 +24610,36 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4638869460001r" cs_id="598___NB___in">
+		<volume h="7" val="78.0" />
+		<volume h="8" val="188.0" />
+		<volume h="9" val="272.0" />
+		<volume h="10" val="142.75" />
+		<volume h="12" val="297.75" />
+		<volume h="13" val="376.0" />
+		<volume h="16" val="220.0" />
+		<volume h="17" val="540.5" />
+		<volume h="18" val="592.5" />
+		<volume h="19" val="238.5" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4638869460001f" cs_id="598___SB___out">
+		<volume h="7" val="41.0" />
+		<volume h="8" val="172.25" />
+		<volume h="9" val="317.0" />
+		<volume h="10" val="123.0" />
+		<volume h="12" val="191.0" />
+		<volume h="13" val="199.5" />
+		<volume h="16" val="103.5" />
+		<volume h="17" val="217.0" />
+		<volume h="18" val="226.0" />
+		<volume h="19" val="124.75" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4539401070002f" cs_id="598___WB___in">
 		<volume h="7" val="113.0" />
 		<volume h="8" val="365.0" />
@@ -24679,6 +24706,42 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4539981950000f" cs_id="602___NB___in">
+		<volume h="7" val="100.0" />
+		<volume h="8" val="224.16666666666666" />
+		<volume h="9" val="308.0" />
+		<volume h="10" val="215.0" />
+		<volume h="11" val="367.5" />
+		<volume h="12" val="397.0" />
+		<volume h="13" val="449.5" />
+		<volume h="14" val="410.5" />
+		<volume h="15" val="498.0" />
+		<volume h="16" val="334.0" />
+		<volume h="17" val="615.3333333333334" />
+		<volume h="18" val="613.3333333333334" />
+		<volume h="19" val="250.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4539981950000r" cs_id="602___SB___out">
+		<volume h="7" val="228.0" />
+		<volume h="8" val="581.8333333333334" />
+		<volume h="9" val="819.1666666666666" />
+		<volume h="10" val="456.0" />
+		<volume h="11" val="556.0" />
+		<volume h="12" val="642.0" />
+		<volume h="13" val="642.1666666666666" />
+		<volume h="14" val="697.0" />
+		<volume h="15" val="608.0" />
+		<volume h="16" val="438.1666666666667" />
+		<volume h="17" val="641.1666666666666" />
+		<volume h="18" val="713.6666666666666" />
+		<volume h="19" val="301.75" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4753085620000f" cs_id="602___WB___in">
 		<volume h="7" val="111.0" />
 		<volume h="8" val="199.25" />
@@ -24725,21 +24788,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="437.0" />
 		<volume h="17" val="977.0" />
 		<volume h="18" val="950.5" />
-		<volume h="19" val="408.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4523852400001f" cs_id="604___EB___out">
-		<volume h="7" val="119.0" />
-		<volume h="8" val="436.5" />
-		<volume h="9" val="594.5" />
-		<volume h="10" val="314.5" />
-		<volume h="12" val="641.0" />
-		<volume h="13" val="683.5" />
-		<volume h="16" val="415.5" />
-		<volume h="17" val="934.5" />
-		<volume h="18" val="934.0" />
 		<volume h="19" val="408.0" />
 	</count>
 
@@ -25019,7 +25067,7 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4542759280003f" cs_id="612___EB___out">
+	<count loc_id="4600118560009f" cs_id="612___EB___out">
 		<volume h="7" val="58.0" />
 		<volume h="8" val="269.5" />
 		<volume h="9" val="288.5" />
@@ -25075,6 +25123,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="355.0" />
 		<volume h="18" val="310.5" />
 		<volume h="19" val="131.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4542759280003f" cs_id="612___WB___out">
+		<volume h="7" val="169.5" />
+		<volume h="8" val="757.0" />
+		<volume h="9" val="510.0" />
+		<volume h="10" val="128.5" />
+		<volume h="12" val="233.5" />
+		<volume h="13" val="312.5" />
+		<volume h="16" val="215.5" />
+		<volume h="17" val="414.0" />
+		<volume h="18" val="343.0" />
+		<volume h="19" val="135.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -25318,40 +25381,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="187.5" />
 		<volume h="17" val="186.0" />
 		<volume h="18" val="191.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="326563360005f" cs_id="6245___NB___out">
-		<volume h="7" val="4.25" />
-		<volume h="8" val="18.75" />
-		<volume h="9" val="23.5" />
-		<volume h="10" val="5.5" />
-		<volume h="11" val="10.0" />
-		<volume h="12" val="16.0" />
-		<volume h="13" val="11.25" />
-		<volume h="14" val="21.75" />
-		<volume h="15" val="28.0" />
-		<volume h="16" val="50.75" />
-		<volume h="17" val="25.0" />
-		<volume h="18" val="41.75" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="326563360005r" cs_id="6245___SB___in">
-		<volume h="7" val="30.0" />
-		<volume h="8" val="48.5" />
-		<volume h="9" val="44.0" />
-		<volume h="10" val="40.0" />
-		<volume h="11" val="31.5" />
-		<volume h="12" val="28.25" />
-		<volume h="13" val="34.0" />
-		<volume h="14" val="36.5" />
-		<volume h="15" val="42.75" />
-		<volume h="16" val="45.0" />
-		<volume h="17" val="39.5" />
-		<volume h="18" val="42.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -26794,18 +26823,18 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 <!-- ====================================================================== -->
 
 	<count loc_id="3970071330000f" cs_id="7578___WB___in">
-		<volume h="7" val="45.0" />
-		<volume h="8" val="123.5" />
-		<volume h="9" val="183.0" />
-		<volume h="10" val="29.0" />
-		<volume h="11" val="26.0" />
-		<volume h="12" val="32.5" />
-		<volume h="13" val="33.5" />
-		<volume h="14" val="34.0" />
-		<volume h="15" val="44.5" />
-		<volume h="16" val="36.5" />
-		<volume h="17" val="124.0" />
-		<volume h="18" val="71.0" />
+		<volume h="7" val="23.5" />
+		<volume h="8" val="62.0" />
+		<volume h="9" val="91.5" />
+		<volume h="10" val="15.5" />
+		<volume h="11" val="14.0" />
+		<volume h="12" val="19.25" />
+		<volume h="13" val="17.75" />
+		<volume h="14" val="18.5" />
+		<volume h="15" val="26.25" />
+		<volume h="16" val="21.25" />
+		<volume h="17" val="64.0" />
+		<volume h="18" val="39.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -29255,36 +29284,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="228949860005r" cs_id="8490___NB___out">
-		<volume h="7" val="27.5" />
-		<volume h="8" val="136.25" />
-		<volume h="9" val="112.5" />
-		<volume h="10" val="33.0" />
-		<volume h="12" val="72.25" />
-		<volume h="13" val="89.5" />
-		<volume h="16" val="67.25" />
-		<volume h="17" val="149.5" />
-		<volume h="18" val="113.0" />
-		<volume h="19" val="35.75" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="228949860005f" cs_id="8490___SB___in">
-		<volume h="7" val="30.0" />
-		<volume h="8" val="129.25" />
-		<volume h="9" val="113.75" />
-		<volume h="10" val="42.0" />
-		<volume h="12" val="99.5" />
-		<volume h="13" val="81.0" />
-		<volume h="16" val="70.5" />
-		<volume h="17" val="141.75" />
-		<volume h="18" val="99.5" />
-		<volume h="19" val="39.75" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="228949860006f" cs_id="8490___SB___out">
 		<volume h="7" val="19.5" />
 		<volume h="8" val="126.0" />
@@ -29788,6 +29787,40 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="16" val="136.5" />
 		<volume h="17" val="125.0" />
 		<volume h="18" val="127.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="326563360005f" cs_id="8603___NB___in">
+		<volume h="7" val="4.25" />
+		<volume h="8" val="18.75" />
+		<volume h="9" val="23.5" />
+		<volume h="10" val="5.5" />
+		<volume h="11" val="10.0" />
+		<volume h="12" val="16.0" />
+		<volume h="13" val="11.25" />
+		<volume h="14" val="21.75" />
+		<volume h="15" val="28.0" />
+		<volume h="16" val="50.75" />
+		<volume h="17" val="25.0" />
+		<volume h="18" val="41.75" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="326563360005r" cs_id="8603___SB___out">
+		<volume h="7" val="30.0" />
+		<volume h="8" val="48.5" />
+		<volume h="9" val="44.0" />
+		<volume h="10" val="40.0" />
+		<volume h="11" val="31.5" />
+		<volume h="12" val="28.25" />
+		<volume h="13" val="34.0" />
+		<volume h="14" val="36.5" />
+		<volume h="15" val="42.75" />
+		<volume h="16" val="45.0" />
+		<volume h="17" val="39.5" />
+		<volume h="18" val="42.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -30890,6 +30923,24 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
+	<count loc_id="4365239350000f" cs_id="8788___WB___out">
+		<volume h="7" val="401.75" />
+		<volume h="8" val="479.75" />
+		<volume h="9" val="502.5" />
+		<volume h="10" val="402.25" />
+		<volume h="11" val="460.0" />
+		<volume h="12" val="376.0" />
+		<volume h="13" val="332.75" />
+		<volume h="14" val="655.5" />
+		<volume h="15" val="782.0" />
+		<volume h="16" val="468.25" />
+		<volume h="17" val="511.0" />
+		<volume h="18" val="441.5" />
+		<volume h="19" val="79.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
 	<count loc_id="4613258620003f" cs_id="886___EB___in">
 		<volume h="7" val="159.5" />
 		<volume h="8" val="199.5" />
@@ -31444,21 +31495,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4595181520004f" cs_id="8957___EB___out">
-		<volume h="7" val="73.75" />
-		<volume h="8" val="273.25" />
-		<volume h="9" val="375.75" />
-		<volume h="10" val="150.5" />
-		<volume h="12" val="283.0" />
-		<volume h="13" val="298.0" />
-		<volume h="16" val="168.0" />
-		<volume h="17" val="401.25" />
-		<volume h="18" val="353.75" />
-		<volume h="19" val="141.5" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="229111460004f" cs_id="8957___NB___in">
 		<volume h="7" val="1.0" />
 		<volume h="8" val="8.0" />
@@ -31489,21 +31525,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4595181520004r" cs_id="8957___WB___in">
-		<volume h="7" val="62.25" />
-		<volume h="8" val="254.25" />
-		<volume h="9" val="328.25" />
-		<volume h="10" val="144.5" />
-		<volume h="12" val="278.5" />
-		<volume h="13" val="309.5" />
-		<volume h="16" val="174.0" />
-		<volume h="17" val="379.75" />
-		<volume h="18" val="329.75" />
-		<volume h="19" val="138.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="4595181520003r" cs_id="8957___WB___out">
 		<volume h="7" val="44.0" />
 		<volume h="8" val="137.0" />
@@ -31515,6 +31536,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="466.0" />
 		<volume h="18" val="406.0" />
 		<volume h="19" val="151.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4595181520004f" cs_id="8964___EB___in">
+		<volume h="7" val="73.75" />
+		<volume h="8" val="273.25" />
+		<volume h="9" val="375.75" />
+		<volume h="10" val="150.5" />
+		<volume h="12" val="283.0" />
+		<volume h="13" val="298.0" />
+		<volume h="16" val="168.0" />
+		<volume h="17" val="401.25" />
+		<volume h="18" val="353.75" />
+		<volume h="19" val="141.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -31575,6 +31611,21 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="309.5" />
 		<volume h="18" val="264.5" />
 		<volume h="19" val="128.0" />
+	</count>
+
+<!-- ====================================================================== -->
+
+	<count loc_id="4595181520004r" cs_id="8964___WB___out">
+		<volume h="7" val="62.25" />
+		<volume h="8" val="254.25" />
+		<volume h="9" val="328.25" />
+		<volume h="10" val="144.5" />
+		<volume h="12" val="278.5" />
+		<volume h="13" val="309.5" />
+		<volume h="16" val="174.0" />
+		<volume h="17" val="379.75" />
+		<volume h="18" val="329.75" />
+		<volume h="19" val="138.0" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -32628,24 +32679,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="4595877930000f" cs_id="945___EB___out">
-		<volume h="7" val="893.5" />
-		<volume h="8" val="1232.5" />
-		<volume h="9" val="1223.75" />
-		<volume h="10" val="902.75" />
-		<volume h="11" val="1147.0" />
-		<volume h="12" val="1202.0" />
-		<volume h="13" val="1142.5" />
-		<volume h="14" val="1195.5" />
-		<volume h="15" val="1272.0" />
-		<volume h="16" val="1321.75" />
-		<volume h="17" val="1616.75" />
-		<volume h="18" val="1513.75" />
-		<volume h="19" val="520.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="466868570007f" cs_id="945___NB___out">
 		<volume h="7" val="56.0" />
 		<volume h="8" val="111.0" />
@@ -32672,24 +32705,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 		<volume h="17" val="93.0" />
 		<volume h="18" val="77.5" />
 		<volume h="19" val="11.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="4535118940000f" cs_id="945___WB___in">
-		<volume h="7" val="1078.75" />
-		<volume h="8" val="1891.5" />
-		<volume h="9" val="1430.25" />
-		<volume h="10" val="804.0" />
-		<volume h="11" val="1031.0" />
-		<volume h="12" val="967.5" />
-		<volume h="13" val="1014.75" />
-		<volume h="14" val="1020.5" />
-		<volume h="15" val="1064.0" />
-		<volume h="16" val="869.5" />
-		<volume h="17" val="1143.5" />
-		<volume h="18" val="966.0" />
-		<volume h="19" val="416.5" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -32739,32 +32754,32 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="228949860004r" cs_id="9516___NB___out">
-		<volume h="7" val="33.5" />
-		<volume h="8" val="142.5" />
-		<volume h="9" val="128.5" />
-		<volume h="10" val="54.0" />
-		<volume h="12" val="109.5" />
-		<volume h="13" val="131.75" />
-		<volume h="16" val="96.5" />
-		<volume h="17" val="230.75" />
-		<volume h="18" val="173.0" />
-		<volume h="19" val="50.25" />
+	<count loc_id="228949860005r" cs_id="9516___NB___in">
+		<volume h="7" val="27.5" />
+		<volume h="8" val="136.25" />
+		<volume h="9" val="112.5" />
+		<volume h="10" val="33.0" />
+		<volume h="12" val="72.25" />
+		<volume h="13" val="89.5" />
+		<volume h="16" val="67.25" />
+		<volume h="17" val="149.5" />
+		<volume h="18" val="113.0" />
+		<volume h="19" val="35.75" />
 	</count>
 
 <!-- ====================================================================== -->
 
-	<count loc_id="228949860004f" cs_id="9516___SB___in">
-		<volume h="7" val="47.25" />
-		<volume h="8" val="165.75" />
-		<volume h="9" val="152.5" />
-		<volume h="10" val="48.0" />
-		<volume h="12" val="92.75" />
-		<volume h="13" val="93.0" />
-		<volume h="16" val="66.0" />
-		<volume h="17" val="136.0" />
-		<volume h="18" val="90.0" />
-		<volume h="19" val="39.0" />
+	<count loc_id="228949860005f" cs_id="9516___SB___out">
+		<volume h="7" val="30.0" />
+		<volume h="8" val="129.25" />
+		<volume h="9" val="113.75" />
+		<volume h="10" val="42.0" />
+		<volume h="12" val="99.5" />
+		<volume h="13" val="81.0" />
+		<volume h="16" val="70.5" />
+		<volume h="17" val="141.75" />
+		<volume h="18" val="99.5" />
+		<volume h="19" val="39.75" />
 	</count>
 
 <!-- ====================================================================== -->
@@ -33308,36 +33323,6 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="5536321680003r" cs_id="988___NB___out">
-		<volume h="7" val="46.0" />
-		<volume h="8" val="154.5" />
-		<volume h="9" val="116.0" />
-		<volume h="10" val="49.0" />
-		<volume h="12" val="74.0" />
-		<volume h="13" val="92.0" />
-		<volume h="16" val="62.5" />
-		<volume h="17" val="139.0" />
-		<volume h="18" val="112.0" />
-		<volume h="19" val="53.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
-	<count loc_id="5536321680003f" cs_id="988___SB___in">
-		<volume h="7" val="34.5" />
-		<volume h="8" val="105.0" />
-		<volume h="9" val="100.0" />
-		<volume h="10" val="44.5" />
-		<volume h="12" val="92.0" />
-		<volume h="13" val="83.5" />
-		<volume h="16" val="76.0" />
-		<volume h="17" val="180.5" />
-		<volume h="18" val="171.0" />
-		<volume h="19" val="58.0" />
-	</count>
-
-<!-- ====================================================================== -->
-
 	<count loc_id="5536321680004f" cs_id="988___SB___out">
 		<volume h="7" val="35.0" />
 		<volume h="8" val="88.0" />
@@ -33413,32 +33398,32 @@ xsi:noNamespaceSchemaLocation="http://matsim.org/files/dtd/counts_v1.xsd"
 
 <!-- ====================================================================== -->
 
-	<count loc_id="5536321680002r" cs_id="989___NB___out">
-		<volume h="7" val="107.0" />
-		<volume h="8" val="310.0" />
-		<volume h="9" val="216.5" />
-		<volume h="10" val="105.0" />
-		<volume h="12" val="161.75" />
-		<volume h="13" val="205.0" />
-		<volume h="16" val="114.0" />
-		<volume h="17" val="240.75" />
-		<volume h="18" val="212.5" />
-		<volume h="19" val="110.0" />
+	<count loc_id="5536321680003r" cs_id="989___NB___in">
+		<volume h="7" val="46.0" />
+		<volume h="8" val="154.5" />
+		<volume h="9" val="116.0" />
+		<volume h="10" val="49.0" />
+		<volume h="12" val="74.0" />
+		<volume h="13" val="92.0" />
+		<volume h="16" val="62.5" />
+		<volume h="17" val="139.0" />
+		<volume h="18" val="112.0" />
+		<volume h="19" val="53.0" />
 	</count>
 
 <!-- ====================================================================== -->
 
-	<count loc_id="5536321680002f" cs_id="989___SB___in">
-		<volume h="7" val="40.25" />
-		<volume h="8" val="130.75" />
-		<volume h="9" val="134.0" />
-		<volume h="10" val="55.75" />
-		<volume h="12" val="134.0" />
-		<volume h="13" val="132.75" />
-		<volume h="16" val="99.75" />
-		<volume h="17" val="237.25" />
-		<volume h="18" val="221.0" />
-		<volume h="19" val="82.75" />
+	<count loc_id="5536321680003f" cs_id="989___SB___out">
+		<volume h="7" val="34.5" />
+		<volume h="8" val="105.0" />
+		<volume h="9" val="100.0" />
+		<volume h="10" val="44.5" />
+		<volume h="12" val="92.0" />
+		<volume h="13" val="83.5" />
+		<volume h="16" val="76.0" />
+		<volume h="17" val="180.5" />
+		<volume h="18" val="171.0" />
+		<volume h="19" val="58.0" />
 	</count>
 
 <!-- ====================================================================== -->
