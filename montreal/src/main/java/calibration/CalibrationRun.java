@@ -20,7 +20,7 @@ import ust.hk.praisehk.metamodelcalibration.measurements.MeasurementsReader;
 
 public class CalibrationRun {
 public static void main(String[] args) {
-	String measurementsFileLoc = "src\\main\\resources\\montrealMeasurements_2020_2022.xml";
+	String measurementsFileLoc = "5_percent\\newData\\newMeasurements.xml";
 	String paramReaderFileLoc = "src\\main\\resources\\paramReaderTrial1.csv";
 	String configFileLoc = "5_percent\\config.xml";
 	String writeFileLoc = "CalibrationOutput\\";
@@ -34,13 +34,12 @@ public static void main(String[] args) {
 	
 	
 	
-	
-	String populationFileLoc = "5_percent\\prepared_population.xml.gz";
-	String networkFileLoc = "5_percent\\montreal_network.xml.gz";
-	String transitScheduleFileLoc = "5_percent\\montreal_transit_schedules.xml.gz";
-	String transitVehcileFileLoc = "5_percent\\montreal_transit_vehicles.xml.gz";
+	String populationFileLoc = "5_percent\\newData\\output_plans.xml.gz";
+	String networkFileLoc = "5_percent\\newData\\montreal_network.xml.gz";
+	String transitScheduleFileLoc = "5_percent\\newData\\montreal_transitSchedule.xml.gz";
+	String transitVehcileFileLoc = "5_percent\\newData\\montreal_transitVehicles.xml.gz";
 	String vehiclesFileLoc = "5_percent\\vehicle.xml";
-	String facilityFileLoc = "5_percent\\montreal_facilities.xml.gz";
+	String facilityFileLoc = "5_percent\\newData\\output_facilities.xml.gz";
 	String householdFileLoc = "5_percent\\montreal_households.xml.gz";
 	
 	Config config = ConfigUtils.createConfig();
@@ -66,11 +65,12 @@ public static void main(String[] args) {
 	
 	Calibrator calibrator = new CalibratorImpl(countData,writeFileLoc,false,pReader,initialTRRadius,maxSuccessiveRejection);
 	writeRunParam(calibrator, writeFileLoc, params, pReader);
-	AnalyticalModel sue=new CNLSUEModel(countData.getTimeBean());
+	
 	calibrator.setMaxTrRadius(maxTRRadius);
 	
 	
 	for(int i=0;i<maxIter;i++) {
+		AnalyticalModel sue=new CNLSUEModel(countData.getTimeBean());
 		sue.setDefaultParameters(pReader.ScaleUp(pReader.getDefaultParam()));
 		sue.setFileLoc("CalibrationOutput/");
 		Measurements m = simrun.run(sue, params, true, Integer.toString(i));

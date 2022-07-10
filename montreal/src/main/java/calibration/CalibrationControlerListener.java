@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.AfterMobsimEvent;
 import org.matsim.core.controler.events.BeforeMobsimEvent;
@@ -39,7 +40,7 @@ public class CalibrationControlerListener implements StartupListener,BeforeMobsi
 	@Inject
 	private OutputDirectoryHierarchy controlerIO;
 	
-	
+	@Named("odNetwork") Network odNetwork;
 	private int maxIter;
 	private final Map<String, FareCalculator> farecalc;
 	private int AverageCountOverNoOfIteration=5;
@@ -105,12 +106,17 @@ public class CalibrationControlerListener implements StartupListener,BeforeMobsi
 			}
 		}else {
 		int counter=event.getIteration();
-			if(counter==this.maxIter) {
-				this.pcuVolumeCounter.geenerateLinkCounts();
+			if(counter%10==0) {
+				this.outputMeasurements = this.pcuVolumeCounter.geenerateLinkCounts();
+				
+				this.outputMeasurements.writeCSVMeasurements(controlerIO.getIterationFilename(counter,"outputMeasurements.csv"));
+				new MeasurementsWriter(this.outputMeasurements).write(controlerIO.getIterationFilename(counter,"outputMeasurements.xml"));
+				
+			}else if(counter==this.maxIter) {
+				this.outputMeasurements = this.pcuVolumeCounter.geenerateLinkCounts();
 				
 				this.outputMeasurements.writeCSVMeasurements(controlerIO.getOutputFilename("outputMeasurements.csv"));
 				new MeasurementsWriter(this.outputMeasurements).write(controlerIO.getOutputFilename("outputMeasurements.xml"));
-				
 			}
 		}
 		
@@ -128,7 +134,7 @@ public class CalibrationControlerListener implements StartupListener,BeforeMobsi
 	public void notifyShutdown(ShutdownEvent event) {
 		if(this.generateOD) {
 		this.SueAssignment.generateRoutesAndOD(event.getServices().getScenario().getPopulation(),
-				event.getServices().getScenario().getNetwork(),
+				odNetwork,
 				event.getServices().getScenario().getTransitSchedule(),
 				event.getServices().getScenario(), this.farecalc);
 		}	

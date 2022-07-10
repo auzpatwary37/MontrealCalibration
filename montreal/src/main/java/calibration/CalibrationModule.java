@@ -1,5 +1,6 @@
 package calibration;
 
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.controler.AbstractModule;
 
 import com.google.inject.multibindings.MapBinder;
@@ -15,19 +16,22 @@ public class CalibrationModule extends AbstractModule{
 	private boolean generateOD;
 	private String fileLoc;
 	private AnalyticalModel model;
+	private Network odNetwork;
 
 	
-	public CalibrationModule(AnalyticalModel model,Measurements countData, boolean generateOD,String fileLoc) {
+	public CalibrationModule(AnalyticalModel model,Measurements countData, boolean generateOD,String fileLoc, Network odNetwork) {
 		this.countData = countData;
 		this.generateOD = generateOD;
 		this.fileLoc = fileLoc;
 		this.model = model;
+		this.odNetwork = odNetwork;
 	}
 	
 	@Override
 	public void install() {
 		PCUCounter lc=new PCUCounter(countData);
 		bind(Measurements.class).annotatedWith(Names.named("Output Measurements")).toInstance(this.countData);
+		if(this.odNetwork!=null)bind(Network.class).annotatedWith(Names.named("odNetwork")).toInstance(this.odNetwork);
 		bind(AnalyticalModel.class).toInstance(this.model);
 		bind(String.class).annotatedWith(Names.named("fileLoc")).toInstance(this.fileLoc);
 		this.addControlerListenerBinding().to(CalibrationControlerListener.class).asEagerSingleton();
@@ -38,6 +42,7 @@ public class CalibrationModule extends AbstractModule{
 				FareCalculator.class);
 		fareCalc.addBinding("bus").toInstance(new UniformFareCalculator(0.));
 		fareCalc.addBinding("subway").toInstance(new UniformFareCalculator(0.));
+		fareCalc.addBinding("rail").toInstance(new UniformFareCalculator(0.));
 		
 	}
 	

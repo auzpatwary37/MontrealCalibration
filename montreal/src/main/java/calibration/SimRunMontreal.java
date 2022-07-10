@@ -1,5 +1,6 @@
 package calibration;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -9,19 +10,23 @@ import java.util.Set;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.groups.ChangeModeConfigGroup.Behavior;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.vehicles.VehicleCapacity;
 
 import picocli.CommandLine.Option;
 import ust.hk.praisehk.metamodelcalibration.analyticalModel.AnalyticalModel;
+import ust.hk.praisehk.metamodelcalibration.analyticalModelImpl.CNLSUEModel;
 import ust.hk.praisehk.metamodelcalibration.calibrator.ParamReader;
 import ust.hk.praisehk.metamodelcalibration.measurements.Measurements;
 
@@ -31,6 +36,9 @@ public class SimRunMontreal {
 	private ParamReader pReader;
 	private Measurements calibrationMeasurements;
 	private String fileLoc;
+	private String odNetFileLoc = "";
+	
+	private String countFileName = "src\\main\\resources\\countsMontreal_2020_2022.xml";
 	
 	@Option(names = {"--plan"}, description = {"Optional Path to plan file to load."}, defaultValue = "prepared_population.xml.gz")
 	private String planFile;
@@ -74,7 +82,7 @@ public class SimRunMontreal {
 	public SimRunMontreal(Config config, ParamReader pReader,Measurements calibrationMeasurements,String fileLoc) {
 		this.config = config;
 		this.pReader = pReader;
-		this.calibrationMeasurements = calibrationMeasurements.clone();
+		this.calibrationMeasurements = calibrationMeasurements;
 		this.fileLoc = fileLoc;
 		
 	}
@@ -102,16 +110,27 @@ public class SimRunMontreal {
 		config.global().setNumberOfThreads(thread);
 		config.qsim().setNumberOfThreads(thread);
 		config.controler().setLastIteration(this.maxIterations);
+		config.counts().setInputFile(countFileName);
+		config.counts().setCountsScaleFactor(20);
+		config.counts().setAverageCountsOverIterations(5);
+		config.counts().setWriteCountsInterval(10);
+		config.changeMode().setIgnoreCarAvailability(true);
+		config.changeMode().setModes(new String[] {"car","pt"});
+		config.changeMode().setBehavior(Behavior.fromSpecifiedModesToSpecifiedModes);
+		
+		//this.scale = params.get(CNLSUEModel.CapacityMultiplierName);
+		//if(counterNo.equals("0"))config.controler().setLastIteration(1);
 		addStrategy(config, "SubtourModeChoice", null, 0.1D, 0 * this.maxIterations);
 		addStrategy(config, "ReRoute", null, 0.5D, 0 * this.maxIterations);
 		addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
-		config.controler().setOutputDirectory(this.output);
+		config.controler().setOutputDirectory(this.output+counterNo);
 		config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 		config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
 		config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
 
 
 		config = pReader.SetParamToConfig(config, params);
+		config.planCalcScore().setLateArrival_utils_hr(-18);
 		//this.scale = config.qsim().getFlowCapFactor()/1.2;
 		Scenario scenario = ScenarioUtils.loadScenario(config);
 
@@ -121,7 +140,7 @@ public class SimRunMontreal {
 			vc.setSeats(Integer.valueOf((int)Math.ceil(vc.getSeats().intValue() * this.scale.doubleValue())));
 			vc.setStandingRoom(Integer.valueOf((int)Math.ceil(vc.getStandingRoom().intValue() * this.scale.doubleValue())));
 		});
-
+		
 		Set<Id<Person>> personIds = new HashSet<Id<Person>>(scenario.getPopulation().getPersons().keySet());
 		personIds.stream().forEach(p->{
 			if(scenario.getPopulation().getPersons().get(p).getSelectedPlan().getPlanElements().stream().filter(pe -> pe instanceof Leg).findAny().isEmpty()) {
@@ -129,8 +148,10 @@ public class SimRunMontreal {
 			}
 		});
 
-
-
+		scenario.getNetwork().getLinks().values().forEach(l->{
+			if(l.getFreespeed()<4.2)l.setFreespeed(4.2);
+		});
+		
 		Map<String,Double> actDuration = new HashMap<>();
 		Map<String,Integer> actNum = new HashMap<>();
 		Set<String> actList = new HashSet<>();
@@ -181,9 +202,12 @@ public class SimRunMontreal {
 
 		Controler controler = new Controler(scenario);
 		//AnalyticalModel model  = new CNLSUEModel(calibrationMeasurements.getTimeBean());
-		controler.addOverridingModule(new CalibrationModule(sue, calibrationMeasurements, generateOd, this.fileLoc+counterNo));
+		Network odNet = null;
+		if(new File(this.odNetFileLoc).exists())odNet = NetworkUtils.readNetwork(odNetFileLoc);
+		Measurements mm = calibrationMeasurements.clone();
+		controler.addOverridingModule(new CalibrationModule(sue, mm, generateOd, this.fileLoc+counterNo,odNet));
 		controler.run();
-		return this.calibrationMeasurements;
+		return mm;
 	}
 
 
@@ -197,6 +221,12 @@ public class SimRunMontreal {
 	}
 
 
+	public String getOdNetFileLoc() {
+		return odNetFileLoc;
+	}
+	public void setOdNetFileLoc(String odNetFileLoc) {
+		this.odNetFileLoc = odNetFileLoc;
+	}
 	public String getNetworkFileLoc() {
 		return networkFileLoc;
 	}

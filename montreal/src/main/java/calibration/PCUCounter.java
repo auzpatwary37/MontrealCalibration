@@ -72,7 +72,7 @@ import ust.hk.praisehk.metamodelcalibration.measurements.Measurements;
 					linkCounts.get(timeBeanId).put(LinkId,totalVehicle);
 				}
 			}
-			
+			double c = 0;
 			for(Measurement m:this.outputMeasurements.getMeasurementsByType().get(MeasurementType.linkVolume)) {
 				@SuppressWarnings("unchecked")
 				ArrayList<Id<Link>> linkIds=(ArrayList<Id<Link>>)m.getAttribute(Measurement.linkListAttributeName);
@@ -82,6 +82,7 @@ import ust.hk.praisehk.metamodelcalibration.measurements.Measurements;
 						count+=linkCounts.get(timeId).get(linkId);
 					}
 					m.putVolume(timeId, count);
+					c+=count;
 				}
 			}
 			
