@@ -15,6 +15,7 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.config.groups.ChangeModeConfigGroup.Behavior;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.StrategyConfigGroup;
@@ -38,7 +39,7 @@ public class SimRunMontreal {
 	private String fileLoc;
 	private String odNetFileLoc = "";
 	
-	private String countFileName = "src\\main\\resources\\countsMontreal_2020_2022.xml";
+	private String countFileName = null;//"src/main/resources/countsMontreal_2020_2022.xml";
 	
 	@Option(names = {"--plan"}, description = {"Optional Path to plan file to load."}, defaultValue = "prepared_population.xml.gz")
 	private String planFile;
@@ -100,6 +101,8 @@ public class SimRunMontreal {
 
 	public Measurements run(AnalyticalModel sue, LinkedHashMap<String, Double> params, boolean generateOd,String counterNo) {
 		config.removeModule("ev");
+		config = pReader.SetParamToConfig(config, params);
+		//this.planFile = "5_percent/output_plans.xml.gz";
 		config.plans().setInputFile(this.planFile);
 		config.households().setInputFile(this.householdFileLoc);
 		config.facilities().setInputFile(this.facilitiesFileLoc);
@@ -119,17 +122,18 @@ public class SimRunMontreal {
 		config.changeMode().setBehavior(Behavior.fromSpecifiedModesToSpecifiedModes);
 		
 		//this.scale = params.get(CNLSUEModel.CapacityMultiplierName);
-		//if(counterNo.equals("0"))config.controler().setLastIteration(1);
-		addStrategy(config, "SubtourModeChoice", null, 0.1D, 0 * this.maxIterations);
-		addStrategy(config, "ReRoute", null, 0.5D, 0 * this.maxIterations);
+		//if(counterNo.equals("0"))config.controler().setLastIteration(250);
+		addStrategy(config, "SubtourModeChoice", null, 0.1D, (int)0.8 * this.maxIterations);
+		addStrategy(config, "ReRoute", null, 0.15D, (int)0.8 * this.maxIterations);
 		addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
 		config.controler().setOutputDirectory(this.output+counterNo);
 		config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 		config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
+		//config.qsim().setFlowCapFactor(1);
 		config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
 
-
-		config = pReader.SetParamToConfig(config, params);
+		config.controler().setWriteEventsInterval(25);
+		
 		config.planCalcScore().setLateArrival_utils_hr(-18);
 		//this.scale = config.qsim().getFlowCapFactor()/1.2;
 		Scenario scenario = ScenarioUtils.loadScenario(config);
@@ -199,7 +203,7 @@ public class SimRunMontreal {
 				System.out.println("No start and end time was found for activity = "+actType+ " in the base population!! Inserting 8 hour as the typical duration.");
 			}
 		}
-
+		new ConfigWriter(config).write("5_percent/newData/configMine.xml");
 		Controler controler = new Controler(scenario);
 		//AnalyticalModel model  = new CNLSUEModel(calibrationMeasurements.getTimeBean());
 		Network odNet = null;

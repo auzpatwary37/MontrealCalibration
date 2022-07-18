@@ -20,10 +20,10 @@ import ust.hk.praisehk.metamodelcalibration.measurements.MeasurementsReader;
 
 public class CalibrationRun {
 public static void main(String[] args) {
-	String measurementsFileLoc = "5_percent\\newData\\newMeasurements.xml";
-	String paramReaderFileLoc = "src\\main\\resources\\paramReaderTrial1.csv";
-	String configFileLoc = "5_percent\\config.xml";
-	String writeFileLoc = "CalibrationOutput\\";
+	String measurementsFileLoc = "5_percent/newData/newMeasurements.xml";
+	String paramReaderFileLoc = "src/main/resources/paramReaderTrial1.csv";
+	String configFileLoc = "5_percent/config.xml";
+	String writeFileLoc = "CalibrationOutput/";
 	int maxIterSim = 50;
 	int maxIter = 20;
 	int thread = 10;
@@ -34,13 +34,13 @@ public static void main(String[] args) {
 	
 	
 	
-	String populationFileLoc = "5_percent\\newData\\output_plans.xml.gz";
-	String networkFileLoc = "5_percent\\newData\\montreal_network.xml.gz";
-	String transitScheduleFileLoc = "5_percent\\newData\\montreal_transitSchedule.xml.gz";
-	String transitVehcileFileLoc = "5_percent\\newData\\montreal_transitVehicles.xml.gz";
-	String vehiclesFileLoc = "5_percent\\vehicle.xml";
-	String facilityFileLoc = "5_percent\\newData\\output_facilities.xml.gz";
-	String householdFileLoc = "5_percent\\montreal_households.xml.gz";
+	String populationFileLoc = "CalibrationOutput/output_rightCap_rightModalShare/output_plans.xml.gz";//"5_percent/output_plans.xml.gz";
+	String networkFileLoc = "5_percent/newData/montreal_network.xml.gz";
+	String transitScheduleFileLoc = "5_percent/newData/montreal_transitSchedule.xml.gz";
+	String transitVehcileFileLoc = "5_percent/newData/montreal_transitVehicles.xml";
+	String vehiclesFileLoc = "5_percent/vehicle.xml";
+	String facilityFileLoc = "5_percent/newData/output_facilities.xml.gz";
+	String householdFileLoc = "5_percent/montreal_households.xml.gz";
 	
 	Config config = ConfigUtils.createConfig();
 	ConfigUtils.loadConfig(config,configFileLoc);
