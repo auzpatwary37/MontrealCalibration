@@ -21,7 +21,8 @@ import ust.hk.praisehk.metamodelcalibration.measurements.MeasurementsReader;
 public class CalibrationRun {
 public static void main(String[] args) {
 	String measurementsFileLoc = "5_percent/newData/newMeasurements.xml";
-	String paramReaderFileLoc = "src/main/resources/paramReaderTrial1.csv";
+	//String paramReaderFileLoc = "src/main/resources/paramReaderTrial1.csv";
+	String paramReaderFileLoc = "src/main/resources/paramReaderTrial1_original.csv";
 	String configFileLoc = "5_percent/config.xml";
 	String writeFileLoc = "CalibrationOutput/";
 	int maxIterSim = 50;
@@ -45,6 +46,7 @@ public static void main(String[] args) {
 	Config config = ConfigUtils.createConfig();
 	ConfigUtils.loadConfig(config,configFileLoc);
 	Measurements countData = new MeasurementsReader().readMeasurements(measurementsFileLoc);
+	
 	countData.applyFactor(scale);
 	ParamReader pReader = new ParamReader(paramReaderFileLoc);
 	

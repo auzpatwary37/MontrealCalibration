@@ -30,6 +30,7 @@ import ust.hk.praisehk.metamodelcalibration.analyticalModel.AnalyticalModel;
 import ust.hk.praisehk.metamodelcalibration.analyticalModelImpl.CNLSUEModel;
 import ust.hk.praisehk.metamodelcalibration.calibrator.ParamReader;
 import ust.hk.praisehk.metamodelcalibration.measurements.Measurements;
+import ust.hk.praisehk.metamodelcalibration.measurements.MeasurementsReader;
 
 public class SimRunMontreal {
 
@@ -340,5 +341,9 @@ public class SimRunMontreal {
 	public void setVehicleFileLoc(String vehicleFileLoc) {
 		this.vehicleFileLoc = vehicleFileLoc;
 	}
-	
+public static void main(String[] args) {
+	String measurementsFileLoc = "5_percent/newData/newMeasurements.xml";
+	Measurements countData = new MeasurementsReader().readMeasurements(measurementsFileLoc);
+	System.out.println(countData.getMeasurements().size());
+}
 }
