@@ -19,6 +19,7 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
+import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule.DefaultStrategy;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.vehicles.VehicleCapacity;
 import picocli.CommandLine;
@@ -145,7 +146,7 @@ public final class Run implements Callable<Integer> {
     		config.planCalcScore().getActivityParams(a.getKey()).setScoringThisActivityAtAll(true);
 
     	}else {
-    		ActivityParams param = new ActivityParams();
+    		ActivityParams param = new ActivityParams(a.getKey());
     		param.setTypicalDuration(a.getValue());
     		param.setMinimalDuration(a.getValue()*.25);
     		param.setScoringThisActivityAtAll(true);
