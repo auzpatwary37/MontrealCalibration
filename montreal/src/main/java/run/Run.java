@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -13,6 +14,7 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
@@ -20,7 +22,9 @@ import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.collections.Tuple;
 import org.matsim.vehicles.VehicleCapacity;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
@@ -113,8 +117,12 @@ public final class Run implements Callable<Integer> {
     		scenario.getPopulation().getPersons().remove(p);
     	}
     });
-    
-   
+    Map<String,Tuple<Double,Double>> timeStrata = new HashMap<>();
+    timeStrata.put("lessThanOneHour", new Tuple<>(0.,3600.));
+    timeStrata.put("OneToTwoHour", new Tuple<>(3600.*1,3600.*2));
+    timeStrata.put("TwoToFourHour", new Tuple<>(3600.*2,3600.*4));
+    timeStrata.put("GreaterThanFourHour", new Tuple<>(3600.*4,3600.*24));
+    stratifyActivities(scenario.getPopulation(),timeStrata,config);
     
     Map<String,Double> actDuration = new HashMap<>();
     Map<String,Integer> actNum = new HashMap<>();
@@ -179,5 +187,40 @@ public final class Run implements Callable<Integer> {
     if (disableAfter > 0)
       strategySettings.setDisableAfter(disableAfter); 
     config.strategy().addStrategySettings(strategySettings);
+  }
+  
+  public static void stratifyActivities(Population population,Map<String,Tuple<Double,Double>> timeStrata,Config config) {
+	  Map<String,Tuple<Integer,Double>> timeTracking = new HashMap<>();
+	  population.getPersons().entrySet().forEach(p->{
+		  p.getValue().getSelectedPlan().getPlanElements().forEach(pe->{
+			 if(pe instanceof Activity) {
+				 Activity a = (Activity)pe;
+				 double startTime = 0;
+				 double endTime = 24*3600;
+				 if(config.qsim().getEndTime().isDefined())endTime = config.qsim().getEndTime().seconds();
+				 if(a.getStartTime().isDefined())startTime = a.getStartTime().seconds();
+				 if(a.getEndTime().isDefined())endTime = a.getEndTime().seconds();
+				 double duration = endTime-startTime;
+				 if(duration == 0)duration = 1;
+				 String actName = a.getType();
+				 for(Entry<String, Tuple<Double, Double>> d:timeStrata.entrySet()) {
+					 if(duration<=d.getValue().getSecond() && duration>d.getValue().getFirst()) {
+						 actName = actName+"___"+d.getKey();
+						 a.setType(actName);
+					 }
+				 }
+				 double d = duration;
+				 timeTracking.compute(actName, (k,v)->v==null?new Tuple<>(1,d):new Tuple<>(v.getFirst()+1,v.getSecond()+d));
+				 
+			 }
+		  });
+	  });
+	  timeTracking.entrySet().forEach(ap->{
+		  ActivityParams aParam = new ActivityParams();
+		  aParam.setActivityType(ap.getKey());
+		  aParam.setTypicalDuration(ap.getValue().getSecond()/ap.getValue().getFirst());
+		  aParam.setMinimalDuration(aParam.getTypicalDuration().seconds()*.3);
+		  config.planCalcScore().addActivityParams(aParam);
+	  });
   }
 }

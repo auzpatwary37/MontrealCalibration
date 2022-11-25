@@ -22,9 +22,9 @@ public class CalibrationRun {
 public static void main(String[] args) {
 	String measurementsFileLoc = "5_percent/newData/newMeasurements.xml";
 	//String paramReaderFileLoc = "src/main/resources/paramReaderTrial1.csv";
-	String paramReaderFileLoc = "src/main/resources/paramReaderTrial1_original.csv";
+	String paramReaderFileLoc = "src/main/resources/paramReaderTrial1_newData.csv";
 	String configFileLoc = "5_percent/config.xml";
-	String writeFileLoc = "CalibrationOutput/";
+	String writeFileLoc = "CalibrationOutputNewOct22/";
 	int maxIterSim = 50;
 	int maxIter = 20;
 	int thread = 10;
@@ -35,13 +35,13 @@ public static void main(String[] args) {
 	
 	
 	
-	String populationFileLoc = "CalibrationOutput/output_rightCap_rightModalShare/output_plans.xml.gz";//"5_percent/output_plans.xml.gz";
-	String networkFileLoc = "5_percent/newData/montreal_network.xml.gz";
-	String transitScheduleFileLoc = "5_percent/newData/montreal_transitSchedule.xml.gz";
-	String transitVehcileFileLoc = "5_percent/newData/montreal_transitVehicles.xml";
-	String vehiclesFileLoc = "5_percent/vehicle.xml";
-	String facilityFileLoc = "5_percent/newData/output_facilities.xml.gz";
-	String householdFileLoc = "5_percent/montreal_households.xml.gz";
+	String populationFileLoc = "newData/virgin_plan_with_links.xml.gz";//"5_percent/output_plans.xml.gz";
+	String networkFileLoc = "newData/osm_network.xml.gz";
+	String transitScheduleFileLoc = "newData/osm_transit_schedules.xml.gz";
+	String transitVehcileFileLoc = "newData/osm_transit_vehicles.xml";
+	//String vehiclesFileLoc = "5_percent/vehicle.xml";
+	String facilityFileLoc = "newData/osm_facilities.xml.gz";
+	//String householdFileLoc = "5_percent/montreal_households.xml.gz";
 	
 	Config config = ConfigUtils.createConfig();
 	ConfigUtils.loadConfig(config,configFileLoc);
@@ -61,8 +61,8 @@ public static void main(String[] args) {
 	simrun.setFacilitiesFileLoc(facilityFileLoc);
 	simrun.setTsFileLoc(transitScheduleFileLoc);
 	simrun.setTvFileLoc(transitVehcileFileLoc);
-	simrun.setHouseholdFileLoc(householdFileLoc);
-	simrun.setVehicleFileLoc(vehiclesFileLoc);
+	//simrun.setHouseholdFileLoc(householdFileLoc);
+	//simrun.setVehicleFileLoc(vehiclesFileLoc);
 	LinkedHashMap<String,Double>params=pReader.getInitialParam();
 	
 	Calibrator calibrator = new CalibratorImpl(countData,writeFileLoc,false,pReader,initialTRRadius,maxSuccessiveRejection);

@@ -123,7 +123,8 @@ public class SimRunMontreal {
 		config.changeMode().setBehavior(Behavior.fromSpecifiedModesToSpecifiedModes);
 		
 		//this.scale = params.get(CNLSUEModel.CapacityMultiplierName);
-		//if(counterNo.equals("0"))config.controler().setLastIteration(250);
+		if(counterNo.equals("0"))config.controler().setLastIteration(250);
+		else config.plans().setInputFile(this.output+"0/output_plans.xml.gz");
 		addStrategy(config, "SubtourModeChoice", null, 0.1D, (int)0.8 * this.maxIterations);
 		addStrategy(config, "ReRoute", null, 0.15D, (int)0.8 * this.maxIterations);
 		addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
