@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,10 +23,11 @@ import org.matsim.facilities.ActivityFacility;
 
 public class PopulationGenerator {
 public static void main(String[] args) throws IOException{
-	String facilityFileLoc = "newData/osm_facilities.xml.gz";
-	String odFileLocation = "EOD_from_Louiselle/EOD/mtl18pv2c.csv";
+	String facilityFileLoc = "data/output_facilities.xml.gz";
+	String odFileLocation = "data/mtl18pv2c.csv";
 	String facilityWriteCsvLocation = "newData/facCoord.csv";
-	String facilityToCTUIDMap = "newData/facToCTUID.csv";
+	String facilityToCTUIDMap = "data/facToCTUID.csv";
+	String populationWriteLocation = "data/outputPopulation.xml";
 	Map<Double,Map<String,Set<Id<ActivityFacility>>>> ctuidToFacilityMap = new HashMap<>();
 	Config config = ConfigUtils.createConfig();
 	config.facilities().setInputFile(facilityFileLoc);
@@ -54,28 +57,221 @@ public static void main(String[] args) throws IOException{
 
     CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
         .setHeader(header)
+        .setDelimiter(";")
         .setSkipHeaderRecord(true)
         .build();
 
     Iterable<CSVRecord> records = csvFormat.parse(in);
     Map<Id<HouseHold>,HouseHold> households = new HashMap<>();
+    
     for (CSVRecord record : records) {
+    	//try{
     	Id<HouseHold> hhId = Id.create(record.get("nolog"),HouseHold.class);
         Id<Member> memId = Id.create(hhId.toString()+record.get("noper"),Member.class);
         String tripNo = record.get("nodep");
-        Id<Trip> tripId;
-        if(tripNo!=null)tripId = Id.create(memId.toString()+tripNo, Trip.class);
+        Id<Trip> tripId = null;
+        if(tripNo!=null && !tripNo.equals(""))tripId = Id.create(memId.toString()+tripNo, Trip.class);
         
         if(!households.containsKey(hhId)) {
-        	HouseHold hh = new HouseHold(hhId.toString(), Integer.parseInt(record.get("revenu")), Double.parseDouble(record.get("xmtmlog")), Double.parseDouble(record.get("ymtmlog")), Double.parseDouble(record.get("srlog")), Double.parseDouble(record.get("facmen18")), false, Integer.parseInt(record.get("nbveh")));
+        	HouseHold hh = new HouseHold(hhId.toString(), Integer.parseInt(record.get("revenu")), 
+        			record.get("xmtmlog").equals("")?null:Double.parseDouble(record.get("xmtmlog")), 
+        			record.get("ymtmlog").equals("")?null:Double.parseDouble(record.get("ymtmlog")), 
+        			record.get("srlog").equals("")?null:Double.parseDouble(record.get("srlog")), 
+        			Double.parseDouble(record.get("facmen18").replace(",", ".")), 
+        			false, Integer.parseInt(record.get("nbveh")));
         	households.put(hh.getHhId(), hh);
+        	hh.setMemSize(Integer.parseInt(record.get("nbper")));
         }
         
         HouseHold hh = households.get(hhId);
-        
+        Member member = hh.getMembers().get(memId);
+        if(member==null) {
+        	member = new Member(memId.toString(), hh, Integer.parseInt(record.get("age")),Integer.parseInt(record.get("percond"))==1, Double.parseDouble(record.get("facper18").replace(",", ".")),
+        			hh.getIncomeGroup(), Integer.parseInt(record.get("sexe")), Integer.parseInt(record.get("occper")), Integer.parseInt(record.get("tele_trav"))==1, 
+        			record.get("xmtmocc").equals("")?null:Double.parseDouble(record.get("xmtmocc")), record.get("ymtmocc").equals("")?null:Double.parseDouble(record.get("ymtmocc")),record.get("srocc").equals("")?null:Double.parseDouble(record.get("srocc")));
+        	hh.addMember(member);
+        	if(member.getAgeGroup()<15)hh.setIfKids(true);
+        }
+        if(tripNo!=null && !tripNo.equals("")) {
+        	double timehhmm = Double.parseDouble(record.get("hredep"));
+        	double time = (int)timehhmm/100*3600+timehhmm%100*60;
+        	
+        	
+        	Trip trip = new Trip(tripId.toString(), member, Double.parseDouble(record.get("xmtmori")), Double.parseDouble(record.get("ymtmori")), Double.parseDouble(record.get("xmtmdes")), 
+        			Double.parseDouble(record.get("ymtmdes")),
+        			time,record.get("facdep18").equals("")?member.getPersonExFac():Double.parseDouble(record.get("facdep18").replace(",", ".")), 
+        			record.get("srori").equals("")?null:Double.parseDouble(record.get("srori")), 
+        			record.get("srdes").equals("")?null:Double.parseDouble(record.get("srdes")),
+        			extractActivity(record),
+        			Integer.parseInt(record.get("mobil")),
+        			extractModes(record), record.get("jour_dpl"));
+        	member.addTrip(trip);
+        }
+//    	}catch(Exception e) {
+//    		e.printStackTrace();
+//    	}
         
     }
 	
 	 
-}	
+}
+public static String[] extractModes(CSVRecord record) {
+	List<String> modes = new ArrayList<>();
+	for(int i = 1;i<9;i++) {
+		String modeString = "mode"+i;
+		if(record.get(modeString)!=null && !record.get(modeString).equals("")) {
+			switch(Integer.parseInt(record.get(modeString))) {
+			case 1: //its a car
+				modes.add("car");
+				break;
+			case 2: // car passenger
+				modes.add("car_passenger");
+				break;
+			case 3: // stm bus 
+				modes.add("pt");
+				break;
+			case 4: //metro
+				modes.add("pt");
+				break;
+			case 5: // RTL
+				modes.add("pt");
+				break;
+			case 6: // STL
+				modes.add("pt");
+				break;
+			case 7: //exo/mrc
+				modes.add("pt");
+				break;
+			case 8: //train
+				modes.add("pt");
+				break;
+			case 9: //Schoolbus for now just kept it as car passenger
+				modes.add("car_passenger");
+				break;
+			case 10://other bus, for now just kept it as car passenger
+				modes.add("car_passenger");
+				break;
+			case 11://taxi
+				modes.add("car");
+				break;
+			case 12:// motorcycle
+				modes.add("car");
+				break;
+			case 13:// bike
+				modes.add("bike");
+				break;
+			case 14: // walking
+				modes.add("walk");
+				break;
+			case 15://paratransit
+				modes.add("pt");
+				break;
+			case 16://outside entry
+				modes.add("pt");
+				break;
+			case 17://junction point
+				modes.add("car");
+				break;
+			case 18://indeterminant 
+			default:	
+			}
+		}
+	}
+	String[] modesArray = new String[modes.size()];
+	int i = 0;
+	for(String s:modes) {
+		modesArray[i]=s;
+		i++;
+	}
+	
+	return modesArray;
+}
+
+public static String extractActivity(CSVRecord record) {
+	if(record.get("nodep")!=null && !record.get("nodep").equals("")) {
+		int motive = Integer.parseInt(record.get("motif"));
+		
+		if(motive==0) {//no movment this should not happen when nodep is not null
+			
+		}else if(motive == 1||motive ==2) {
+			return "work";
+		}else if(motive==4) {
+			return "education";
+		}else if(motive == 5) {
+			return "shop";
+		}else if(motive == 6||motive == 7) {
+			return "leisure";
+		}else if(motive == 11) {
+			return "home";
+		}else if(motive == 8|| motive == 9 || motive==10) {
+			return "errands";
+		}else if(motive == 3 || motive==12|| motive==13) {
+			return "other";
+		}
+					
+			
+	}
+	return null;
+}
+
+//Chat gpt code 
+
+//public static void redistributeExpansions(Map<Id<HouseHold>, HouseHold> hhMap) {
+//    // create a map to hold the new expansion factors for each household
+//    Map<Id<HouseHold>, Double> newHhExpansions = new HashMap<>();
+//
+//    // create maps to hold the new expansion factors for members and trips
+//    Map<Id<Member>, Double> newMemberExpansions = new HashMap<>();
+//    Map<Id<Trip>, Double> newTripExpansions = new HashMap<>();
+//    Map<Id<Member>,Member> members = new HashMap<>();
+//
+//    // iterate over each household and calculate the new expansion factor
+//    for (Id<HouseHold> hhId : hhMap.keySet()) {
+//        double hhExpFactor = 0.0;
+//        Map<String, Double> hhAttributes = new HashMap<>();
+//
+//        HouseHold hh = hhMap.get(hhId);
+//        Map<Id<Member>, Member> memberMap = hh.getMembers();
+//
+//        // iterate over each member in the household and sum their expansion factors
+//        for (Id<Member> memberId : memberMap.keySet()) {
+//            Member member = memberMap.get(memberId);
+//            double memberExpFactor = member.getPersonExFac();
+//            String memberAttrKey = member.generateBehavioralKey();
+//            newMemberExpansions.put(memberId, 0.0);
+//            members.put(memberId, member);
+//            hhAttributes.merge(memberAttrKey, memberExpFactor, Double::sum);
+//
+//            Map<Id<Trip>, Trip> tripMap = member.getTrips();
+//
+//            // iterate over each trip for the member and sum their expansion factors
+//            for (Id<Trip> tripId : tripMap.keySet()) {
+//                Trip trip = tripMap.get(tripId);
+//                double tripExpFactor = trip.getTripExpFactror();
+//                String tripAttrKey = trip.generateBehavioralKey();
+//                newTripExpansions.put(tripId, 0.0);
+//                hhAttributes.merge(tripAttrKey, tripExpFactor, Double::sum);
+//            }
+//        }
+//
+//        // sum the expansion factors for all members and trips in the household
+//        for (double expFactor : hhAttributes.values()) {
+//            hhExpFactor += expFactor;
+//        }
+//
+//        // update the new expansion factor for the household
+//        newHhExpansions.put(hhId, hhExpFactor);
+//    }
+//
+//    // redistribute the new expansion factors for members and trips
+//    for (Id<Member> memberId : newMemberExpansions.keySet()) {
+//        Member member = members.get(memberId);
+//        member.setNewExpFac(newHhExpansions.get(member.getHouseHold().getHhId()) * newMemberExpansions.get(memberId));
+//    }
+//
+//    for (Id<Trip> tripId : newTripExpansions.keySet()) {
+//        Trip trip = hhMap.get(tripId.getHouseHoldId()).getMember().get(tripId.getMemberId()).getTrip().get(tripId);
+//        trip.setExpansionFactor(newHhExpansions.get(tripId.getHouseHoldId()) * newTripExpansions.get(tripId));
+//    }
+//}
 }
