@@ -15,11 +15,18 @@ import java.util.Set;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.ActivityFacility;
+import org.matsim.households.Households;
+import org.matsim.households.HouseholdsWriterV10;
+import org.matsim.vehicles.MatsimVehicleWriter;
+import org.matsim.vehicles.Vehicles;
 
 public class PopulationGenerator {
 public static void main(String[] args) throws IOException{
@@ -28,10 +35,19 @@ public static void main(String[] args) throws IOException{
 	String facilityWriteCsvLocation = "newData/facCoord.csv";
 	String facilityToCTUIDMap = "data/facToCTUID.csv";
 	String populationWriteLocation = "data/outputPopulation.xml";
-	Map<Double,Map<String,Set<Id<ActivityFacility>>>> ctuidToFacilityMap = new HashMap<>();
+	Map<String,Map<Double,Set<Id<ActivityFacility>>>> ctuidToFacilityMap = new HashMap<>();
 	Config config = ConfigUtils.createConfig();
 	config.facilities().setInputFile(facilityFileLoc);
-	ActivityFacilities fac = ScenarioUtils.loadScenario(config).getActivityFacilities();
+	Scenario scenario = ScenarioUtils.loadScenario(config);
+	
+	ActivityFacilities fac = scenario.getActivityFacilities();
+	
+	Population population = scenario.getPopulation();
+	Vehicles vehicles = scenario.getVehicles();
+	Households matsimHouseholds = scenario.getHouseholds();
+	
+	double scale = 1.0;
+	
 	BufferedReader bf = new BufferedReader(new FileReader(new File(facilityToCTUIDMap)));
 	bf.readLine();
 	String line = null;
@@ -40,13 +56,11 @@ public static void main(String[] args) throws IOException{
 		Id<ActivityFacility> facId = Id.create(part[0], ActivityFacility.class);
 		double ct = Double.parseDouble(part[1]);
 		
-		if(!ctuidToFacilityMap.containsKey(ct)){
-			ctuidToFacilityMap.put(ct, new HashMap<>());
-		}
 		
 		fac.getFacilities().get(facId).getActivityOptions().values().forEach(at->{
-			if(!ctuidToFacilityMap.get(ct).containsKey(at.getType()))ctuidToFacilityMap.get(ct).put(at.getType(), new HashSet<>());
-			ctuidToFacilityMap.get(ct).get(at.getType()).add(facId);
+			if(!ctuidToFacilityMap.containsKey(at.getType()))ctuidToFacilityMap.put(at.getType(), new HashMap<>());
+			if(!ctuidToFacilityMap.get(at.getType()).containsKey(ct))ctuidToFacilityMap.get(at.getType()).put(ct, new HashSet<>());
+			ctuidToFacilityMap.get(at.getType()).get(ct).add(facId);
 		});
 	}
 	
@@ -107,13 +121,21 @@ public static void main(String[] args) throws IOException{
         			extractModes(record), record.get("jour_dpl"));
         	member.addTrip(trip);
         }
-//    	}catch(Exception e) {
-//    		e.printStackTrace();
-//    	}
         
     }
+	Map<String,Map<Id<HouseHold>,Double>> hhSpare = new HashMap<>();
+	Map<String,Map<Id<Member>,Double>> memberSpare = new HashMap<>();
+	Map<String,Map<Id<Trip>,Double>> tripSpare = new HashMap<>();
 	
-	 
+	
+    households.values().forEach(hh->{
+
+    	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare);
+    });
+    
+    new PopulationWriter(population).write("data/outputODPopulation_"+scale+".xml.gz");
+    new MatsimVehicleWriter(vehicles).writeFile("data/outputODVehicle_"+scale+".xml.gz");
+    new HouseholdsWriterV10(matsimHouseholds).writeFile("data/outputODHouseholds_"+scale+".xml.gz");
 }
 public static String[] extractModes(CSVRecord record) {
 	List<String> modes = new ArrayList<>();

@@ -9,7 +9,7 @@ import org.matsim.api.core.v01.Id;
 
 public class Member {
 	private Id<Member> memId;
-	private Map<Id<Trip>,Trip> trips = new HashMap<>();
+	private Map<Id<Trip>,Trip> trips = new LinkedHashMap<>();
 	int numOfTrips = 0;
 	private int ageGroup;
 	private boolean ifHaveLicense;
@@ -29,7 +29,7 @@ public class Member {
 	public Member(String id, HouseHold hh, int ageGroup, boolean haveLicense,double personExFac,int incomeGroup,int gender, int occupation
 			, boolean remoteWork,Double workX, Double workY, Double workCT) {
 		this.hh = hh;
-		this.memId = Id.create(memId, Member.class);
+		this.memId = Id.create(id, Member.class);
 		this.ageGroup = ageGroup;
 		this.incomeGroup = incomeGroup;
 		this.gender = gender;
@@ -115,6 +115,7 @@ public class Member {
 			this.limitingFactor = trip.getTripExpFactror();
 			this.hh.setLimitingFactor(this.limitingFactor);
 		}
+		this.trips.put(trip.getTripId(), trip);
 		this.lastTripKey = trip.getTripId();
 		return trip;
 	}
@@ -160,5 +161,15 @@ public class Member {
 		return key;
 	}
 	
-	
+	public double getAdditionalMemberExpansionFactor() {
+		double addFactor = this.personExFac;
+		
+		for(Trip trip:this.trips.values()) {
+			if(trip.getTripExpFactror()<addFactor)addFactor = trip.getTripExpFactror();
+		}
+		
+		
+		
+		return Math.max(0,addFactor-this.limitingFactor);
+	}
 }
