@@ -275,13 +275,14 @@ public class HouseHold {
 						memberSpare.get(member.generateBehavioralKey()).put(member.getMemId(), scale*(member.getPersonExFac()-this.limitingFactor-addionalMember));			
 					}
 
-					population.addPerson(person);
+					
 					boolean ifCarRequired = false;
 					if(member.getTrips().size()==0) {
 						if(this.ct!=null) {
 							Plan plan = popFac.createPlan();
 							plan.addActivity(popFac.createActivityFromActivityFacilityId("home",drawRandomFacility(facilities, matsimFacilities, facilityFac, this.originalCoord, this.ct, "home", "home_"+this.hhId+"_"+i)));
 							person.addPlan(plan);
+							population.addPerson(person);
 						}
 					}else {
 						boolean shouldAdd = true;
@@ -415,7 +416,11 @@ public class HouseHold {
 							}
 							j++;
 						}
-						if(shouldAdd)person.addPlan(plan);
+						if(shouldAdd) {
+							person.addPlan(plan);
+							population.addPerson(person);
+						}
+						
 					}
 					if(k==0) {
 						person.getAttributes().putAttribute("personTyp", "householdPerson");
