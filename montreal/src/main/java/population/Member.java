@@ -32,6 +32,7 @@ public class Member {
 		this.memId = Id.create(id, Member.class);
 		this.ageGroup = ageGroup;
 		this.incomeGroup = incomeGroup;
+		this.ifHaveLicense = haveLicense;
 		this.gender = gender;
 		this.personExFac = personExFac;
 		this.occupation = occupation;

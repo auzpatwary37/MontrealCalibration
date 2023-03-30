@@ -14,6 +14,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
+import org.matsim.core.population.PersonUtils;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.ActivityFacilitiesFactory;
 import org.matsim.facilities.ActivityFacility;
@@ -224,194 +225,232 @@ public class HouseHold {
 		HouseholdsFactory hhFac = houseHolds.getFactory();
 		VehiclesFactory vFac = vehicles.getFactory();
 		ActivityFacilitiesFactory facilityFac = matsimFacilities.getFactory();
-		
+
 		VehicleType carType = vFac.createVehicleType(Id.create("car", VehicleType.class));
 		carType.setNetworkMode("car");
 		carType.setPcuEquivalents(1);
 		if(!vehicles.getVehicleTypes().containsKey(Id.create("car",VehicleType.class)))vehicles.addVehicleType(carType);
-		
+
 		double maxClone = (int)this.limitingFactor*scale;
-		
+
 		if(this.hhExFac-this.limitingFactor!=0) {
 			hhSpare.compute(this.generateBehavioralKey(), (k,v)->v==null?new HashMap<>():v);
 			hhSpare.get(this.generateBehavioralKey()).put(hhId, scale*(this.hhExFac-this.limitingFactor));			
 		}
-		
+
 		for(int i=0;i<maxClone;i++) {
 			Household hh = hhFac.createHousehold(Id.create(hhId.toString()+"_"+i, Household.class));
 			hh.getAttributes().putAttribute("income_class", this.incomeGroup);
 			hh.getAttributes().putAttribute("ifHasKid", this.isIfKids());
 			hh.getAttributes().putAttribute("vehicles", this.numOfCar);
 			if(this.ct!=null)hh.getAttributes().putAttribute("census tracts", this.ct);
-			
-			
+
+
 			houseHolds.getHouseholds().put(hh.getId(), hh);
-			
+
 			int carCreated = 0;
-			
+
 			for(Member member:this.members.values()) {
 				int addionalMember = (int)(member.getAdditionalMemberExpansionFactor()*scale);
 				if(i!=0)addionalMember = 0;
-				
+
 				for(int k = 0;k<=addionalMember;k++) {
-				
-				Person person = popFac.createPerson(Id.createPersonId(member.getMemId().toString()+"_i"+i+"_k"+k));
-				person.getAttributes().putAttribute("age", member.getAgeGroup());
-				person.getAttributes().putAttribute("gender", member.getGender());
-				person.getAttributes().putAttribute("occupation", member.getOccupation());
-				if(k==0)hh.getMemberIds().add(person.getId());
-				
-				if(member.getWorkCT()!=null)person.getAttributes().putAttribute("work census tract", member.getWorkCT());
-				
-				if(this.ct!=null)person.getAttributes().putAttribute("home census tract", this.ct);
-				person.getAttributes().putAttribute("license", member.isIfHaveLicense());
-				
-				if(k==0)person.getAttributes().putAttribute("household id", hh.getId().toString());
-				
-				if(member.getPersonExFac()-this.limitingFactor!=0) {
-					memberSpare.compute(member.generateBehavioralKey(), (kk,v)->v==null?new HashMap<>():v);
-					memberSpare.get(member.generateBehavioralKey()).put(member.getMemId(), scale*(member.getPersonExFac()-this.limitingFactor-addionalMember));			
-				}
-				
-				population.addPerson(person);
-				boolean ifCarRequired = false;
-				if(member.getTrips().size()==0) {
-					if(this.ct!=null) {
-						Plan plan = popFac.createPlan();
-						plan.addActivity(popFac.createActivityFromActivityFacilityId("home",drawRandomFacility(facilities, matsimFacilities, facilityFac, this.originalCoord, this.ct, "home", "home_"+this.hhId+"_"+i)));
-						person.addPlan(plan);
+
+					Person person = popFac.createPerson(Id.createPersonId(member.getMemId().toString()+"_i"+i+"_k"+k));
+					person.getAttributes().putAttribute("age", member.getAgeGroup());
+					person.getAttributes().putAttribute("gender", member.getGender());
+					person.getAttributes().putAttribute("occupation", member.getOccupation());
+					person.getAttributes().putAttribute("hh income group", this.incomeGroup);
+					if(k==0)hh.getMemberIds().add(person.getId());
+
+					if(member.getWorkCT()!=null)person.getAttributes().putAttribute("work census tract", member.getWorkCT());
+
+					if(this.ct!=null)person.getAttributes().putAttribute("home census tract", this.ct);
+					person.getAttributes().putAttribute("license", member.isIfHaveLicense());
+
+					if(k==0)person.getAttributes().putAttribute("household id", hh.getId().toString());
+
+					if(member.getPersonExFac()-this.limitingFactor!=0) {
+						memberSpare.compute(member.generateBehavioralKey(), (kk,v)->v==null?new HashMap<>():v);
+						memberSpare.get(member.generateBehavioralKey()).put(member.getMemId(), scale*(member.getPersonExFac()-this.limitingFactor-addionalMember));			
 					}
-				}else {
-					boolean shouldAdd = true;
-					Plan plan = popFac.createPlan();
-					
-					int j = 0;
-					double previousCT = 0;
-					Coord previousDCoord = null;
-					
-					for(Trip trip:member.getTrips().values()) {
-						
-						if(trip.getOriginCT()!=null && trip.getDestinationCT()!=null) {
-							if(j==0) {
-								if(this.ct!=null && Double.compare(trip.getOriginCT(),this.ct)!=0) {
-									System.out.println("First trip origin is not home. Setting as home trip nonetheless.");
-								}
-								Activity start = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(), "home", "home_"+this.hhId+"_"+i));
-								start.setEndTime(trip.getDepartureTime());
-								
-								plan.addActivity(start);
-								
-								plan.addLeg(popFac.createLeg(trip.getMode()));
-								if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
-								
-								plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalDCoord(), trip.getDestinationCT(), trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId())));
-								
-								
-								
-								int extraTrips = 0;
-								if(i==0 && k==0 && (extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor-addionalMember)))>0){// check for additional trips left
-									for(int l = 0;l<extraTrips;l++) {
-										Person tripPerson = popFac.createPerson(Id.createPersonId(trip.getTripId().toString()+"_"+l));
-										Plan tripPlan = popFac.createPlan();
-										tripPerson.addPlan(tripPlan);
-										Activity startTrip = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(),"home", "home_"+trip.getTripId()+"_O_"+l));
-										startTrip.setEndTime(trip.getDepartureTime());
-										tripPlan.addActivity(startTrip);
-										tripPlan.addLeg(popFac.createLeg(trip.getMode()));
-										tripPlan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+l)));
-										population.addPerson(tripPerson);
-										if(trip.getMode().equals("car")) {
-											Vehicle vehicle = vFac.createVehicle(Id.create(tripPerson.getId().toString(),Vehicle.class), carType);
-											vehicles.addVehicle(vehicle);
-											carCreated++;
-											Map<String,Id<Vehicle>> v = new HashMap<>();
-											v.put("car",vehicle.getId());
-											VehicleUtils.insertVehicleIdsIntoAttributes(tripPerson,v);
-											
-										}
+
+					population.addPerson(person);
+					boolean ifCarRequired = false;
+					if(member.getTrips().size()==0) {
+						if(this.ct!=null) {
+							Plan plan = popFac.createPlan();
+							plan.addActivity(popFac.createActivityFromActivityFacilityId("home",drawRandomFacility(facilities, matsimFacilities, facilityFac, this.originalCoord, this.ct, "home", "home_"+this.hhId+"_"+i)));
+							person.addPlan(plan);
+						}
+					}else {
+						boolean shouldAdd = true;
+						Plan plan = popFac.createPlan();
+
+						int j = 0;
+						double previousCT = 0;
+						Coord previousDCoord = null;
+
+						for(Trip trip:member.getTrips().values()) {
+
+							if(trip.getOriginCT()!=null && trip.getDestinationCT()!=null) {
+								if(j==0) {
+									if(this.ct!=null && Double.compare(trip.getOriginCT(),this.ct)!=0) {
+										System.out.println("First trip origin is not home. Setting as home trip nonetheless.");
 									}
-								}
-								
-							}else {
-									
-								if(trip.getOriginCT().compareTo(previousCT)!=0) {
-									System.out.println("Discontinueous chain!!!");
-									
-									Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
-									previousAct.setEndTime(trip.getDepartureTime());
-									if(member.isIfHaveLicense()) {
-										plan.addLeg(popFac.createLeg("car"));
-										if(ifCarRequired==false)ifCarRequired = true;
-									}else {
-										plan.addLeg(popFac.createLeg("pt"));
-									}
-									Activity a = popFac.createActivityFromActivityFacilityId(previousAct.getType(), drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(), previousAct.getType(), previousAct.getType()+trip.getTripId()+"_O_"+i));
-									a.setEndTime(trip.getDepartureTime());
-									plan.addActivity(a);
-									
+									Activity start = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(), "home", "home_"+this.hhId+"_"+i));
+									start.setEndTime(trip.getDepartureTime());
+
+									plan.addActivity(start);
+
 									plan.addLeg(popFac.createLeg(trip.getMode()));
 									if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
-									plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+i)));
-									
-								}else {
-									Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
-									previousAct.setEndTime(trip.getDepartureTime());
-									plan.addLeg(popFac.createLeg(trip.getMode()));
-									plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_"+trip.getTripId()+"_D_"+i)));
-								}
-								int extraTrips = 0;
-								if(i==0 && k==0 && (extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor-addionalMember)))>0){// check for additional trips left
-									for(int l = 0;l<extraTrips;l++) {
-										Person tripPerson = popFac.createPerson(Id.createPersonId(trip.getTripId().toString()+"_"+l));
-										Plan tripPlan = popFac.createPlan();
-										tripPerson.addPlan(tripPlan);
-										String previousActType = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1)).getType();
-										Activity previousAct =  popFac.createActivityFromActivityFacilityId(previousActType, drawRandomFacility(facilities, matsimFacilities, facilityFac,previousDCoord,previousCT, previousActType,trip.getMotive()+"_O_"+trip.getTripId()+"_"+l));
-										previousAct.setEndTime(trip.getDepartureTime());
-										tripPlan.addActivity(previousAct);
-										tripPlan.addLeg(popFac.createLeg(trip.getMode()));
-										tripPlan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+l)));
-										population.addPerson(tripPerson);
-										if(trip.getMode().equals("car")) {
-											Vehicle vehicle = vFac.createVehicle(Id.create(tripPerson.getId().toString(),Vehicle.class), carType);
-											vehicles.addVehicle(vehicle);
-											carCreated++;
-											Map<String,Id<Vehicle>> v = new HashMap<>();
-											v.put("car",vehicle.getId());
-											VehicleUtils.insertVehicleIdsIntoAttributes(tripPerson,v);
-											
+
+									plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalDCoord(), trip.getDestinationCT(), trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId())));
+
+									if(trip.getDay()!=null && !trip.getDay().equals(""))plan.getAttributes().putAttribute("dayOfWeek", trip.getDay());
+
+									int extraTrips = 0;
+									if(i==0 && k==0 && (extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor-addionalMember)))>0){// check for additional trips left
+										for(int l = 0;l<extraTrips;l++) {
+											Person tripPerson = popFac.createPerson(Id.createPersonId(trip.getTripId().toString()+"_"+l));
+											tripPerson.getAttributes().putAttribute("age", member.getAgeGroup());
+											tripPerson.getAttributes().putAttribute("gender", member.getGender());
+											tripPerson.getAttributes().putAttribute("occupation", member.getOccupation());
+											if(member.getWorkCT()!=null)tripPerson.getAttributes().putAttribute("work census tract", member.getWorkCT());
+											if(this.ct!=null)tripPerson.getAttributes().putAttribute("home census tract", this.ct);
+											tripPerson.getAttributes().putAttribute("license", member.isIfHaveLicense());
+											Plan tripPlan = popFac.createPlan();
+											tripPerson.addPlan(tripPlan);
+											tripPerson.getAttributes().putAttribute("personTyp", "tripPerson");
+											Activity startTrip = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(),"home", "home_"+trip.getTripId()+"_O_"+l));
+											startTrip.setEndTime(trip.getDepartureTime());
+											tripPlan.addActivity(startTrip);
+											tripPlan.addLeg(popFac.createLeg(trip.getMode()));
+											tripPlan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+l)));
+											if(trip.getDay()!=null && !trip.getDay().equals(""))tripPlan.getAttributes().putAttribute("dayOfWeek", trip.getDay());
+											population.addPerson(tripPerson);
+											if(trip.getMode().equals("car")) {
+												Vehicle vehicle = vFac.createVehicle(Id.create(tripPerson.getId().toString(),Vehicle.class), carType);
+												vehicles.addVehicle(vehicle);
+												Map<String,Id<Vehicle>> v = new HashMap<>();
+												v.put("car",vehicle.getId());
+												VehicleUtils.insertVehicleIdsIntoAttributes(tripPerson,v);
+												PersonUtils.setCarAvail(tripPerson, "always");
+											}else {
+												PersonUtils.setCarAvail(tripPerson, "never");
+											}
 										}
 									}
+
+								}else {
+
+									if(trip.getOriginCT().compareTo(previousCT)!=0) {
+										System.out.println("Discontinueous chain!!!");
+
+										Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
+										previousAct.setEndTime(trip.getDepartureTime());
+										if(member.isIfHaveLicense()) {
+											plan.addLeg(popFac.createLeg("car"));
+											if(ifCarRequired==false)ifCarRequired = true;
+										}else {
+											plan.addLeg(popFac.createLeg("pt"));
+										}
+										Activity a = popFac.createActivityFromActivityFacilityId(previousAct.getType(), drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(), previousAct.getType(), previousAct.getType()+trip.getTripId()+"_O_"+i));
+										a.setEndTime(trip.getDepartureTime());
+										plan.addActivity(a);
+
+										plan.addLeg(popFac.createLeg(trip.getMode()));
+										if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
+										plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+i)));
+
+									}else {
+										Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
+										previousAct.setEndTime(trip.getDepartureTime());
+										plan.addLeg(popFac.createLeg(trip.getMode()));
+										if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
+										plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_"+trip.getTripId()+"_D_"+i)));
+									}
+									int extraTrips = 0;
+									if(i==0 && k==0 && (extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor-addionalMember)))>0){// check for additional trips left
+										for(int l = 0;l<extraTrips;l++) {
+											Person tripPerson = popFac.createPerson(Id.createPersonId(trip.getTripId().toString()+"_"+l));
+											tripPerson.getAttributes().putAttribute("age", member.getAgeGroup());
+											tripPerson.getAttributes().putAttribute("gender", member.getGender());
+											tripPerson.getAttributes().putAttribute("occupation", member.getOccupation());
+											if(member.getWorkCT()!=null)tripPerson.getAttributes().putAttribute("work census tract", member.getWorkCT());
+											if(this.ct!=null)tripPerson.getAttributes().putAttribute("home census tract", this.ct);
+											tripPerson.getAttributes().putAttribute("license", member.isIfHaveLicense());
+											Plan tripPlan = popFac.createPlan();
+											tripPerson.addPlan(tripPlan);
+											String previousActType = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1)).getType();
+											Activity previousAct =  popFac.createActivityFromActivityFacilityId(previousActType, drawRandomFacility(facilities, matsimFacilities, facilityFac,previousDCoord,previousCT, previousActType,trip.getMotive()+"_O_"+trip.getTripId()+"_"+l));
+											previousAct.setEndTime(trip.getDepartureTime());
+											tripPlan.addActivity(previousAct);
+											tripPlan.addLeg(popFac.createLeg(trip.getMode()));
+											tripPlan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+l)));
+											if(trip.getDay()!=null && !trip.getDay().equals(""))tripPlan.getAttributes().putAttribute("dayOfWeek", trip.getDay());
+											population.addPerson(tripPerson);
+											tripPerson.getAttributes().putAttribute("personTyp", "tripPerson");
+											if(trip.getMode().equals("car")) {
+												Vehicle vehicle = vFac.createVehicle(Id.create(tripPerson.getId().toString(),Vehicle.class), carType);
+												vehicles.addVehicle(vehicle);
+												Map<String,Id<Vehicle>> v = new HashMap<>();
+												v.put("car",vehicle.getId());
+												VehicleUtils.insertVehicleIdsIntoAttributes(tripPerson,v);
+												PersonUtils.setCarAvail(tripPerson, "always");
+											}else {
+												PersonUtils.setCarAvail(tripPerson, "never");
+											}
+										}
+									}
+
 								}
-								
+								previousCT = trip.getDestinationCT();
+								previousDCoord = trip.getOriginalDCoord();
+
+							}else {
+								shouldAdd = false;
+								break;
 							}
-							previousCT = trip.getDestinationCT();
-							previousDCoord = trip.getOriginalDCoord();
-									
-						}else {
-							shouldAdd = false;
-							break;
+							j++;
 						}
-						j++;
+						if(shouldAdd)person.addPlan(plan);
 					}
-					if(shouldAdd)person.addPlan(plan);
+					if(k==0) {
+						person.getAttributes().putAttribute("personTyp", "householdPerson");
+					}else {
+						person.getAttributes().putAttribute("personTyp", "soloPerson");
+					}
+					if(ifCarRequired==true && k==0 && (this.numOfCar-carCreated)>0) {
+						Vehicle vehicle = vFac.createVehicle(Id.create(person.getId().toString(),Vehicle.class), carType);
+						vehicles.addVehicle(vehicle);
+						Map<String,Id<Vehicle>> v = new HashMap<>();
+						v.put("car",vehicle.getId());
+						VehicleUtils.insertVehicleIdsIntoAttributes(person,v);	
+						hh.getVehicleIds().add(vehicle.getId());
+						carCreated++;
+					
+						PersonUtils.setCarAvail(person, "always");
+						
+					}else if(ifCarRequired==true && k!=0) {
+						Vehicle vehicle = vFac.createVehicle(Id.create(person.getId().toString(),Vehicle.class), carType);
+						vehicles.addVehicle(vehicle);
+						Map<String,Id<Vehicle>> v = new HashMap<>();
+						v.put("car",vehicle.getId());
+						VehicleUtils.insertVehicleIdsIntoAttributes(person,v);
+						PersonUtils.setCarAvail(person, "always");
+					}else if(k==0 && (ifCarRequired==true||carCreated>0||member.isIfHaveLicense())) {
+						PersonUtils.setCarAvail(person, "sometimes");
+					}else {
+						PersonUtils.setCarAvail(person, "never");
+					}
+
 				}
-				
-				if(ifCarRequired==true && (carCreated-this.numOfCar)>0) {
-					Vehicle vehicle = vFac.createVehicle(Id.create(person.getId().toString(),Vehicle.class), carType);
-					vehicles.addVehicle(vehicle);
-					carCreated++;
-					Map<String,Id<Vehicle>> v = new HashMap<>();
-					v.put("car",vehicle.getId());
-					VehicleUtils.insertVehicleIdsIntoAttributes(person,v);
-					if(k==0)hh.getVehicleIds().add(vehicle.getId());
-				}
-				
 			}
-			}
-			
+
 		}
-		
+
 	}
 	
 	public static Id<ActivityFacility> generateFacilityId(String id, Coord coord,ActivityFacilities facilities,String actType,ActivityFacilitiesFactory facFac){
