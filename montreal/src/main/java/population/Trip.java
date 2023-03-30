@@ -38,6 +38,7 @@ public class Trip {
 		this.originalDCoord = new Coord(dX,dY);
 		this.originCT = originCt;
 		this.destinationCT = destinationCT;
+		this.departureTime = departureTime;
 		this.motive = motive;
 		this.mobile = mobile;
 		if(mobile==3)this.member.getHouseHold().setIfKids(true);
@@ -48,6 +49,21 @@ public class Trip {
 	}
 	
 	
+	
+
+	public void setOriginCT(Double originCT) {
+		this.originCT = originCT;
+	}
+
+
+
+
+	public void setDestinationCT(Double destinationCT) {
+		this.destinationCT = destinationCT;
+	}
+
+
+
 
 	public double getNewExpFac() {
 		return newExpFac;

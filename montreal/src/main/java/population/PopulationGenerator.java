@@ -23,6 +23,8 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.ActivityFacility;
+import org.matsim.facilities.ActivityOption;
+import org.matsim.facilities.FacilitiesWriter;
 import org.matsim.households.Households;
 import org.matsim.households.HouseholdsWriterV10;
 import org.matsim.vehicles.MatsimVehicleWriter;
@@ -46,21 +48,25 @@ public static void main(String[] args) throws IOException{
 	Vehicles vehicles = scenario.getVehicles();
 	Households matsimHouseholds = scenario.getHouseholds();
 	
-	double scale = 1.0;
+	double scale = .1;
 	
 	BufferedReader bf = new BufferedReader(new FileReader(new File(facilityToCTUIDMap)));
 	bf.readLine();
 	String line = null;
+	Set<Double> ctList = new HashSet<>();
 	while((line = bf.readLine())!=null) {
 		String[] part = line.split(",");
 		Id<ActivityFacility> facId = Id.create(part[0], ActivityFacility.class);
 		double ct = Double.parseDouble(part[1]);
-		
+		ctList.add(ct);
+		fac.getFacilities().get(facId).getActivityOptions().put("errands", fac.getFactory().createActivityOption("errands"));
 		
 		fac.getFacilities().get(facId).getActivityOptions().values().forEach(at->{
 			if(!ctuidToFacilityMap.containsKey(at.getType()))ctuidToFacilityMap.put(at.getType(), new HashMap<>());
 			if(!ctuidToFacilityMap.get(at.getType()).containsKey(ct))ctuidToFacilityMap.get(at.getType()).put(ct, new HashSet<>());
+			
 			ctuidToFacilityMap.get(at.getType()).get(ct).add(facId);
+			
 		});
 	}
 	
@@ -81,10 +87,10 @@ public static void main(String[] args) throws IOException{
     for (CSVRecord record : records) {
     	//try{
     	Id<HouseHold> hhId = Id.create(record.get("nolog"),HouseHold.class);
-        Id<Member> memId = Id.create(hhId.toString()+record.get("noper"),Member.class);
+        Id<Member> memId = Id.create(hhId.toString()+"_"+record.get("noper"),Member.class);
         String tripNo = record.get("nodep");
         Id<Trip> tripId = null;
-        if(tripNo!=null && !tripNo.equals(""))tripId = Id.create(memId.toString()+tripNo, Trip.class);
+        if(tripNo!=null && !tripNo.equals(""))tripId = Id.create(memId.toString()+"_"+tripNo, Trip.class);
         
         if(!households.containsKey(hhId)) {
         	HouseHold hh = new HouseHold(hhId.toString(), Integer.parseInt(record.get("revenu")), 
@@ -127,15 +133,20 @@ public static void main(String[] args) throws IOException{
 	Map<String,Map<Id<Member>,Double>> memberSpare = new HashMap<>();
 	Map<String,Map<Id<Trip>,Double>> tripSpare = new HashMap<>();
 	
+	households.values().forEach(hh->{
+		hh.checkAndUpdateLimitingFactors();
+		hh.checkForCTConsistancy(new ArrayList<>(ctList));
+	});
 	
     households.values().forEach(hh->{
 
-    	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare);
+    	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, fac, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare);
     });
     
     new PopulationWriter(population).write("data/outputODPopulation_"+scale+".xml.gz");
     new MatsimVehicleWriter(vehicles).writeFile("data/outputODVehicle_"+scale+".xml.gz");
     new HouseholdsWriterV10(matsimHouseholds).writeFile("data/outputODHouseholds_"+scale+".xml.gz");
+    new FacilitiesWriter(fac).write("data/outputODFacilities.xml.gz");
 }
 public static String[] extractModes(CSVRecord record) {
 	List<String> modes = new ArrayList<>();
@@ -195,7 +206,10 @@ public static String[] extractModes(CSVRecord record) {
 				modes.add("car");
 				break;
 			case 18://indeterminant 
-			default:	
+				modes.add("car");
+				break;
+			default:
+				modes.add("car");
 			}
 		}
 	}

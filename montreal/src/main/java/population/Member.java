@@ -38,12 +38,19 @@ public class Member {
 		this.remoteWork = remoteWork;
 		if(workX!=null && workY!=null)this.workCoord = new Coord(workX,workY);
 		this.newExpFac = this.personExFac;
-		this.limitingFactor = this.personExFac;
+		this.limitingFactor = Math.min(this.personExFac,this.hh.getHhExFac());
 	}
 	
 	
 	
 	
+	public void setLimitingFactor(double limitingFactor) {
+		this.limitingFactor = limitingFactor;
+	}
+
+
+
+
 	public double getNewExpFac() {
 		return newExpFac;
 	}
@@ -172,4 +179,12 @@ public class Member {
 		
 		return Math.max(0,addFactor-this.limitingFactor);
 	}
+
+
+
+
+	public void setWorkCT(Double workCT) {
+		this.workCT = workCT;
+	}
+	
 }
