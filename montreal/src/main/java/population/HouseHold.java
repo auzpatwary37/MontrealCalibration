@@ -301,8 +301,8 @@ public class HouseHold {
 								
 								plan.addActivity(start);
 								
-								plan.addLeg(popFac.createLeg(trip.getModes()[0]));
-								if(trip.getModes()[0].equals("car") && ifCarRequired==false)ifCarRequired = true;
+								plan.addLeg(popFac.createLeg(trip.getMode()));
+								if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
 								
 								plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalDCoord(), trip.getDestinationCT(), trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId())));
 								
@@ -317,10 +317,10 @@ public class HouseHold {
 										Activity startTrip = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(),"home", "home_"+trip.getTripId()+"_O_"+l));
 										startTrip.setEndTime(trip.getDepartureTime());
 										tripPlan.addActivity(startTrip);
-										tripPlan.addLeg(popFac.createLeg(trip.getModes()[0]));
+										tripPlan.addLeg(popFac.createLeg(trip.getMode()));
 										tripPlan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+l)));
 										population.addPerson(tripPerson);
-										if(trip.getModes()[0].equals("car")) {
+										if(trip.getMode().equals("car")) {
 											Vehicle vehicle = vFac.createVehicle(Id.create(tripPerson.getId().toString(),Vehicle.class), carType);
 											vehicles.addVehicle(vehicle);
 											carCreated++;
@@ -349,14 +349,14 @@ public class HouseHold {
 									a.setEndTime(trip.getDepartureTime());
 									plan.addActivity(a);
 									
-									plan.addLeg(popFac.createLeg(trip.getModes()[0]));
-									if(trip.getModes()[0].equals("car") && ifCarRequired==false)ifCarRequired = true;
+									plan.addLeg(popFac.createLeg(trip.getMode()));
+									if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
 									plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+i)));
 									
 								}else {
 									Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
 									previousAct.setEndTime(trip.getDepartureTime());
-									plan.addLeg(popFac.createLeg(trip.getModes()[0]));
+									plan.addLeg(popFac.createLeg(trip.getMode()));
 									plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_"+trip.getTripId()+"_D_"+i)));
 								}
 								int extraTrips = 0;
@@ -369,10 +369,10 @@ public class HouseHold {
 										Activity previousAct =  popFac.createActivityFromActivityFacilityId(previousActType, drawRandomFacility(facilities, matsimFacilities, facilityFac,previousDCoord,previousCT, previousActType,trip.getMotive()+"_O_"+trip.getTripId()+"_"+l));
 										previousAct.setEndTime(trip.getDepartureTime());
 										tripPlan.addActivity(previousAct);
-										tripPlan.addLeg(popFac.createLeg(trip.getModes()[0]));
+										tripPlan.addLeg(popFac.createLeg(trip.getMode()));
 										tripPlan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+l)));
 										population.addPerson(tripPerson);
-										if(trip.getModes()[0].equals("car")) {
+										if(trip.getMode().equals("car")) {
 											Vehicle vehicle = vFac.createVehicle(Id.create(tripPerson.getId().toString(),Vehicle.class), carType);
 											vehicles.addVehicle(vehicle);
 											carCreated++;

@@ -1,5 +1,8 @@
 package population;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 
@@ -157,4 +160,16 @@ public class Trip {
 		
 		return key;
 	}
+	
+	public String getMode() {
+		Set<String> uniqueModes = new HashSet<>();
+		for(String s:modes)uniqueModes.add(s);
+		if(uniqueModes.contains("pt"))return "pt";
+		if(uniqueModes.contains("car"))return "car";
+		if(uniqueModes.contains("bike"))return "bike";
+		if(uniqueModes.contains("car_passenger"))return "car_passenger";
+		
+		return "walk";
+	}
+	
 }
