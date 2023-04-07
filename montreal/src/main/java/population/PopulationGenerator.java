@@ -142,11 +142,14 @@ public static void main(String[] args) throws IOException{
 		hh.checkForCTConsistancy(new ArrayList<>(ctList));
 	});
 	handleNullOriginAndDestination(households);
-	
+	writeTreatedCTForTrips(households,"data/stat");
     households.values().forEach(hh->{
 
     	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, fac, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare);
     });
+    
+    
+    
     config.qsim().setStartTime(0);
     config.qsim().setEndTime(27*3600);
     for(Person p:population.getPersons().values()) {
@@ -180,6 +183,34 @@ public static void main(String[] args) throws IOException{
     writeOriginalOriginCTForODActivity(households, scale,"work","data/stat");
     writeOriginalDestinationCTForODActivity(households, scale,"work","data/stat");
 }
+
+public static void writeTreatedCTForTrips(Map<Id<HouseHold>,HouseHold> hhs, String folderLocation) {
+	FileWriter fw;
+	try {
+		fw = new FileWriter(new File(folderLocation+"/treatedTripCT.csv"));
+		fw.append("tripId,oCT,dCT\n");
+		hhs.entrySet().stream().forEach(h->{
+			h.getValue().getMembers().entrySet().forEach(m->{
+				m.getValue().getTrips().entrySet().forEach(t->{
+					try {
+						fw.append(t.getKey().toString()+","+t.getValue().getOriginCT()+","+t.getValue().getDestinationCT()+"\n");
+						fw.flush();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				});
+			});
+		});
+		fw.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+}
+
 public static String[] extractModes(CSVRecord record) {
 	List<String> modes = new ArrayList<>();
 	for(int i = 1;i<9;i++) {
