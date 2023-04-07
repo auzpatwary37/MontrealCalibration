@@ -311,8 +311,8 @@ public class HouseHold {
 
 									if(trip.getDay()!=null && !trip.getDay().equals(""))plan.getAttributes().putAttribute("dayOfWeek", trip.getDay());
 
-									int extraTrips = 0;
-									if(i==0 && k==0 && (extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor-addionalMember)))>0){// check for additional trips left
+									int extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor)-addionalMember);
+									if(i==0 && k==0 && extraTrips>0){// check for additional trips left
 										for(int l = 0;l<extraTrips;l++) {
 											Person tripPerson = popFac.createPerson(Id.createPersonId(trip.getTripId().toString()+"_"+l));
 											tripPerson.getAttributes().putAttribute("age", member.getAgeGroup());
@@ -458,6 +458,20 @@ public class HouseHold {
 
 	}
 	
+	
+	
+	public void setOriginalCoord(Coord originalCoord) {
+		this.originalCoord = originalCoord;
+	}
+
+
+
+	public void setCt(Double ct) {
+		this.ct = ct;
+	}
+
+
+
 	public static Id<ActivityFacility> generateFacilityId(String id, Coord coord,ActivityFacilities facilities,String actType,ActivityFacilitiesFactory facFac){
 		ActivityFacility fac = facFac.createActivityFacility(Id.create(id, ActivityFacility.class), coord);
 		fac.getActivityOptions().put(actType, facFac.createActivityOption(actType));
@@ -473,6 +487,7 @@ public class HouseHold {
 		Id<ActivityFacility> out = null;
 		if(facilities.get(originalActivity).get(originalCT)==null) {
 			out = generateFacilityId(id, originalCoord, matsimFacilities, originalActivity, facilityFactory);
+			matsimFacilities.getFacilities().get(out).getAttributes().putAttribute("CTUID", originalCT);
 			facilities.get(originalActivity).put(originalCT, Set.of(out));
 		}else {
 			out = drawRandom(facilities.get(originalActivity).get(originalCT));

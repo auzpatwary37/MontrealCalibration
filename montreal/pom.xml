@@ -256,6 +256,13 @@
     <artifactId>commons-io</artifactId>
     <version>2.11.0</version>
 </dependency>
+
+
+<dependency>
+    <groupId>org.apache.mahout</groupId>
+    <artifactId>mahout-math</artifactId>
+    <version>0.13.0</version>
+</dependency>
 <!-- 
 <dependency>
 	    <groupId>com.github.matsim-scenarios</groupId>

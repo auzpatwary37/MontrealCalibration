@@ -18,6 +18,9 @@ public class Trip {
 	private Double originCT;
 	private Double destinationCT;
 	
+	private Double originalOCT;
+	private Double originalDCT;
+	
 	private double departureTime;
 	private double arrivalTime;
 	
@@ -40,7 +43,9 @@ public class Trip {
 		this.originalOCoord = new Coord(oX,oY);
 		this.originalDCoord = new Coord(dX,dY);
 		this.originCT = originCt;
+		this.originalOCT = originCt;
 		this.destinationCT = destinationCT;
+		this.originalDCT = destinationCT;
 		this.departureTime = departureTime;
 		this.motive = motive;
 		this.mobile = mobile;
@@ -149,6 +154,36 @@ public class Trip {
 		return generateBehavioralKey(this.originCT,this.destinationCT,this.previousAct,this.motive,this.departureTime, this.modes[0]);
 	}
 	
+	
+	
+	public Double getOriginalOCT() {
+		return originalOCT;
+	}
+
+
+
+
+	public Double getOriginalDCT() {
+		return originalDCT;
+	}
+
+
+
+
+	public void setOriginalOCoord(Coord originalOCoord) {
+		this.originalOCoord = originalOCoord;
+	}
+
+
+
+
+	public void setOriginalDCoord(Coord originalDCoord) {
+		this.originalDCoord = originalDCoord;
+	}
+
+
+
+
 	public static String generateBehavioralKey(Double originCT, Double destinationCT, String previousAct,String currentAct, Double departureTime, String mode) {// this will determine what behaviors are taken into account
 		String key = "";
 		key = key+originCT+"___";

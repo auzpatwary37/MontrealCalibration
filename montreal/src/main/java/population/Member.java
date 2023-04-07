@@ -116,8 +116,22 @@ public class Member {
 	public Trip addTrip(Trip trip) {
 		if(this.lastTripKey==null) {
 			trip.setPreviousAct("home");
+			if(trip.getOriginCT()==null && this.hh.getCt()!=null) {
+				trip.setOriginCT(this.hh.getCt());
+				trip.setOriginalOCoord(this.hh.getOriginalCoord());
+			}else if(trip.getOriginCT()!=null && this.hh.getCt()==null) {
+				this.hh.setCt(trip.getOriginCT());
+				this.hh.setOriginalCoord(trip.getOriginalOCoord());
+			}
 		}else {
 			trip.setPreviousAct(trips.get(lastTripKey).getMotive());
+			if(trip.getOriginCT()==null && this.trips.get(lastTripKey).getDestinationCT()!=null) {
+				trip.setOriginCT(this.trips.get(lastTripKey).getDestinationCT());
+				trip.setOriginalOCoord(this.trips.get(lastTripKey).getOriginalDCoord());
+			}else if(trip.getOriginCT()!=null && this.trips.get(lastTripKey).getDestinationCT()==null) {
+				this.trips.get(lastTripKey).setDestinationCT(trip.getOriginCT());
+				this.trips.get(lastTripKey).setOriginalDCoord(trip.getOriginalOCoord());
+			}
 		}
 		if(trip.getTripExpFactror()<this.limitingFactor) {
 			this.limitingFactor = trip.getTripExpFactror();

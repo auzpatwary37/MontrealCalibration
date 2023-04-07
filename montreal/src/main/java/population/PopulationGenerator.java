@@ -3,6 +3,7 @@ package population;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -14,8 +15,13 @@ import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.mahout.math.random.Multinomial;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.config.Config;
@@ -23,7 +29,6 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.ActivityFacility;
-import org.matsim.facilities.ActivityOption;
 import org.matsim.facilities.FacilitiesWriter;
 import org.matsim.households.Households;
 import org.matsim.households.HouseholdsWriterV10;
@@ -48,7 +53,7 @@ public static void main(String[] args) throws IOException{
 	Vehicles vehicles = scenario.getVehicles();
 	Households matsimHouseholds = scenario.getHouseholds();
 	
-	double scale = .1;
+	double scale = 1;
 	
 	BufferedReader bf = new BufferedReader(new FileReader(new File(facilityToCTUIDMap)));
 	bf.readLine();
@@ -59,8 +64,9 @@ public static void main(String[] args) throws IOException{
 		Id<ActivityFacility> facId = Id.create(part[0], ActivityFacility.class);
 		double ct = Double.parseDouble(part[1]);
 		ctList.add(ct);
-		fac.getFacilities().get(facId).getActivityOptions().put("errands", fac.getFactory().createActivityOption("errands"));
 		
+		fac.getFacilities().get(facId).getActivityOptions().put("errands", fac.getFactory().createActivityOption("errands"));
+		fac.getFacilities().get(facId).getAttributes().putAttribute("CTUID", ct);
 		fac.getFacilities().get(facId).getActivityOptions().values().forEach(at->{
 			if(!ctuidToFacilityMap.containsKey(at.getType()))ctuidToFacilityMap.put(at.getType(), new HashMap<>());
 			if(!ctuidToFacilityMap.get(at.getType()).containsKey(ct))ctuidToFacilityMap.get(at.getType()).put(ct, new HashSet<>());
@@ -75,11 +81,9 @@ public static void main(String[] args) throws IOException{
 	
 	Reader in = new FileReader(odFileLocation);
 
-    CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-        .setHeader(header)
-        .setDelimiter(";")
-        .setSkipHeaderRecord(true)
-        .build();
+    @SuppressWarnings("deprecation")
+	CSVFormat csvFormat = CSVFormat.newFormat(';')
+        .withHeader();
 
     Iterable<CSVRecord> records = csvFormat.parse(in);
     Map<Id<HouseHold>,HouseHold> households = new HashMap<>();
@@ -137,16 +141,44 @@ public static void main(String[] args) throws IOException{
 		hh.checkAndUpdateLimitingFactors();
 		hh.checkForCTConsistancy(new ArrayList<>(ctList));
 	});
+	handleNullOriginAndDestination(households);
 	
     households.values().forEach(hh->{
 
     	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, fac, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare);
     });
+    config.qsim().setStartTime(0);
+    config.qsim().setEndTime(27*3600);
+    for(Person p:population.getPersons().values()) {
+		((Activity)p.getSelectedPlan().getPlanElements().get(0)).setStartTime(config.qsim().getStartTime().seconds());
+		((Activity)p.getSelectedPlan().getPlanElements().get(p.getSelectedPlan().getPlanElements().size()-1)).setEndTime(config.qsim().getEndTime().seconds());
+		for(int i = 2;i<p.getSelectedPlan().getPlanElements().size();i++) {
+			Activity previousAct = (Activity)p.getSelectedPlan().getPlanElements().get(0);
+			if(p.getSelectedPlan().getPlanElements().get(i) instanceof Activity) {
+				Activity a = (Activity) p.getSelectedPlan().getPlanElements().get(i);
+				a.setStartTime(Math.min(previousAct.getEndTime().seconds()+900,a.getEndTime().seconds()));
+			}
+		}
+	}
     
     new PopulationWriter(population).write("data/outputODPopulation_"+scale+".xml.gz");
     new MatsimVehicleWriter(vehicles).writeFile("data/outputODVehicle_"+scale+".xml.gz");
     new HouseholdsWriterV10(matsimHouseholds).writeFile("data/outputODHouseholds_"+scale+".xml.gz");
-    new FacilitiesWriter(fac).write("data/outputODFacilities.xml.gz");
+    new FacilitiesWriter(fac).write("data/outputODFacilities"+scale+".xml.gz");
+    
+    writeGender(population, households, scale, "data/stat");
+    writeAge(population, households, scale, "data/stat");
+    writeMotive(population, households, scale, "data/stat");
+    writeMode(population, households, scale, "data/stat");
+    writeFromToActivity(population, households, scale, "data/stat");
+    writeDepartureTimeDistribution(population, households, scale, "data/stat");
+    writeOriginCTDemand(population, households, fac, scale, "data/stat");
+    writeDestinationCTDemand(population, households, fac, scale, "data/stat");
+    writeActivitySpecificOriginCTDemand(population, households, fac, scale,"work", "data/stat");
+    writeActivitySpecificDestinationCTDemand(population, households, fac, scale,"work", "data/stat");
+    writeODCTDemand(population, households, fac, scale, "data/stat");
+    writeOriginalOriginCTForODActivity(households, scale,"work","data/stat");
+    writeOriginalDestinationCTForODActivity(households, scale,"work","data/stat");
 }
 public static String[] extractModes(CSVRecord record) {
 	List<String> modes = new ArrayList<>();
@@ -310,4 +342,655 @@ public static String extractActivity(CSVRecord record) {
 //        trip.setExpansionFactor(newHhExpansions.get(tripId.getHouseHoldId()) * newTripExpansions.get(tripId));
 //    }
 //}
+
+
+public static void writeGender(Population population, Map<Id<HouseHold>,HouseHold> hhs,double scale,String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/gender.csv"));
+		fw.append("Source,Male,Female\n");
+		Map<Integer,Integer> fromPopulation = new HashMap<>();
+		Map<Integer,Double> fromOD = new HashMap<>();
+		for(Person p:population.getPersons().values()) {
+			if(!p.getAttributes().getAttribute("personTyp").equals("tripPerson")) {
+				int gender = (int) p.getAttributes().getAttribute("gender");
+				if(!fromPopulation.containsKey(gender))fromPopulation.put(gender, 0);
+				fromPopulation.put(gender,fromPopulation.get(gender)+1);
+			}
+		}
+		hhs.values().forEach(h->{
+			h.getMembers().values().forEach(m->{
+				if(!fromOD.containsKey(m.getGender()))fromOD.put(m.getGender(), 0.);
+				fromOD.put(m.getGender(), fromOD.get(m.getGender())+m.getPersonExFac()*scale);
+			});
+		});
+		fw.append("synthetic,"+fromPopulation.get(1)+","+fromPopulation.get(2)+"\n");
+		fw.append("OD,"+fromOD.get(1)+","+fromOD.get(2)+"\n");
+		fw.flush();
+		fw.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeAge(Population population, Map<Id<HouseHold>,HouseHold> hhs,double scale,String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/age.csv"));
+		fw.append("Source,5-15,16-25,26-35,36-45,46-55,56-65,66-75,75-100\n");
+		Map<String,Integer> fromPopulation = new HashMap<>();
+		Map<String,Double> fromOD = new HashMap<>();
+		String[] ageBin = new String[] {"5-15","16-25","26-35","36-45","46-55","56-65","66-75","75-100"};
+		for(Person p:population.getPersons().values()) {
+			if(!p.getAttributes().getAttribute("personTyp").equals("tripPerson")) {
+				int age = (int) p.getAttributes().getAttribute("age");
+				for(String s:ageBin) {
+					int ageLower = Integer.parseInt(s.split("-")[0]);
+					int ageUpper = Integer.parseInt(s.split("-")[1]);
+					if(age>=ageLower && age<=ageUpper) {
+						if(!fromPopulation.containsKey(s))fromPopulation.put(s, 0);
+						fromPopulation.put(s,fromPopulation.get(s)+1);
+					}
+				}
+			}
+		}
+		hhs.values().forEach(h->{
+			h.getMembers().values().forEach(m->{
+				for(String s:ageBin) {
+					int ageLower = Integer.parseInt(s.split("-")[0]);
+					int ageUpper = Integer.parseInt(s.split("-")[1]);
+					if(m.getAgeGroup()>=ageLower && m.getAgeGroup()<=ageUpper) {
+						if(!fromOD.containsKey(s))fromOD.put(s, 0.);
+						fromOD.put(s,fromOD.get(s)+m.getPersonExFac()*scale);
+					}
+				}
+			});
+		});
+		fw.append("synthetic");
+		for(String s:ageBin)fw.append(","+fromPopulation.get(s));
+		fw.append("\n");
+		fw.append("OD");
+		for(String s:ageBin)fw.append(","+fromOD.get(s));
+		fw.append("\n");
+		fw.flush();
+		fw.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeMotive(Population population, Map<Id<HouseHold>,HouseHold> hhs,double scale,String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/activities.csv"));
+		fw.append("Source,work,education,shop,errands,home,leisure,other\n");
+		
+		Map<String,Integer> fromPopulation = new HashMap<>();
+		Map<String,Double> fromOD = new HashMap<>();
+		String[] acts = new String[] {"work","education","shop","errands","home","leisure","other"};
+		
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe: p.getSelectedPlan().getPlanElements()) {
+				if(i!=0 && pe instanceof Activity) {
+					fromPopulation.compute(((Activity)pe).getType(),(k,v)->v==null?1:v+1);
+				}
+				i++;
+			}
+		}
+		hhs.values().forEach(h->{
+			h.getMembers().values().forEach(m->{
+				m.getTrips().values().forEach(t->{
+					fromOD.compute(t.getMotive(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+				});
+			});
+		});
+		fw.append("synthetic");
+		for(String s:acts)fw.append(","+fromPopulation.get(s));
+		fw.append("\n");
+		fw.append("OD");
+		for(String s:acts)fw.append(","+fromOD.get(s));
+		fw.append("\n");
+		fw.flush();
+		fw.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeMode(Population population, Map<Id<HouseHold>,HouseHold> hhs,double scale,String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/modes.csv"));
+		fw.append("Source,car,car_passenger,pt,bike,walk\n");
+		
+		Map<String,Integer> fromPopulation = new HashMap<>();
+		Map<String,Double> fromOD = new HashMap<>();
+		String[] acts = new String[] {"car","car_passenger","pt","bike","walk"};
+		
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe: p.getSelectedPlan().getPlanElements()) {
+				if(pe instanceof Leg) {
+					fromPopulation.compute(((Leg)pe).getMode(),(k,v)->v==null?1:v+1);
+				}
+				i++;
+			}
+		}
+		hhs.values().forEach(h->{
+			h.getMembers().values().forEach(m->{
+				m.getTrips().values().forEach(t->{
+					fromOD.compute(t.getMode(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+				});
+			});
+		});
+		fw.append("synthetic");
+		for(String s:acts)fw.append(","+fromPopulation.get(s));
+		fw.append("\n");
+		fw.append("OD");
+		for(String s:acts)fw.append(","+fromOD.get(s));
+		fw.append("\n");
+		fw.flush();
+		fw.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeFromToActivity(Population population, Map<Id<HouseHold>,HouseHold> hhs,double scale,String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/fromToActs.csv"));
+		fw.append("type,synthetic,OD\n");
+		Map<String,Double> fromOD = new HashMap<>();
+		Map<String,Integer>fromPopulation = new HashMap<>();
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe:p.getSelectedPlan().getPlanElements()) {
+				if(pe instanceof Leg) {
+					Activity a = (Activity)p.getSelectedPlan().getPlanElements().get(i-1);
+					Activity b = (Activity)p.getSelectedPlan().getPlanElements().get(i+1);
+					String fromTo = a.getType()+"_"+b.getType();
+					fromPopulation.compute(fromTo, (k,v)->v==null?1:v+1);
+				}
+				i++;
+			}
+		}
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				String from = "home";
+				for(Trip t:m.getTrips().values()) {
+					String fromTo = from+"_"+t.getMotive();
+					fromOD.compute(fromTo, (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+					from = t.getMotive();
+				}
+			}
+		}
+		
+		Set<String> cts = new HashSet<>(fromOD.keySet());
+		cts.addAll(fromPopulation.keySet());
+		
+		for(String d:cts){
+			if(!fromOD.containsKey(d))fromOD.put(d, 0.);
+			if(!fromPopulation.containsKey(d))fromPopulation.put(d, 0);
+			fw.append(d+","+fromPopulation.get(d)+","+fromOD.get(d)+"\n");
+			fw.flush();
+		}
+		fw.close();
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeDepartureTimeDistribution(Population population, Map<Id<HouseHold>,HouseHold> hhs,double scale,String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/departureTime.csv"));
+		fw.append("time,synthetic,od\n");
+		int[] timeBin = new int[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
+		Map<Integer,Double> fromOD = new HashMap<>();
+		Map<Integer,Integer>fromPopulation = new HashMap<>();
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe:p.getSelectedPlan().getPlanElements()) {
+				if(pe instanceof Activity && i!=p.getSelectedPlan().getPlanElements().size()-1) {
+					Activity a = (Activity)pe;
+					int time = 0;
+					for(int j = 0;j<timeBin.length;j++) {
+						double t = a.getEndTime().seconds();
+						if(t==0)t=1;
+						if(t/3600>timeBin[j]-1 && t/3600<=timeBin[j]) {
+							time = timeBin[j];
+							break;
+						}
+					}
+					fromPopulation.compute(time, (k,v)->v==null?1:v+1);
+				}
+				i++;
+			}
+		}
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					int time = 0;
+					for(int j = 0;j<timeBin.length;j++) {
+						double a = t.getDepartureTime();
+						if(a==0)a=1;
+						if(a/3600>timeBin[j]-1 && a/3600<=timeBin[j]) {
+							time = timeBin[j];
+							break;
+						}
+					}
+					fromOD.compute(time, (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+				}
+			}
+		}
+		
+		
+		for(int d:timeBin){
+			
+			fw.append(d+","+fromPopulation.get(d)+","+fromOD.get(d)+"\n");
+			fw.flush();
+		}
+		fw.close();
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+
+public static void writeOriginCTDemand(Population population, Map<Id<HouseHold>,HouseHold> hhs,ActivityFacilities facilities,double scale,String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/originCT.csv"));
+		fw.append("CTUID,Synthetic,OD\n");
+		Map<Double,Double> fromOD = new HashMap<>();
+		Map<Double,Integer>fromPopulation = new HashMap<>();
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe:p.getSelectedPlan().getPlanElements()) {
+				if(pe instanceof Leg) {
+					Activity a = (Activity)p.getSelectedPlan().getPlanElements().get(i-1);
+					double ct = (double) facilities.getFacilities().get(a.getFacilityId()).getAttributes().getAttribute("CTUID");
+					fromPopulation.compute(ct, (k,v)->v==null?1:v+1);
+				}
+				i++;
+			}
+		}
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					fromOD.compute(t.getOriginCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+				}
+			}
+		}
+		
+		Set<Double> cts = new HashSet<>(fromOD.keySet());
+		cts.addAll(fromPopulation.keySet());
+		
+		for(Double d:cts){
+			if(!fromOD.containsKey(d))fromOD.put(d, 0.);
+			if(!fromPopulation.containsKey(d))fromPopulation.put(d, 0);
+			fw.append(d+","+fromPopulation.get(d)+","+fromOD.get(d)+"\n");
+			fw.flush();
+		}
+		fw.close();
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeActivitySpecificOriginCTDemand(Population population, Map<Id<HouseHold>,HouseHold> hhs,ActivityFacilities facilities,double scale,String activity, String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/originCT_"+activity+".csv"));
+		fw.append("CTUID,Synthetic,OD\n");
+		Map<Double,Double> fromOD = new HashMap<>();
+		Map<Double,Integer>fromPopulation = new HashMap<>();
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe:p.getSelectedPlan().getPlanElements()) {
+				if(pe instanceof Leg) {
+					Activity a = (Activity)p.getSelectedPlan().getPlanElements().get(i-1);
+					if(a.getType().equals(activity)) {
+						double ct = (double) facilities.getFacilities().get(a.getFacilityId()).getAttributes().getAttribute("CTUID");
+						fromPopulation.compute(ct, (k,v)->v==null?1:v+1);
+					}
+				}
+				i++;
+			}
+		}
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					if(t.getMotive().equals(activity)) {
+						fromOD.compute(t.getOriginCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+					}
+				}
+			}
+		}
+		
+		Set<Double> cts = new HashSet<>(fromOD.keySet());
+		cts.addAll(fromPopulation.keySet());
+		
+		for(Double d:cts){
+			if(!fromOD.containsKey(d))fromOD.put(d, 0.);
+			if(!fromPopulation.containsKey(d))fromPopulation.put(d, 0);
+			fw.append(d+","+fromPopulation.get(d)+","+fromOD.get(d)+"\n");
+			fw.flush();
+		}
+		fw.close();
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeDestinationCTDemand(Population population, Map<Id<HouseHold>,HouseHold> hhs,ActivityFacilities facilities, double scale, String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/destinationCT.csv"));
+		fw.append("CTUID,Synthetic,OD\n");
+		Map<Double,Double> fromOD = new HashMap<>();
+		Map<Double,Integer>fromPopulation = new HashMap<>();
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe:p.getSelectedPlan().getPlanElements()) {
+				if(pe instanceof Leg) {
+					Activity a = (Activity)p.getSelectedPlan().getPlanElements().get(i+1);
+					double ct = (double) facilities.getFacilities().get(a.getFacilityId()).getAttributes().getAttribute("CTUID");
+					fromPopulation.compute(ct, (k,v)->v==null?1:v+1);
+				}
+				i++;
+			}
+		}
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					fromOD.compute(t.getDestinationCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+				}
+			}
+		}
+		
+		Set<Double> cts = new HashSet<>(fromOD.keySet());
+		cts.addAll(fromPopulation.keySet());
+		
+		for(Double d:cts){
+			if(!fromOD.containsKey(d))fromOD.put(d, 0.);
+			if(!fromPopulation.containsKey(d))fromPopulation.put(d, 0);
+			fw.append(d+","+fromPopulation.get(d)+","+fromOD.get(d)+"\n");
+			fw.flush();
+		}
+		fw.close();
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeActivitySpecificDestinationCTDemand(Population population, Map<Id<HouseHold>,HouseHold> hhs,ActivityFacilities facilities, double scale,String activity, String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/destinationCT_"+activity+".csv"));
+		fw.append("CTUID,Synthetic,OD\n");
+		Map<Double,Double> fromOD = new HashMap<>();
+		Map<Double,Integer>fromPopulation = new HashMap<>();
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe:p.getSelectedPlan().getPlanElements()) {
+				if(pe instanceof Leg) {
+					Activity a = (Activity)p.getSelectedPlan().getPlanElements().get(i+1);
+					if(a.getType().equals(activity)) {
+						double ct = (double) facilities.getFacilities().get(a.getFacilityId()).getAttributes().getAttribute("CTUID");
+						fromPopulation.compute(ct, (k,v)->v==null?1:v+1);
+					}
+				}
+				i++;
+			}
+		}
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					if(t.getMotive().equals(activity)) {
+						fromOD.compute(t.getDestinationCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+					}
+				}
+			}
+		}
+		
+		Set<Double> cts = new HashSet<>(fromOD.keySet());
+		cts.addAll(fromPopulation.keySet());
+		
+		for(Double d:cts){
+			if(!fromOD.containsKey(d))fromOD.put(d, 0.);
+			if(!fromPopulation.containsKey(d))fromPopulation.put(d, 0);
+			fw.append(d+","+fromPopulation.get(d)+","+fromOD.get(d)+"\n");
+			fw.flush();
+		}
+		fw.close();
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+public static void writeODCTDemand(Population population, Map<Id<HouseHold>,HouseHold> hhs,ActivityFacilities facilities, double scale, String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/odCT.csv"));
+		fw.append("oCTUID_dCTUID,Synthetic,OD\n");
+		Map<String,Double> fromOD = new HashMap<>();
+		Map<String,Integer>fromPopulation = new HashMap<>();
+		for(Person p:population.getPersons().values()) {
+			int i = 0;
+			for(PlanElement pe:p.getSelectedPlan().getPlanElements()) {
+				if(pe instanceof Leg) {
+					Activity a = (Activity)p.getSelectedPlan().getPlanElements().get(i-1);
+					Activity b = (Activity)p.getSelectedPlan().getPlanElements().get(i+1);
+					double oct = (double) facilities.getFacilities().get(a.getFacilityId()).getAttributes().getAttribute("CTUID");
+					double bct = (double) facilities.getFacilities().get(b.getFacilityId()).getAttributes().getAttribute("CTUID");
+					fromPopulation.compute(oct+"_"+bct, (k,v)->v==null?1:v+1);
+				}
+				i++;
+			}
+		}
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					fromOD.compute(t.getOriginCT()+"_"+t.getDestinationCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+				}
+			}
+		}
+		
+		Set<String> cts = new HashSet<>(fromOD.keySet());
+		cts.addAll(fromPopulation.keySet());
+		
+		for(String d:cts){
+			if(!fromOD.containsKey(d))fromOD.put(d, 0.);
+			if(!fromPopulation.containsKey(d))fromPopulation.put(d, 0);
+			fw.append(d+","+fromPopulation.get(d)+","+fromOD.get(d)+"\n");
+			fw.flush();
+		}
+		fw.close();
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+public static void writeOriginalOriginCTForOD(Map<Id<HouseHold>,HouseHold> hhs,double scale, String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/originalOCTdemandOD.csv"));
+		fw.append("oCTUID,OD\n");
+		Map<Double,Double> fromOD = new HashMap<>();
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					fromOD.compute(t.getOriginalOCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+				}
+			}
+		}
+	
+	for(Double d:fromOD.keySet()){
+		
+		fw.append(d+","+fromOD.get(d)+"\n");
+		fw.flush();
+	}
+	fw.close();
+	
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeOriginalDestinationCTForOD(Map<Id<HouseHold>,HouseHold> hhs,double scale, String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/originalDCTdemandOD.csv"));
+		fw.append("oCTUID,OD\n");
+		Map<Double,Double> fromOD = new HashMap<>();
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					fromOD.compute(t.getOriginalDCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+				}
+			}
+		}
+	
+	for(Double d:fromOD.keySet()){
+		
+		fw.append(d+","+fromOD.get(d)+"\n");
+		fw.flush();
+	}
+	fw.close();
+	
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeOriginalOriginCTForODActivity(Map<Id<HouseHold>,HouseHold> hhs,double scale,String act, String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/originalOCTdemandOD_"+act+".csv"));
+		fw.append("oCTUID,OD\n");
+		Map<Double,Double> fromOD = new HashMap<>();
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					if(t.getMotive().equals(act)) {
+					fromOD.compute(t.getOriginalOCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+					}
+				}
+			}
+		}
+	
+	for(Double d:fromOD.keySet()){
+		
+		fw.append(d+","+fromOD.get(d)+"\n");
+		fw.flush();
+	}
+	fw.close();
+	
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void writeOriginalDestinationCTForODActivity(Map<Id<HouseHold>,HouseHold> hhs,double scale,String act, String outFile) {
+	try {
+		FileWriter fw = new FileWriter(new File(outFile+"/originalDCTdemandOD_"+act+".csv"));
+		fw.append("oCTUID,OD\n");
+		Map<Double,Double> fromOD = new HashMap<>();
+		for(HouseHold h:hhs.values()) {
+			for(Member m:h.getMembers().values()) {
+				for(Trip t:m.getTrips().values()) {
+					if(t.getMotive().equals(act)) {
+						fromOD.compute(t.getOriginalDCT(), (k,v)->v==null?t.getTripExpFactror()*scale:v+t.getTripExpFactror()*scale);
+					}
+				}
+			}
+		}
+	
+	for(Double d:fromOD.keySet()){
+		
+		fw.append(d+","+fromOD.get(d)+"\n");
+		fw.flush();
+	}
+	fw.close();
+	
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public static void handleNullOriginAndDestination(Map<Id<HouseHold>,HouseHold> hhs) {
+	Map<Double,Multinomial<Double>> originToDestinationDistribution = new HashMap<>();
+	Map<Double,Map<Double,Double>> otodDistribution = new HashMap<>();
+	
+	Map<Double,Multinomial<Double>> destinationToOriginDistribution = new HashMap<>();
+	Map<Double,Map<Double,Double>> dtooDistribution = new HashMap<>();
+	
+	Map<String,Double> odDistribution = new HashMap<>();
+	Multinomial<String> originDestinationDistribution = new Multinomial<String>();
+	
+	hhs.values().forEach(h->{
+		h.getMembers().values().forEach(m->{
+			m.getTrips().values().forEach(t->{
+				if(t.getOriginCT()!=null && t.getDestinationCT()!=null) {
+					if(!otodDistribution.containsKey(t.getOriginCT())) {
+						otodDistribution.put(t.getOriginCT(), new HashMap<>());	
+					}
+					
+					if(!dtooDistribution.containsKey(t.getDestinationCT())) {
+						dtooDistribution.put(t.getDestinationCT(), new HashMap<>());	
+					}
+					
+					if(!odDistribution.containsKey(Double.toString(t.getOriginCT())+"_"+Double.toString(t.getDestinationCT()))) {
+						odDistribution.put(Double.toString(t.getOriginCT())+"_"+Double.toString(t.getDestinationCT()),0.);
+					};
+					otodDistribution.get(t.getOriginCT()).compute(t.getDestinationCT(),(k,v)->v==null?t.getTripExpFactror():v+t.getTripExpFactror());
+					dtooDistribution.get(t.getDestinationCT()).compute(t.getOriginCT(), (k,v)->v==null?t.getTripExpFactror():v+t.getTripExpFactror());
+					odDistribution.compute(Double.toString(t.getOriginCT())+"_"+Double.toString(t.getDestinationCT()),(k,v)->v==null?t.getTripExpFactror():v+t.getTripExpFactror());
+				}
+			});
+		});
+	});
+	
+	otodDistribution.entrySet().forEach(otod->{
+		originToDestinationDistribution.put(otod.getKey(), new Multinomial<Double>());
+		otod.getValue().entrySet().forEach(a->originToDestinationDistribution.get(otod.getKey()).add(a.getKey(), a.getValue()));
+	});
+	
+	dtooDistribution.entrySet().forEach(dtoo->{
+		destinationToOriginDistribution.put(dtoo.getKey(), new Multinomial<Double>());
+		dtoo.getValue().entrySet().forEach(a->destinationToOriginDistribution.get(dtoo.getKey()).add(a.getKey(), a.getValue()));
+	});
+	
+	odDistribution.entrySet().forEach(a->{
+		originDestinationDistribution.add(a.getKey(), a.getValue());
+	});
+	
+	hhs.values().forEach(h->{
+		h.getMembers().values().forEach(m->{
+			m.getTrips().values().forEach(t->{
+				if(t.getOriginCT()==null && t.getDestinationCT()!=null) {
+					t.setOriginCT(destinationToOriginDistribution.get(t.getDestinationCT()).sample());
+				}else if(t.getOriginCT()!=null && t.getDestinationCT()==null) {
+					t.setDestinationCT(originToDestinationDistribution.get(t.getOriginCT()).sample());
+				}else if(t.getOriginCT()==null && t.getDestinationCT()==null) {
+					String od = originDestinationDistribution.sample();
+					t.setOriginCT(Double.parseDouble(od.split("_")[0]));
+					t.setDestinationCT(Double.parseDouble(od.split("_")[1]));
+				}
+			});
+		});
+	});
+}
+
+
+
 }
