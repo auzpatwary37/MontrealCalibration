@@ -183,6 +183,7 @@ public class PopulationGeneratorLaval {
 				if(p.getSelectedPlan().getPlanElements().get(i) instanceof Activity) {
 					Activity a = (Activity) p.getSelectedPlan().getPlanElements().get(i);
 					a.setStartTime(Math.min(previousAct.getEndTime().seconds()+900,a.getEndTime().seconds()));
+					a.setCoord(fac.getFacilities().get(a.getFacilityId()).getCoord());
 				}
 			}
 		}
