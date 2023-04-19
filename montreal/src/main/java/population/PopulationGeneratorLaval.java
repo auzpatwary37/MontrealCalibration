@@ -206,6 +206,7 @@ public class PopulationGeneratorLaval {
 		writeODCTDemand(population, households, fac, scale, "quebec/stat");
 		writeOriginalOriginCTForODActivity(households, scale,"work","quebec/stat");
 		writeOriginalDestinationCTForODActivity(households, scale,"work","quebec/stat");
+		writeTreatedCTForTrips(households,"quebec/stat");
 	}
 
 	public static void writeTreatedCTForTrips(Map<Id<HouseHold>,HouseHold> hhs, String folderLocation) {
