@@ -183,6 +183,7 @@ public class PopulationGeneratorLaval {
 				if(p.getSelectedPlan().getPlanElements().get(i) instanceof Activity) {
 					Activity a = (Activity) p.getSelectedPlan().getPlanElements().get(i);
 					a.setStartTime(Math.min(previousAct.getEndTime().seconds()+900,a.getEndTime().seconds()));
+					a.setCoord(fac.getFacilities().get(a.getFacilityId()).getCoord());
 				}
 			}
 		}
@@ -205,6 +206,7 @@ public class PopulationGeneratorLaval {
 		writeODCTDemand(population, households, fac, scale, "quebec/stat");
 		writeOriginalOriginCTForODActivity(households, scale,"work","quebec/stat");
 		writeOriginalDestinationCTForODActivity(households, scale,"work","quebec/stat");
+		writeTreatedCTForTrips(households,"quebec/stat");
 	}
 
 	public static void writeTreatedCTForTrips(Map<Id<HouseHold>,HouseHold> hhs, String folderLocation) {
