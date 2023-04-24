@@ -246,54 +246,52 @@ public class PopulationGeneratorLaval {
 				case 2: // car passenger
 					modes.add("car_passenger");
 					break;
-				case 3: // stm bus 
-					modes.add("pt");
-					break;
-				case 4: //metro
-					modes.add("pt");
-					break;
-				case 5: // RTL
-					modes.add("pt");
-					break;
-				case 6: // STL
-					modes.add("pt");
-					break;
-				case 7: //exo/mrc
-					modes.add("pt");
-					break;
-				case 8: //train
-					modes.add("pt");
-					break;
-				case 9: //Schoolbus for now just kept it as car passenger
-					modes.add("car_passenger");
-					break;
-				case 10://other bus, for now just kept it as car passenger
-					modes.add("car_passenger");
-					break;
-				case 11://taxi
+				case 3: // taxi
 					modes.add("car");
 					break;
-				case 12:// motorcycle
+				case 4: //scooter
 					modes.add("car");
 					break;
-				case 13:// bike
-					modes.add("bike");
+				case 5: // bike
+					modes.add("car");
 					break;
-				case 14: // walking
+				case 6: // rtc bus
+					modes.add("pt");
+					break;
+				case 7: //school bus for now just kept it as car passenger
+					modes.add("car_passenger");
+					break;
+				case 8: //other bus
+					modes.add("car_passenger");
+					break;
+				case 9: //adaptive bus
+					modes.add("car_passenger");
+					break;
+				case 10://intercity bus
+					modes.add("other");
+					break;
+				case 11://train
+					modes.add("other");
+					break;
+				case 12:// airplane
+					modes.add("other");
+					break;
+				case 13:// walk
 					modes.add("walk");
 					break;
-				case 15://paratransit
-					modes.add("pt");
-					break;
-				case 16://outside entry
-					modes.add("pt");
-					break;
-				case 17://junction point
+				case 14: // traverser (boat with cars)
 					modes.add("car");
 					break;
-				case 18://indeterminant 
-					modes.add("car");
+				case 15://traverse (boat without car)
+					modes.add("pt");
 					break;
+				case 16://other
+					modes.add("other");
+					break;
+				case 17:// refused
+					modes.add("other");
+					break;
+
 				default:
 					modes.add("car");
 				}
@@ -308,26 +306,99 @@ public class PopulationGeneratorLaval {
 
 		return modesArray;
 	}
-
+	
+//	public static String[] extractModes(CSVRecord record) {
+//		List<String> modes = new ArrayList<>();
+//		for(int i = 1;i<5;i++) {
+//			String modeString = "mode"+i;
+//			if(record.get(modeString)!=null && !record.get(modeString).equals("")) {
+//				switch((int)Double.parseDouble(record.get(modeString))) {
+//				case 1: //its a car
+//					modes.add("car");
+//					break;
+//				case 2: // car passenger
+//					modes.add("car_passenger");
+//					break;
+//				case 3: // stm bus 
+//					modes.add("pt");
+//					break;
+//				case 4: //metro
+//					modes.add("pt");
+//					break;
+//				case 5: // RTL
+//					modes.add("pt");
+//					break;
+//				case 6: // STL
+//					modes.add("pt");
+//					break;
+//				case 7: //exo/mrc
+//					modes.add("pt");
+//					break;
+//				case 8: //train
+//					modes.add("pt");
+//					break;
+//				case 9: //Schoolbus for now just kept it as car passenger
+//					modes.add("car_passenger");
+//					break;
+//				case 10://other bus, for now just kept it as car passenger
+//					modes.add("car_passenger");
+//					break;
+//				case 11://taxi
+//					modes.add("car");
+//					break;
+//				case 12:// motorcycle
+//					modes.add("car");
+//					break;
+//				case 13:// bike
+//					modes.add("bike");
+//					break;
+//				case 14: // walking
+//					modes.add("walk");
+//					break;
+//				case 15://paratransit
+//					modes.add("pt");
+//					break;
+//				case 16://outside entry
+//					modes.add("pt");
+//					break;
+//				case 17://junction point
+//					modes.add("car");
+//					break;
+//				case 18://indeterminant 
+//					modes.add("car");
+//					break;
+//				default:
+//					modes.add("car");
+//				}
+//			}
+//		}
+//		String[] modesArray = new String[modes.size()];
+//		int i = 0;
+//		for(String s:modes) {
+//			modesArray[i]=s;
+//			i++;
+//		}
+//
+//		return modesArray;
+//	}
+	
 	public static String extractActivity(CSVRecord record) {
 		if(record.get("nodep")!=null && !record.get("nodep").equals("")) {
 			int motive = (int)Double.parseDouble(record.get("motif"));
 
 			if(motive==0) {//no movment this should not happen when nodep is not null
 
-			}else if(motive == 1||motive ==2) {
+			}else if(motive == 1||motive ==2||motive==3) {
 				return "work";
 			}else if(motive==4) {
 				return "education";
 			}else if(motive == 5) {
 				return "shop";
-			}else if(motive == 6||motive == 7) {
+			}else if(motive == 6||motive == 7||motive==8) {
 				return "leisure";
-			}else if(motive == 11) {
+			}else if(motive == 12) {
 				return "home";
-			}else if(motive == 8|| motive == 9 || motive==10) {
-				return "errands";
-			}else if(motive == 3 || motive==12|| motive==13) {
+			}else if(motive == 9 || motive==10|| motive==11|| motive==13) {
 				return "other";
 			}
 
@@ -335,6 +406,33 @@ public class PopulationGeneratorLaval {
 		}
 		return null;
 	}
+
+//	public static String extractActivity(CSVRecord record) {
+//		if(record.get("nodep")!=null && !record.get("nodep").equals("")) {
+//			int motive = (int)Double.parseDouble(record.get("motif"));
+//
+//			if(motive==0) {//no movment this should not happen when nodep is not null
+//
+//			}else if(motive == 1||motive ==2) {
+//				return "work";
+//			}else if(motive==4) {
+//				return "education";
+//			}else if(motive == 5) {
+//				return "shop";
+//			}else if(motive == 6||motive == 7) {
+//				return "leisure";
+//			}else if(motive == 11) {
+//				return "home";
+//			}else if(motive == 8|| motive == 9 || motive==10) {
+//				return "errands";
+//			}else if(motive == 3 || motive==12|| motive==13) {
+//				return "other";
+//			}
+//
+//
+//		}
+//		return null;
+//	}
 
 	//Chat gpt code 
 

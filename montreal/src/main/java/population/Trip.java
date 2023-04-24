@@ -42,10 +42,14 @@ public class Trip {
 		this.member = member;
 		this.originalOCoord = new Coord(oX,oY);
 		this.originalDCoord = new Coord(dX,dY);
-		this.originCT = originCt;
-		this.originalOCT = originCt;
-		this.destinationCT = destinationCT;
-		this.originalDCT = destinationCT;
+		if(originCt!=null && Double.compare(originCt, 0.0)!=0) {
+			this.originCT = originCt;
+			this.originalOCT = originCt;
+		}
+		if(destinationCT!=null && Double.compare(destinationCT, 0.0)!=0) {
+			this.destinationCT = destinationCT;
+			this.originalDCT = destinationCT;
+		}
 		this.departureTime = departureTime;
 		this.motive = motive;
 		this.mobile = mobile;
