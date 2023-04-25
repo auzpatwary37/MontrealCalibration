@@ -68,7 +68,7 @@ public class PopulationGeneratorLaval {
 		Vehicles vehicles = scenario.getVehicles();
 		Households matsimHouseholds = scenario.getHouseholds();
 
-		double scale = 1;
+		double scale = .1;
 
 		BufferedReader bf = new BufferedReader(new FileReader(new File(facilityToCTUIDMap)));
 		bf.readLine();
@@ -120,7 +120,7 @@ public class PopulationGeneratorLaval {
 				HouseHold hh = new HouseHold(hhId.toString(), Integer.parseInt(record.get("revenu")), 
 						record.get("xmtmlog").equals("")?null:Double.parseDouble(record.get("xmtmlog")), 
 								record.get("ymtmlog").equals("")?null:Double.parseDouble(record.get("ymtmlog")), 
-										record.get("srlog").equals("")?null:Double.parseDouble(record.get("srlog")), 
+										record.get("srlog").equals("")?null:Double.parseDouble(record.get("srlog"))*1000, 
 												Double.parseDouble(record.get("facmen").replace(",", ".")), 
 												false, Integer.parseInt(record.get("nbveh")));
 				households.put(hh.getHhId(), hh);
@@ -135,7 +135,7 @@ public class PopulationGeneratorLaval {
 						Integer.parseInt(record.get("sexe")),
 						Integer.parseInt(record.get("occper")), 
 						(int)Double.parseDouble(record.get("teletrav"))==1, 
-						record.get("xmtmocc").equals("")?null:Double.parseDouble(record.get("xmtmocc")), record.get("ymtmocc").equals("")?null:Double.parseDouble(record.get("ymtmocc")),record.get("srocc").equals("")?null:Double.parseDouble(record.get("srocc")));
+						record.get("xmtmocc").equals("")?null:Double.parseDouble(record.get("xmtmocc")), record.get("ymtmocc").equals("")?null:Double.parseDouble(record.get("ymtmocc")),record.get("srocc").equals("")?null:Double.parseDouble(record.get("srocc"))*1000);
 				hh.addMember(member);
 				if(member.getAgeGroup()<15)hh.setIfKids(true);
 			}
@@ -147,8 +147,8 @@ public class PopulationGeneratorLaval {
 				Trip trip = new Trip(tripId.toString(), member, record.get("xmtmori").equals("")?0:Double.parseDouble(record.get("xmtmori")), record.get("ymtmori").equals("")?0:Double.parseDouble(record.get("ymtmori")), record.get("xmtmdes").equals("")?0:Double.parseDouble(record.get("xmtmdes")), 
 						record.get("ymtmdes").equals("")?0:Double.parseDouble(record.get("ymtmdes")),
 						time,record.get("facdep").equals("")?member.getPersonExFac():Double.parseDouble(record.get("facdep").replace(",", ".")), 
-								record.get("srori").equals("")?null:Double.parseDouble(record.get("srori")), 
-										record.get("srdes").equals("")?null:Double.parseDouble(record.get("srdes")),
+								record.get("srori").equals("")?null:Double.parseDouble(record.get("srori"))*1000, 
+										record.get("srdes").equals("")?null:Double.parseDouble(record.get("srdes"))*1000,
 												extractActivity(record),
 												Integer.parseInt(record.get("mobil")),
 												extractModes(record), record.get("jour"));

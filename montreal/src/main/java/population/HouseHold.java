@@ -46,7 +46,9 @@ public class HouseHold {
 	public HouseHold(String id, int income, double x, double y, Double ct, double hhExFac, boolean ifKids, int numofCar) {
 		hhId = Id.create(id, HouseHold.class);
 		originalCoord = new Coord(x,y);
-		if(ct!=null && Double.compare(ct, 0.0)!=0)this.ct = ct;
+		if(ct!=null && Double.compare(ct, 0.0)!=0) {
+			this.ct = ct;
+		}
 		this.incomeGroup = income;
 		this.hhExFac = hhExFac;
 		this.numOfCar = numofCar;
