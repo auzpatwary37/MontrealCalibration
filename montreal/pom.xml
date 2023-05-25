@@ -9,7 +9,7 @@
         <geotools.version>24-SNAPSHOT</geotools.version>
         
         		<!--release:-->
-		<matsim.version>15.0-SNAPSHOT</matsim.version>
+	<!-- 	<matsim.version>13</matsim.version> -->
 
 <!--		in IDE for a possible 13.1-->
 <!--		<matsim.version>13.1-SNAPSHOT</matsim.version>-->
@@ -20,16 +20,17 @@
 <!--		I think we should leave this at a weekly build for better stability.  Please pull up every time you see this.  kai, dec'20 -->
 
 		<!--development head:-->
-<!--		<matsim.version>14.0-SNAPSHOT</matsim.version>-->
+<!--		<matsim.version>15.0-SNAPSHOT</matsim.version>-->
 
 <!--		!! matsim-examples is currently on a more modern version since I want to modernize some things there. kai, apr'21 !!-->
 		
-		<matsim.version>15.0-SNAPSHOT</matsim.version> <!-- 18.05.2021-->
-		<maven.compiler.source>14</maven.compiler.source>
-		<maven.compiler.target>14</maven.compiler.target>
+		<matsim.version>15.0</matsim.version> <!-- 18.05.2021-->
+		<maven.compiler.source>19</maven.compiler.source>
+		<maven.compiler.target>19</maven.compiler.target>
 	
    </properties>
   
+
 <build>
     <plugins>
 
@@ -39,10 +40,9 @@
     <artifactId>maven-compiler-plugin</artifactId>
     <version>3.8.0</version>
     <configuration>
-        <release>14</release> 
+        <release>19</release> 
     </configuration>
 </plugin>
-
 
     <plugin>
       <artifactId>maven-assembly-plugin</artifactId>
@@ -83,9 +83,10 @@
   
  <repositories>
 <repository>
-			<id>matsim</id>
-			<url>https://repo.matsim.org/repository/matsim</url>
-		</repository>
+    <id>matsim</id>
+    <name>MATSim Maven repository</name>
+    <url>https://repo.matsim.org/repository/matsim/</url>
+  </repository>
 
 		<repository>
 			<id>jitpack.io</id>
@@ -116,7 +117,10 @@
       <releases><enabled>false</enabled></releases>
     </repository>
 
-
+ <repository>
+        <id>pt2matsim</id>
+        <url>https://repo.matsim.org/repository/matsim/</url>
+    </repository>
 
 		<repository>
 			<id>de.topobyte</id>
@@ -263,6 +267,12 @@
     <artifactId>mahout-math</artifactId>
     <version>0.13.0</version>
 </dependency>
+
+<dependency>
+        <groupId>org.matsim</groupId>
+        <artifactId>pt2matsim</artifactId>
+        <version>23.4</version>
+    </dependency> 
 <!-- 
 <dependency>
 	    <groupId>com.github.matsim-scenarios</groupId>
@@ -271,4 +281,10 @@
 	</dependency>
 -->
 </dependencies>
+
+
+
+
+
+
 </project>

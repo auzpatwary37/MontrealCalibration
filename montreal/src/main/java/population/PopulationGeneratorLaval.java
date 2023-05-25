@@ -68,7 +68,7 @@ public class PopulationGeneratorLaval {
 		Vehicles vehicles = scenario.getVehicles();
 		Households matsimHouseholds = scenario.getHouseholds();
 
-		double scale = .1;
+		double scale = 1.;
 
 		BufferedReader bf = new BufferedReader(new FileReader(new File(facilityToCTUIDMap)));
 		bf.readLine();
