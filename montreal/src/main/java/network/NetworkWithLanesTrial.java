@@ -92,6 +92,7 @@ public class NetworkWithLanesTrial {
 		configPt.setMaxLinkCandidateDistance(1000);
 		configPt.setMaxTravelCostFactor(200);
 		configPt.setNLinkThreshold(10);
+		configPt.setNumOfThreads(2);
 		
 
 		new ConfigWriter(config).write("data/osm/ptMapperConfig.xml");

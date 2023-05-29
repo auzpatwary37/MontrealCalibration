@@ -12,6 +12,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.network.NetworkFactory;
+import org.matsim.api.core.v01.network.NetworkWriter;
+import org.matsim.api.core.v01.network.Node;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.xml.sax.Attributes;
@@ -31,7 +38,7 @@ public class OSMWayAndNodesReader extends DefaultHandler{
     private Map<Long, NodeOSM> taggedNodes;
     private Map<String, List<Way>> waysByType;
     private List<Long> wayNodeIds;
-    private CoordinateTransformation tsf = TransformationFactory.getCoordinateTransformation("WSG84", "epsg:32188");
+    private CoordinateTransformation tsf = TransformationFactory.getCoordinateTransformation("WGS84", "epsg:32188");
     private Map<String,String> wayTags;
     
     public OSMWayAndNodesReader() {
@@ -41,7 +48,39 @@ public class OSMWayAndNodesReader extends DefaultHandler{
         wayNodeIds = new ArrayList<>();
     }
 
-    @Override
+    
+    
+    public StringBuilder getCurrentElement() {
+		return currentElement;
+	}
+
+
+
+	public Map<Long, NodeOSM> getGeneralNodes() {
+		return generalNodes;
+	}
+
+
+
+	public Map<Long, NodeOSM> getTaggedNodes() {
+		return taggedNodes;
+	}
+
+
+
+	public Map<String, List<Way>> getWaysByType() {
+		return waysByType;
+	}
+
+
+
+	public List<Long> getWayNodeIds() {
+		return wayNodeIds;
+	}
+
+
+
+	@Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
         currentElement = new StringBuilder();
 
@@ -50,10 +89,10 @@ public class OSMWayAndNodesReader extends DefaultHandler{
             nodeId = Long.parseLong(attributes.getValue("id"));
             double latitude = Double.parseDouble(attributes.getValue("lat"));
             double longitude = Double.parseDouble(attributes.getValue("lon"));
-            nodeCoordinate = new Coord(latitude, longitude);
+            nodeCoordinate = new Coord(longitude,latitude);
             nodeCoordinate = tsf.transform(nodeCoordinate);
-        } else if (isNode && qName.equalsIgnoreCase("tag")) {
-            String key = attributes.getValue("k");
+        } else if (isNode && qName.equalsIgnoreCase("tag")) {	
+        	String key = attributes.getValue("k");
             String value = attributes.getValue("v");
 
             if (isTaggedNode(key, value)) {
@@ -63,7 +102,7 @@ public class OSMWayAndNodesReader extends DefaultHandler{
             wayNodeIds.clear();
             isLink = true;
             wayTags = new HashMap<>();
-        } else if (isTaggedNode && qName.equalsIgnoreCase("nd")) {
+        } else if (isLink && qName.equalsIgnoreCase("nd")) {
             long refNodeId = Long.parseLong(attributes.getValue("ref"));
             wayNodeIds.add(refNodeId);
         }else if(isLink && qName.equalsIgnoreCase("tag")) {
@@ -74,6 +113,7 @@ public class OSMWayAndNodesReader extends DefaultHandler{
     private boolean isTaggedNode(String key, String value) {
         return (key.equals("public_transport") && value.equals("stop_position")) ||
                 (key.equals("railway") && value.equals("stop"));
+        
     }
 
     @Override
@@ -127,8 +167,68 @@ public class OSMWayAndNodesReader extends DefaultHandler{
 	}
 	
 	public static void main(String[] args) {
-		String fileLoc = "data/osm/export-2.osm";
+		String fileLoc = "data/osm/fixOSM.osm";
 		OSMWayAndNodesReader reader = new OSMWayAndNodesReader();
+		reader.read(fileLoc);
+		System.out.println();
+		
+		Network net = NetworkUtils.createNetwork();
+		NetworkFactory netFac = net.getFactory();
+		
+		Set<NodeOSM> nodes = new HashSet<>();
+		
+		//String[] types = new String[]{"rail","subway"};
+		Set<String> types = reader.getWaysByType().keySet();
+		
+//		reader.getWaysByType().get(type).forEach(a->{
+//			a.getNodeIds().forEach(n->{
+//				if(reader.getGeneralNodes().get(n)!=null)nodes.add(reader.getGeneralNodes().get(n));
+//				else nodes.add(reader.getTaggedNodes().get(n));
+//					
+//			});
+//		});
+		
+//		nodes.forEach(n->{
+//			net.addNode(netFac.createNode(Id.createNodeId(n.getId()), n.getCoordinate()));
+//		});
+		
+		Map<Long,NodeOSM> osmNodes = new HashMap<>();
+		osmNodes.putAll(reader.generalNodes);
+		osmNodes.putAll(reader.getTaggedNodes());
+		
+		for(String type:types) {
+		reader.getWaysByType().get(type).forEach(a->{
+			NodeOSM fromNode = osmNodes.get(a.getNodeIds().get(0));
+			if(!net.getNodes().containsKey(Id.createNodeId(fromNode.getId())))net.addNode(netFac.createNode(Id.createNodeId(fromNode.getId()),fromNode.getCoordinate()));
+			for(int i = 1;i<a.getNodeIds().size();i++) {
+				if(true || NetworkUtils.getEuclideanDistance(osmNodes.get(a.getNodeIds().get(i)).getCoordinate(),fromNode.getCoordinate())>250) {
+					if(!net.getNodes().containsKey(Id.createNodeId(a.getNodeIds().get(i))))net.addNode(netFac.createNode(Id.createNodeId(a.getNodeIds().get(i)),osmNodes.get(a.getNodeIds().get(i)).getCoordinate()));
+					Id<Link> lId = Id.createLinkId(Long.toString(fromNode.getId())+"_"+a.getNodeIds().get(i));
+					if(!net.getLinks().containsKey(lId)) {
+						net.addLink(netFac.createLink(lId,net.getNodes().get(Id.createNodeId(fromNode.getId())), net.getNodes().get(Id.createNodeId(a.getNodeIds().get(i)))));
+						Link link = net.getLinks().get(lId);
+						link.setCapacity(30000);
+						link.setFreespeed(21);
+						Set<String> modes = new HashSet<>();
+						modes.add("pt");
+						if(type.equals("subway"))modes.add("subway");
+						else if(type.equals("rail")) {
+							modes.add("light_rail");
+							modes.add("rail");
+							//modes.add("subway");
+						}
+						link.setAllowedModes(modes);
+						link.setLength(NetworkUtils.getEuclideanDistance(osmNodes.get(a.getNodeIds().get(i)).getCoordinate(),fromNode.getCoordinate()));
+					}
+					fromNode = osmNodes.get(a.getNodeIds().get(i));
+				}
+			}
+		});
+		}
+		
+		new NetworkWriter(net).write("data/osm/osmPt.xml");
+		
+		
 	}
 	
 

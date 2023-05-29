@@ -100,7 +100,7 @@ public static void main(String[] args) throws IOException {
         link.setLength(length);
         link.setCapacity(capacityTheoretical*laneAm);
         link.setNumberOfLanes(laneAm);
-        link.getAttributes().putAttribute("type", type);
+        link.getAttributes().putAttribute("type_em", type);
         link.getAttributes().putAttribute("cam", cam);
         link.getAttributes().putAttribute("modes", modes);
         link.getAttributes().putAttribute("lanes_am", laneAm);
@@ -168,7 +168,7 @@ public static void main(String[] args) throws IOException {
 	toRemove.forEach(config::removeModule);
 	
 	configPt.setInputNetworkFile("data/kinan/emNetworkAm.xml");
-	config.network().setLaneDefinitionsFile("emLanes.xml");
+	config.network().setLaneDefinitionsFile("data/kinan/emLanes.xml");
 	configPt.setInputScheduleFile("data/kinan/emTs.xml");
 	configPt.setOutputNetworkFile("data/kinan/emMultimodal.xml");
 	configPt.setOutputScheduleFile("data/kinan/emTsMapped.xml");
@@ -178,7 +178,7 @@ public static void main(String[] args) throws IOException {
 	configPt.setMaxLinkCandidateDistance(1000);
 	configPt.setMaxTravelCostFactor(200);
 	configPt.setNLinkThreshold(10);
-	
+	configPt.setNumOfThreads(10);
 
 	new ConfigWriter(config).write("data/kinan/ptMapperConfig.xml");
 	
