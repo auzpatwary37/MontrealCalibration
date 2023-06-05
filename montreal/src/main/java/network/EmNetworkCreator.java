@@ -113,6 +113,8 @@ public static void main(String[] args) throws IOException {
         outNet.addLink(link);
 	}
 	
+	NetworkWithLanesTrial.addTransit(outNet,"data/osm/fixOSM.osm");
+	
 	Iterable<CSVRecord> recordsTurns = csvFormatTurn.parse(emTurnsIn);
 	Map<Id<Link>,Map<Id<Link>,Integer>> restrictions = new HashMap<>();
 	

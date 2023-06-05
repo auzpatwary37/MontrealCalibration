@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
@@ -68,7 +69,7 @@ public class ParamReader {
 	//In No Code Format (This include limit for only the parameters that are inculded in the initial param)
 	private LinkedHashMap<String,Tuple<Double,Double>>initialParamLimit=new LinkedHashMap<>();
 	
-	private static final Logger logger=Logger.getLogger(ParamReader.class);
+	private static final Logger logger=LogManager.getLogger(ParamReader.class);
 	
 	public ParamReader(String fileLoc) {
 		File file=new File(fileLoc);

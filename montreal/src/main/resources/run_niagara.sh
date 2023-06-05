@@ -7,20 +7,19 @@
 #SBATCH --account=def-fciari
 #SBATCH --mail-user=ashraf-uz-zaman.patwary@polymtl.ca
 #SBATCH --mail-type=ALL
-#SBATCH --output=/scratch/f/fciari/ashraf37/calibration_050522.slurm
+#SBATCH --output=/scratch/f/fciari/ashraf37/pt2Matsim/output.slurm
 
 
 echo "Current working directory: `pwd`"
 echo "Starting run at: `date`"
 
-#Load environment
-module load CCEnv arch/avx512 StdEnv/2020
 
 # Load Java
-module load java/14.0.2
+module load java/17.0.2
 
 # Load script
-java -Xmx180G -cp runSim.jar run.Run --config config_with_calibrated_parameters.xml
+java -Xmx150g -cp montreal-0.0.1-SNAPSHOT-jar-shaded.jar network.NetworkWithLanesTrial data/osm/RegionMontrealaise.osm data/osm/fixOSM.osm data/osm/outputNet.xml data/osm/outputLanes.xml data/kinan/gtfsData/out/ data/osm/osmTs.xml data/osm/osmVehicles.xml data/osm/osmMultimodal.xml data/osm/osmTsMapped.xml data/osm/ptMapperConfig.xml
+
 
 ###############################################
 

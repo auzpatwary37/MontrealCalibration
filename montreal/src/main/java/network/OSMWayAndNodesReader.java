@@ -167,7 +167,7 @@ public class OSMWayAndNodesReader extends DefaultHandler{
 	}
 	
 	public static void main(String[] args) {
-		String fileLoc = "data/osm/fixOSM.osm";
+		String fileLoc = "data/osm/rail.osm";
 		OSMWayAndNodesReader reader = new OSMWayAndNodesReader();
 		reader.read(fileLoc);
 		System.out.println();
@@ -198,6 +198,8 @@ public class OSMWayAndNodesReader extends DefaultHandler{
 		
 		for(String type:types) {
 		reader.getWaysByType().get(type).forEach(a->{
+			if(a.getAttributes().get("service")==null &&(a.getAttributes().get("usage")==null ||a.getAttributes().get("usage").equals("main")||a.getAttributes().get("usage").equals("branch"))) {
+				
 			NodeOSM fromNode = osmNodes.get(a.getNodeIds().get(0));
 			if(!net.getNodes().containsKey(Id.createNodeId(fromNode.getId())))net.addNode(netFac.createNode(Id.createNodeId(fromNode.getId()),fromNode.getCoordinate()));
 			for(int i = 1;i<a.getNodeIds().size();i++) {
@@ -212,7 +214,7 @@ public class OSMWayAndNodesReader extends DefaultHandler{
 						Set<String> modes = new HashSet<>();
 						modes.add("pt");
 						if(type.equals("subway"))modes.add("subway");
-						else if(type.equals("rail")) {
+						else if(type.equals("rail")||type.equals("light_rail")||type.equals("train")) {
 							modes.add("light_rail");
 							modes.add("rail");
 							//modes.add("subway");
@@ -223,10 +225,11 @@ public class OSMWayAndNodesReader extends DefaultHandler{
 					fromNode = osmNodes.get(a.getNodeIds().get(i));
 				}
 			}
+			}
 		});
 		}
 		
-		new NetworkWriter(net).write("data/osm/osmPt.xml");
+		new NetworkWriter(net).write("data/osm/osmPtNew.xml");
 		
 		
 	}
