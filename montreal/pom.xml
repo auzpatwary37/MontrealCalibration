@@ -337,11 +337,6 @@
     <version>0.13.0</version>
 </dependency>
 
-<dependency>
-        <groupId>org.matsim</groupId>
-        <artifactId>pt2matsim</artifactId>
-        <version>23.4_r</version>
-    </dependency> 
 <!-- 
 <dependency>
 	    <groupId>com.github.matsim-scenarios</groupId>
