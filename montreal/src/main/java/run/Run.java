@@ -67,6 +67,11 @@ public final class Run implements Callable<Integer> {
   @Option(names = {"--thread"}, description = {"Number of thread"}, defaultValue = "40")
   private int thread;
   
+  @Option(names = {"--lanes"}, description = {"Location of the lane definition file"}, defaultValue = "null")
+  private String laneFile;
+  
+  @Option(names = {"--vehicles"}, description = {"Location of the auto vehicle file"}, defaultValue = "null")
+  private String vehiclesFile;
   
   public static void main(String[] args) {
     (new CommandLine(new Run()))
@@ -87,6 +92,8 @@ public final class Run implements Callable<Integer> {
     config.transit().setVehiclesFile(this.tvFileLoc);
     config.global().setNumberOfThreads(thread);
     config.qsim().setNumberOfThreads(thread);
+    if(!laneFile.equals("null"))config.network().setLaneDefinitionsFile(laneFile);
+    if(!this.vehiclesFile.equals("null"))config.vehicles().setVehiclesFile(this.vehiclesFile);
     config.controler().setLastIteration(this.maxIterations);
     addStrategy(config, "SubtourModeChoice", null, 0.1D, 0 * this.maxIterations);
     addStrategy(config, "ReRoute", null, 0.5D, 0 * this.maxIterations);
