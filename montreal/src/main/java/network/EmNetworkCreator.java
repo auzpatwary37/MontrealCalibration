@@ -113,7 +113,7 @@ public static void main(String[] args) throws IOException {
         outNet.addLink(link);
 	}
 	
-	NetworkWithLanesTrial.addTransit(outNet,"data/osm/fixOSM.osm");
+	NetworkWithLanesTrial.addTransit(outNet,"data/osm/rail.osm");
 	
 	Iterable<CSVRecord> recordsTurns = csvFormatTurn.parse(emTurnsIn);
 	Map<Id<Link>,Map<Id<Link>,Integer>> restrictions = new HashMap<>();
@@ -149,6 +149,7 @@ public static void main(String[] args) throws IOException {
 			lanes.addLanesToLinkAssignment(l2l);
 		}
 	}
+	NetworkUtils.runNetworkCleaner(outNet);
 	
 	new LanesWriter(lanes).write("data/kinan/emLanes.xml");
 	new NetworkWriter(outNet).write("data/kinan/emNetworkAm.xml");
@@ -176,9 +177,9 @@ public static void main(String[] args) throws IOException {
 	configPt.setOutputScheduleFile("data/kinan/emTsMapped.xml");
 	
 	
-	configPt.setCandidateDistanceMultiplier(5);
-	configPt.setMaxLinkCandidateDistance(1000);
-	configPt.setMaxTravelCostFactor(200);
+	configPt.setCandidateDistanceMultiplier(10);
+	configPt.setMaxLinkCandidateDistance(100);
+	configPt.setMaxTravelCostFactor(100);
 	configPt.setNLinkThreshold(10);
 	configPt.setNumOfThreads(10);
 

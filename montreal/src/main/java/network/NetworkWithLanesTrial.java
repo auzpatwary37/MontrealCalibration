@@ -13,7 +13,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkFactory;
 import org.matsim.contrib.signals.SignalSystemsConfigGroup;
 import org.matsim.contrib.signals.data.SignalsData;
-import org.matsim.contrib.signals.network.SignalsAndLanesOsmNetworkReader;
+
 import org.matsim.contrib.signals.utils.SignalUtils;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
@@ -100,6 +100,7 @@ public class NetworkWithLanesTrial {
 			
 		}
 		addTransit(network,osmTransit);
+		NetworkUtils.runNetworkCleaner(network);
 		new NetworkWriter(network).write(outputNet);
 		new LanesWriter(lanes).write(outputLanes);
 		System.out.println("Wrong Lanes = "+wrongLane+" out of "+totalLane);
