@@ -48,7 +48,7 @@ public class NetworkWithLanesTrial {
 		String ptMapperConfig = "data/osm/ptMapperConfig.xml";
 		int thread = 10;
 		int distanceMultiplier = 5;
-		int candidateDistance = 100;
+		int candidateDistance = 50;
 		int maxTravelCostFactor = 200;
 		int nLink = 10;
 		

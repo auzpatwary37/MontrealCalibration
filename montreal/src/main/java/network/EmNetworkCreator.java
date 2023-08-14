@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -34,7 +34,6 @@ import org.matsim.lanes.LanesUtils;
 import org.matsim.lanes.LanesWriter;
 import org.matsim.pt2matsim.config.PublicTransitMappingConfigGroup;
 import org.matsim.pt2matsim.run.CheckMappedSchedulePlausibility;
-import org.matsim.pt2matsim.run.CreateDefaultPTMapperConfig;
 import org.matsim.pt2matsim.run.Gtfs2TransitSchedule;
 import org.matsim.pt2matsim.run.PublicTransitMapper;
 
