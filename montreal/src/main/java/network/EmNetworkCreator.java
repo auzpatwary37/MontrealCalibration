@@ -3,8 +3,12 @@ package network;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -39,6 +43,8 @@ import org.matsim.pt2matsim.run.PublicTransitMapper;
 
 public class EmNetworkCreator {
 public static void main(String[] args) throws IOException {
+	String mathildeOsmConverterConfig = "data/osm/osm_config.xml";
+	String osmNet = "data/osm/RegionMontrealaise.osm";
 	String emNodes = "data/kinan/emNodes.csv";
 	String emLinks = "data/kinan/emLinks.csv";
 	String emTurns = "data/kinan/emme_Turns.csv";
@@ -162,6 +168,7 @@ public static void main(String[] args) throws IOException {
 	//ConfigUtils.loadConfig(config,"data/kinan/ptMapperConfig.xml");
 	
 	ConfigGroup c = PublicTransitMappingConfigGroup.createDefaultConfig();
+	c = PublicTransitMappingConfigGroup.loadConfig(mathildeOsmConverterConfig);
 	config.addModule(c);
 	
 	PublicTransitMappingConfigGroup configPt = ConfigUtils.addOrGetModule(config, PublicTransitMappingConfigGroup.GROUP_NAME, PublicTransitMappingConfigGroup.class); 
@@ -186,7 +193,7 @@ public static void main(String[] args) throws IOException {
 	
 	//CreateDefaultPTMapperConfig.main(new String[]{"data/kinan/ptMapperConfig.xml"});
 	
-	PublicTransitMapper.run("data/kinan/ptMapperConfig.xml");
+	PublicTransitMapper.run(config, configPt);
 	Network outNetFinal = NetworkUtils.readNetwork("data/kinan/emMultimodal.xml");
 	CheckMappedSchedulePlausibility.run("data/kinan/emTsMapped.xml", "data/kinan/emMultimodal.xml", "epsg:32188", "data/kinan/plausibility");
 	
@@ -198,27 +205,78 @@ public static void main(String[] args) throws IOException {
  * @return
  */
 public static Map<Id<Link>,Integer> orderToLinks(Link link, Map<Id<Link>,Integer>restrictions) {
-	Map<Id<Link>, Integer> order = new HashMap<>();
+	Map<Id<Link>, Integer> order = new LinkedHashMap<>();
 	TreeMap<Double,Id<Link>> angle = new TreeMap<>();
+	List<Tuple<Id<Link>,Double>> angles = new ArrayList<>();
 	
 	for(Link l: link.getToNode().getOutLinks().values()) {
 		if(restrictions==null || restrictions.containsKey(l.getId()) && restrictions.get(l.getId())!=0) {
-			angle.put( getAngle(link,l),l.getId());
+			double a =  getAngle(link,l);
+			angles.add(new Tuple<>(l.getId(),a));
+			
 		}
 	}
+	
+	angles.sort(new Comparator<Tuple<Id<Link>,Double>>(){
+
+		@Override
+		public int compare(Tuple<Id<Link>, Double> o1, Tuple<Id<Link>, Double> o2) {
+			if (o1.getSecond() < o2.getSecond()) return -1;
+	        if (o1.getSecond() > o2.getSecond()) return 1;
+	        return 0;
+		}
+	});
+	
 	int nPlus = 0;
 	int nMinus = 0;
-	if(angle.size()%2==0) {
+	if(angles.size()%2==0) {
 		nPlus = angle.size()/2-1;
 		nMinus = -1*angle.size()/2;
 	}else {
 		nPlus = (angle.size()-1)/2;
 		nMinus = -1*(angle.size()-1)/2;
 	}
-	
+	int j = 0;
 	for(int i = nMinus;i<=nPlus;i++) {
-		Entry<Double, Id<Link>> p = angle.pollLastEntry();
-		order.put(p.getValue(),i);
+		angles.get(j);
+		order.put(angles.get(j).getFirst(),i);
+		j++;
+	}
+	
+	return order;
+}
+
+
+/**
+ * 
+ * @param link the from Link for which lanes are to be ordered.
+ * @return the angle in order from negative to positive
+ */
+public static Map<Id<Link>,Double> getOrderedAnglesforToLinks(Link link) {
+	Map<Id<Link>, Double> order = new LinkedHashMap<>();
+	List<Tuple<Id<Link>,Double>> angles = new ArrayList<>();
+	
+	for(Link l: link.getToNode().getOutLinks().values()) {
+		
+			double a =  getAngle(link,l);
+			angles.add(new Tuple<>(l.getId(),a));
+			
+		
+	}
+	
+	angles.sort(new Comparator<Tuple<Id<Link>,Double>>(){
+
+		@Override
+		public int compare(Tuple<Id<Link>, Double> o1, Tuple<Id<Link>, Double> o2) {
+			if (o1.getSecond() < o2.getSecond()) return -1;
+	        if (o1.getSecond() > o2.getSecond()) return 1;
+	        return 0;
+		}
+	});
+	
+	
+	for(int i = 0;i<angles.size();i++) {
+		order.put(angles.get(i).getFirst(), angles.get(i).getSecond());
 	}
 	
 	return order;

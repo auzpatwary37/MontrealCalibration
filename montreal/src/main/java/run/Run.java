@@ -1,29 +1,40 @@
 package run;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
-import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule.DefaultStrategy;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.facilities.ActivityFacilities;
+import org.matsim.facilities.FacilitiesUtils;
+import org.matsim.pt.transitSchedule.api.TransitSchedule;
 import org.matsim.vehicles.VehicleCapacity;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
@@ -51,7 +62,7 @@ public final class Run implements Callable<Integer> {
   @Option(names = {"--facilities"}, description = {"Optional Path to facilities file to load."}, defaultValue = "montreal_facilities.xml.gz")
   private String facilitiesFileLoc;
   
-  @Option(names = {"--iterations"}, description = {"Maximum number of iteration to simulate."}, defaultValue = "250")
+  @Option(names = {"--iterations"}, description = {"Maximum number of iteration to simulate."}, defaultValue = "250") 
   private int maxIterations;
   
   @Option(names = {"--household"}, description = {"Optional Path to household file to load."}, defaultValue = "montreal_households.xml.gz")
@@ -69,6 +80,14 @@ public final class Run implements Callable<Integer> {
   @Option(names = {"--thread"}, description = {"Number of thread"}, defaultValue = "40")
   private int thread;
   
+  @Option(names = {"--lanes"}, description = {"Location of the lane definition file"}, defaultValue = "null")
+  private String laneFile;
+  
+  @Option(names = {"--vehicles"}, description = {"Location of the auto vehicle file"}, defaultValue = "null")
+  private String vehiclesFile;
+  
+  @Option(names = {"--clearplan"}, description = {"If clear the population of routes and non selected plans"}, defaultValue = "false")
+  private String ifClear;
   
   public static void main(String[] args) {
     (new CommandLine(new Run()))
@@ -89,9 +108,11 @@ public final class Run implements Callable<Integer> {
     config.transit().setVehiclesFile(this.tvFileLoc);
     config.global().setNumberOfThreads(thread);
     config.qsim().setNumberOfThreads(thread);
+    if(!laneFile.equals("null"))config.network().setLaneDefinitionsFile(laneFile);
+    config.vehicles().setVehiclesFile(this.vehiclesFile);
     config.controler().setLastIteration(this.maxIterations);
-    addStrategy(config, "SubtourModeChoice", null, 0.1D, 0 * this.maxIterations);
-    addStrategy(config, "ReRoute", null, 0.5D, 0 * this.maxIterations);
+    addStrategy(config, "SubtourModeChoice", null, 0.05D, 0 * this.maxIterations);
+    addStrategy(config, "ReRoute", null, 0.1D, 0 * this.maxIterations);
     addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
     config.controler().setOutputDirectory(this.output);
     config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
@@ -102,7 +123,7 @@ public final class Run implements Callable<Integer> {
     config = pReader.SetParamToConfig(config, pReader.getInitialParam());
     
     Scenario scenario = ScenarioUtils.loadScenario(config);
-   
+    checkPtConsistency(scenario.getNetwork(),scenario.getTransitSchedule());
     scenario.getTransitVehicles().getVehicleTypes().values().stream().forEach(vt -> {
     	vt.setPcuEquivalents(vt.getPcuEquivalents()*this.scale.doubleValue());
         VehicleCapacity vc = vt.getCapacity();
@@ -138,7 +159,10 @@ public final class Run implements Callable<Integer> {
     		}
     		
     	});
+ 
     });
+    
+  
     
     for(Entry<String, Double> a:actDuration.entrySet()){
     	a.setValue(a.getValue()/actNum.get(a.getKey()));
@@ -166,7 +190,7 @@ public final class Run implements Callable<Integer> {
     		System.out.println("No start and end time was found for activity = "+actType+ " in the base population!! Inserting 8 hour as the typical duration.");
     	}
     }
-    
+    if(ifClear.equals("true"))clearPopulationFromRouteAndNetwork(scenario.getPopulation(),scenario.getNetwork(),scenario.getActivityFacilities());
     Controler controler = new Controler(scenario);
     controler.run();
     return Integer.valueOf(0);
@@ -184,9 +208,82 @@ public final class Run implements Callable<Integer> {
     config.strategy().addStrategySettings(strategySettings);
   }
   
-  public void assignFacilityToNetwork(ActivityFacilities facilities,Network network) {
-	  facilities.getFacilities().values().forEach(f->{
+  public static void clearPopulationFromRouteAndNetwork(Population pop, Network net, ActivityFacilities fac) {
+	  for(Person p:pop.getPersons().values()){
+		  Plan plan = p.getSelectedPlan();
+		  for(Plan pl:new ArrayList<>(p.getPlans())) {
+			  if(!pl.equals(plan))p.getPlans().remove(pl);
+		  }
+		  boolean ptTrip = false;
+		  List<PlanElement> ptElements = new ArrayList<>();
+		  int startingIndex = 0;
+		  int legNo = 0;
+		  int actNo = 0;
+		  int i = 0;
+		  List<PlanElement> untouched = new ArrayList<>(p.getSelectedPlan().getPlanElements());
+		  for(PlanElement pe:untouched) {
+			  
+			  if(pe instanceof Activity) {
+				((Activity)pe).setLinkId(null);
+				if(((Activity)pe).getType().equals("pt interaction")) {
+					if(ptTrip == false) {
+						legNo--;
+						ptTrip = true;
+						startingIndex = actNo+legNo;
+						ptElements.add(untouched.get(i-1));
+						ptElements.add(pe);
+					}else {
+						ptElements.add(pe);
+					}
+					
+				}else {
+					if(ptTrip == true) {
+						ptTrip = false;
+						p.getSelectedPlan().getPlanElements().removeAll(ptElements);
+						p.getSelectedPlan().getPlanElements().add(startingIndex, PopulationUtils.createLeg("pt"));
+						legNo++;
+						actNo++;
+					}else {
+						actNo++;
+					}
+				}
+			  }else {
+				  if(ptTrip == true) {
+					  ptElements.add(pe);
+				  }else {
+					  ((Leg)pe).setRoute(null);
+					  legNo++;
+				  }
+			  }
+			  i++;
+		  }
+//		  if(untouched.size()!=p.getSelectedPlan().getPlanElements().size()) {
+//			  System.out.println();
+//		  }
 		 
+	  }
+	 
+	    fac.getFacilities().values().forEach(f->{
+	    	FacilitiesUtils.setLinkID(f, NetworkUtils.getNearestRightEntryLink(net, f.getCoord()).getId());
+	    });
+  }
+  
+  public static void checkPtConsistency(Network net,TransitSchedule ts) {
+	  ts.getTransitLines().values().forEach(tl->{
+		  tl.getRoutes().values().forEach(tr->{
+			  List<Id<Link>> links = new ArrayList<>();
+			  
+			  links.add(tr.getRoute().getStartLinkId());
+			  links.addAll(tr.getRoute().getLinkIds());
+			  links.add(tr.getRoute().getEndLinkId());
+			  
+			  for(int i = 1;i<links.size();i++) {
+				  if(net.getLinks().get(links.get(i-1)).getToNode().getId()!=net.getLinks().get(links.get(i)).getFromNode().getId()) {
+					  throw new IllegalArgumentException("Inconsistent route!!!");
+				  }
+			  }
+		  });
 	  });
   }
+  
 }

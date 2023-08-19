@@ -36,6 +36,7 @@ import org.matsim.pt2matsim.run.PublicTransitMapper;
 public class NetworkWithLanesTrial {
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
+		String mathildeOsmConverterConfig = "data/osm/osm_config.xml";
 		String osmNet = "data/osm/RegionMontrealaise.osm";
 		String osmTransit = "data/osm/fixOsm.osm";
 		String outputNet = "data/osm/outputNet.xml";
@@ -46,81 +47,81 @@ public class NetworkWithLanesTrial {
 		String finalnet = "data/osm/osmMultimodal.xml";
 		String mappedTs = "data/osm/osmTsMapped.xml";
 		String ptMapperConfig = "data/osm/ptMapperConfig.xml";
-		int thread = 10;
-		int distanceMultiplier = 5;
-		int candidateDistance = 50;
-		int maxTravelCostFactor = 200;
+		int thread = 12;
+		double distanceMultiplier = 5;
+		double candidateDistance = 300;
+		double maxTravelCostFactor = 200;
 		int nLink = 10;
 		
 		if(args.length!=0) {
-				osmNet = args[0];
-				osmTransit = args[1];
-				outputNet = args[2];
-				outputLanes = args[3];
-				gtfsFolder = args[4];
-				outTs = args[5];
-				outTv = args[6];
-				finalnet = args[7];
-				mappedTs = args[8];
-				ptMapperConfig = args[9];
-				thread = Integer.parseInt(args[10]);
-				distanceMultiplier = Integer.parseInt(args[11]);
-				candidateDistance = Integer.parseInt(args[12]);
-				maxTravelCostFactor = Integer.parseInt(args[13]);
-				nLink = Integer.parseInt(args[14]);
+				distanceMultiplier = Double.parseDouble(args[0]);
+				candidateDistance = Double.parseDouble(args[1]);
+				maxTravelCostFactor = Double.parseDouble(args[2]);
+				nLink = Integer.parseInt(args[3]);
 			}
+//		
+//		Network network = NetworkUtils.createNetwork();
+//		CoordinateTransformation coordTransfer = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:32188");
+//		SignalSystemsConfigGroup signalConfig = new SignalSystemsConfigGroup();
+//		SignalsData signals = SignalUtils.createSignalsData(signalConfig);
+//		Lanes lanes = LanesUtils.createLanesContainer();
+//		SignalsAndLanesOsmNetworkReader netReader = new SignalsAndLanesOsmNetworkReader(network, coordTransfer, true, signals, lanes);
+//		
+//		netReader.setBoundingBox(45.0, -74.7, 46.15, -72.8);
+//		
+//		netReader.setAcceptFourPlusCrossings(true);
+//		netReader.setAllowUTurnAtLeftLaneOnly(true);
+//		netReader.setKeepPaths(false);
+//		netReader.setMakePedestrianSignals(true);
+//		netReader.parse(osmNet);//"data/osm/Region Montrealaise.osm"
+//		
+//		addTransit(network,osmTransit);
+//		//NetworkUtils.runNetworkCleaner(network);
+//		System.out.println(checkForBadCapacity(network));
+//		int wrongLane = 0;
+//		int totalLane = 0;
+//		for(Entry<Id<Link>, LanesToLinkAssignment> l2l:new HashMap<>(lanes.getLanesToLinkAssignments()).entrySet()){
+//			if(l2l.getValue().getLanes().isEmpty()||l2l.getValue().getLanes()==null) {
+//				lanes.getLanesToLinkAssignments().remove(l2l.getKey());
+//				wrongLane++;
+//				continue;
+//				
+//			}
+//			for(Entry<Id<Lane>, Lane> lane:new HashMap<>(l2l.getValue().getLanes()).entrySet()){
+//				totalLane++;
+//				if((lane.getValue().getToLinkIds()==null || lane.getValue().getToLinkIds().isEmpty()) && (lane.getValue().getToLaneIds()==null || lane.getValue().getToLaneIds().isEmpty())) {
+//					wrongLane++;
+//					l2l.getValue().getLanes().remove(lane.getKey());		
+//					if(l2l.getValue().getLanes().isEmpty())lanes.getLanesToLinkAssignments().remove(l2l.getKey());
+//				}
+//			};
+//		};
+//		if(args.length!=0) {
+//			
+//		}
+//		new NetworkWriter(network).write(outputNet);
+//		new LanesWriter(lanes).write(outputLanes);
 		
-		Network network = NetworkUtils.createNetwork();
-		CoordinateTransformation coordTransfer = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:32188");
-		SignalSystemsConfigGroup signalConfig = new SignalSystemsConfigGroup();
-		SignalsData signals = SignalUtils.createSignalsData(signalConfig);
-		Lanes lanes = LanesUtils.createLanesContainer();
-		SignalsAndLanesOsmNetworkReader netReader = new SignalsAndLanesOsmNetworkReader(network, coordTransfer, true, signals, lanes);
 		
-		netReader.setBoundingBox(45.0, -74.7, 46.15, -72.8);
+//		System.out.println("Wrong Lanes = "+wrongLane+" out of "+totalLane);
 		
-		netReader.setAcceptFourPlusCrossings(true);
-		netReader.setAllowUTurnAtLeftLaneOnly(true);
-		netReader.setKeepPaths(false);
-		netReader.setMakePedestrianSignals(true);
-		netReader.parse(osmNet);//"data/osm/Region Montrealaise.osm"
-		int wrongLane = 0;
-		int totalLane = 0;
-		for(Entry<Id<Link>, LanesToLinkAssignment> l2l:lanes.getLanesToLinkAssignments().entrySet()){
-			for(Entry<Id<Lane>, Lane> lane:new HashMap<>(l2l.getValue().getLanes()).entrySet()){
-				totalLane++;
-				if((lane.getValue().getToLinkIds()==null || lane.getValue().getToLinkIds().isEmpty()) && (lane.getValue().getToLaneIds()==null || lane.getValue().getToLaneIds().isEmpty())) {
-					wrongLane++;
-					l2l.getValue().getLanes().remove(lane.getKey());		
-					
-				}
-			};
-		};
-		if(args.length!=0) {
-			
-		}
-		addTransit(network,osmTransit);
-		NetworkUtils.runNetworkCleaner(network);
-		new NetworkWriter(network).write(outputNet);
-		new LanesWriter(lanes).write(outputLanes);
-		System.out.println("Wrong Lanes = "+wrongLane+" out of "+totalLane);
-		
-		Gtfs2TransitSchedule.run(gtfsFolder, "all", "epsg:32188", outTs,outTv);
+		Gtfs2TransitSchedule.run(gtfsFolder, "dayWithMostServices", "epsg:32188", outTs,outTv);
 		
 		Config config = ConfigUtils.createConfig();
 		//CreateDefaultPTMapperConfig.main(new String[]{"data/kinan/ptMapperConfig.xml"});
 		//ConfigUtils.loadConfig(config,"data/kinan/ptMapperConfig.xml");
 		
-		ConfigGroup c = PublicTransitMappingConfigGroup.createDefaultConfig();
+		ConfigGroup cDefault = PublicTransitMappingConfigGroup.createDefaultConfig();
+		ConfigGroup c = PublicTransitMappingConfigGroup.loadConfig(mathildeOsmConverterConfig);
 		config.addModule(c);
 		
 		PublicTransitMappingConfigGroup configPt = ConfigUtils.addOrGetModule(config, PublicTransitMappingConfigGroup.GROUP_NAME, PublicTransitMappingConfigGroup.class); 
 
-		Set<String> toRemove = config.getModules().keySet().stream().filter(module -> !module.equals(PublicTransitMappingConfigGroup.GROUP_NAME)).collect(Collectors.toSet());
-		toRemove.forEach(config::removeModule);
+//		Set<String> toRemove = config.getModules().keySet().stream().filter(module -> !module.equals(PublicTransitMappingConfigGroup.GROUP_NAME)).collect(Collectors.toSet());
+//		toRemove.forEach(config::removeModule);
 		
-		configPt.setInputNetworkFile(outputNet);
-		config.network().setLaneDefinitionsFile(outputLanes);
+		configPt.setInputNetworkFile("data/osm/testNet.xml");//outputNet
+		config.network().setLaneDefinitionsFile("data/osm/testLanes.xml");//outputLanes
 		configPt.setInputScheduleFile(outTs);
 		configPt.setOutputNetworkFile(finalnet);
 		configPt.setOutputScheduleFile(mappedTs);
@@ -131,13 +132,32 @@ public class NetworkWithLanesTrial {
 		configPt.setMaxTravelCostFactor(maxTravelCostFactor);
 		configPt.setNLinkThreshold(nLink);
 		configPt.setNumOfThreads(thread);
+		Map<String,Set<String>> modes = new HashMap<>();
+		modes.put("bus", new HashSet<>());
+		modes.put("subway", new HashSet<>());
+		modes.put("rail", new HashSet<>());
+		
+		modes.get("bus").add("bus");
+		modes.get("bus").add("car");
+		modes.get("bus").add("car_passenger");
+		
+		modes.get("subway").add("subway");
+		modes.get("subway").add("light_rail");
+		
+		
+		modes.get("rail").add("rail");
+		modes.get("rail").add("light_rail");
+		
+		configPt.setTransportModeAssignment(modes);
+		
+		
 		
 
 		new ConfigWriter(config).write(ptMapperConfig);
 		
 		//CreateDefaultPTMapperConfig.main(new String[]{"data/kinan/ptMapperConfig.xml"});
 		
-		PublicTransitMapper.run(ptMapperConfig);
+		PublicTransitMapper.run(config, configPt);
 		
 		CheckMappedSchedulePlausibility.run(mappedTs, finalnet, "epsg:32188", "data/osm/plausibility");
 		
@@ -145,6 +165,17 @@ public class NetworkWithLanesTrial {
 		
 		//new SignalsWriter(signals).write("data/osm/outputSignals.xml");
 		//new SignalsScenarioWriter();
+	}
+	
+	
+	public static double checkForBadCapacity(Network net) {
+		double badCap = 0;
+		for(Link link:net.getLinks().values()) {
+			if(link.getLength()==0||link.getCapacity()<=0) {
+				badCap++;
+			}
+		}
+		return badCap;
 	}
 	
 	public static void addTransit(Network net, String osmFile) {
