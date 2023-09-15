@@ -257,10 +257,10 @@ public static Map<Id<Link>,Double> getOrderedAnglesforToLinks(Link link) {
 	List<Tuple<Id<Link>,Double>> angles = new ArrayList<>();
 	
 	for(Link l: link.getToNode().getOutLinks().values()) {
-		
+		if( l.getAllowedModes().containsAll(link.getAllowedModes())) {
 			double a =  getAngle(link,l);
 			angles.add(new Tuple<>(l.getId(),a));
-			
+		}
 		
 	}
 	

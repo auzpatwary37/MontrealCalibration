@@ -25,14 +25,14 @@ public class RunFromEclipse {
 				"--thread", "10",
 				"--scale", ".05", 
 				"--config", "matsimRun/configMine.xml",
-				"--network", "matsimRun/osmMultimodal.xml",
-				"--ts", "matsimRun/osmTsMapped.xml", 
-				"--tv", "matsimRun/osmVehicles.xml", 
+				"--network", "data/osm/valid1252OSM/osmMultimodal.xml",
+				"--ts", "data/osm/valid1252OSM/osmTsMapped.xml", 
+				"--tv", "data/osm/valid1252OSM/osmVehicles.xml", 
 				"--plan", "matsimRun/output_plans.xml.gz", 
 				"--facilities", "matsimRun/output_facilities.xml.gz", 
 				"--clearplan", "true",
 				"--household","matsimRun/montreal_households.xml.gz",
-				"--lanes","data/osm/outputLanes_out.xml"
+				"--lanes","data/osm/valid1252OSM/testLanes_out.xml"
 			};
 		
 		String[] args3 = new String[] {

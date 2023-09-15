@@ -3,31 +3,22 @@ package network;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkFactory;
-import org.matsim.contrib.signals.SignalSystemsConfigGroup;
-import org.matsim.contrib.signals.data.SignalsData;
-import org.matsim.contrib.signals.network.SignalsAndLanesOsmNetworkReader;
-import org.matsim.contrib.signals.utils.SignalUtils;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.network.io.NetworkWriter;
-import org.matsim.core.utils.geometry.CoordinateTransformation;
-import org.matsim.core.utils.geometry.transformations.TransformationFactory;
-import org.matsim.lanes.Lane;
-import org.matsim.lanes.Lanes;
-import org.matsim.lanes.LanesToLinkAssignment;
-import org.matsim.lanes.LanesUtils;
-import org.matsim.lanes.LanesWriter;
+import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.pt.transitSchedule.api.TransitScheduleReader;
+import org.matsim.pt.utils.TransitScheduleValidator;
+import org.matsim.pt.utils.TransitScheduleValidator.ValidationResult;
 import org.matsim.pt2matsim.config.PublicTransitMappingConfigGroup;
 import org.matsim.pt2matsim.run.CheckMappedSchedulePlausibility;
 import org.matsim.pt2matsim.run.Gtfs2TransitSchedule;
@@ -49,9 +40,9 @@ public class NetworkWithLanesTrial {
 		String ptMapperConfig = "data/osm/ptMapperConfig.xml";
 		int thread = 12;
 		double distanceMultiplier = 5;
-		double candidateDistance = 300;
-		double maxTravelCostFactor = 200;
-		int nLink = 10;
+		double candidateDistance = 150;
+		double maxTravelCostFactor = 300;
+		int nLink = 5;
 		
 		if(args.length!=0) {
 				distanceMultiplier = Double.parseDouble(args[0]);
@@ -121,6 +112,7 @@ public class NetworkWithLanesTrial {
 //		toRemove.forEach(config::removeModule);
 		
 		configPt.setInputNetworkFile("data/osm/testNet.xml");//outputNet
+		config.network().setInputFile("data/osm/testNet.xml");
 		config.network().setLaneDefinitionsFile("data/osm/testLanes.xml");//outputLanes
 		configPt.setInputScheduleFile(outTs);
 		configPt.setOutputNetworkFile(finalnet);
@@ -142,27 +134,33 @@ public class NetworkWithLanesTrial {
 		modes.get("bus").add("car_passenger");
 		
 		modes.get("subway").add("subway");
-		modes.get("subway").add("light_rail");
 		
 		
 		modes.get("rail").add("rail");
 		modes.get("rail").add("light_rail");
 		
 		configPt.setTransportModeAssignment(modes);
+		Set<String> modesToKeep = new HashSet<>();
+		modesToKeep.add("car");
+		modesToKeep.add("car_passenger");
+//		modesToKeep.add("subway");
+//		modesToKeep.add("pt");
 		
+		configPt.setModesToKeepOnCleanUp(modesToKeep);
 		
 		
 
 		new ConfigWriter(config).write(ptMapperConfig);
 		
 		//CreateDefaultPTMapperConfig.main(new String[]{"data/kinan/ptMapperConfig.xml"});
-		
+		configPt.setRoutingWithCandidateDistance(true);
 		PublicTransitMapper.run(config, configPt);
 		
 		CheckMappedSchedulePlausibility.run(mappedTs, finalnet, "epsg:32188", "data/osm/plausibility");
-		
-		
-		
+		Scenario scn = ScenarioUtils.createScenario(ConfigUtils.createConfig());
+		new TransitScheduleReader(scn).readFile(mappedTs);
+		ValidationResult r = TransitScheduleValidator.validateAll(scn.getTransitSchedule(), NetworkUtils.readNetwork(finalnet));
+		System.out.println("transit is valid? "+ r.isValid());;
 		//new SignalsWriter(signals).write("data/osm/outputSignals.xml");
 		//new SignalsScenarioWriter();
 	}
