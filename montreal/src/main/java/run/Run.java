@@ -111,16 +111,18 @@ public final class Run implements Callable<Integer> {
     if(!laneFile.equals("null"))config.network().setLaneDefinitionsFile(laneFile);
     config.vehicles().setVehiclesFile(this.vehiclesFile);
     config.controler().setLastIteration(this.maxIterations);
+    config.strategy().clearStrategySettings();
     addStrategy(config, "SubtourModeChoice", null, 0.05D, 0 * this.maxIterations);
     addStrategy(config, "ReRoute", null, 0.1D, 0 * this.maxIterations);
     addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
     config.controler().setOutputDirectory(this.output);
     config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
-    config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
-    config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
+   
     
     ParamReader pReader = new ParamReader(paramFile);
     config = pReader.SetParamToConfig(config, pReader.getInitialParam());
+    config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
+    config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
     
     Scenario scenario = ScenarioUtils.loadScenario(config);
     checkPtConsistency(scenario.getNetwork(),scenario.getTransitSchedule());

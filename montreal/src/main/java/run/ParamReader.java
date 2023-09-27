@@ -344,9 +344,13 @@ public class ParamReader {
 		}
 		if(params.containsKey(AnalyticalModel.CapacityMultiplierName)) {
 			configOut.qsim().setFlowCapFactor(params.get(AnalyticalModel.CapacityMultiplierName));
+			configOut.qsim().setStorageCapFactor(params.get(AnalyticalModel.CapacityMultiplierName));
 		}else {
 			Double factor=params.get("All "+AnalyticalModel.CapacityMultiplierName);
-			if(factor!=null)configOut.qsim().setFlowCapFactor(factor);
+			if(factor!=null) {
+				configOut.qsim().setFlowCapFactor(factor);
+				configOut.qsim().setStorageCapFactor(factor);
+			}
 		}
 		return configOut;
 	}
