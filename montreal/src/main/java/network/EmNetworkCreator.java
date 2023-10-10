@@ -151,7 +151,7 @@ public static void main(String[] args) throws IOException {
 				l.addToLinkId(o.getKey());
 				l2l.addLane(l);
 			}
-			lanes.addLanesToLinkAssignment(l2l);
+			if(!l2l.getLanes().isEmpty())lanes.addLanesToLinkAssignment(l2l);
 		}
 	}
 	NetworkUtils.runNetworkCleaner(outNet);
@@ -183,11 +183,35 @@ public static void main(String[] args) throws IOException {
 	configPt.setOutputScheduleFile("data/kinan/emTsMapped.xml");
 	
 	
-	configPt.setCandidateDistanceMultiplier(10);
-	configPt.setMaxLinkCandidateDistance(100);
-	configPt.setMaxTravelCostFactor(100);
-	configPt.setNLinkThreshold(10);
+	configPt.setCandidateDistanceMultiplier(5);
+	configPt.setMaxLinkCandidateDistance(150);
+	configPt.setMaxTravelCostFactor(300);
+	configPt.setNLinkThreshold(5);
 	configPt.setNumOfThreads(10);
+	
+	Map<String,Set<String>> modes = new HashMap<>();
+	modes.put("bus", new HashSet<>());
+	modes.put("subway", new HashSet<>());
+	modes.put("rail", new HashSet<>());
+	
+	modes.get("bus").add("bus");
+	modes.get("bus").add("car");
+	modes.get("bus").add("car_passenger");
+	
+	modes.get("subway").add("subway");
+	
+	
+	modes.get("rail").add("rail");
+	modes.get("rail").add("light_rail");
+	
+	configPt.setTransportModeAssignment(modes);
+	Set<String> modesToKeep = new HashSet<>();
+	modesToKeep.add("car");
+	modesToKeep.add("car_passenger");
+//	modesToKeep.add("subway");
+//	modesToKeep.add("pt");
+	
+	configPt.setModesToKeepOnCleanUp(modesToKeep);
 
 	new ConfigWriter(config).write("data/kinan/ptMapperConfig.xml");
 	

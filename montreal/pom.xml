@@ -242,6 +242,13 @@
 			<artifactId>ev</artifactId>
 			<version>${matsim.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.grundid.opendatalab/geojson-jackson -->
+<dependency>
+    <groupId>de.grundid.opendatalab</groupId>
+    <artifactId>geojson-jackson</artifactId>
+    <version>1.14</version>
+</dependency>
+
 <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 <dependency>
     <groupId>org.slf4j</groupId>
@@ -337,11 +344,11 @@
     <version>0.13.0</version>
 </dependency>
 
-<dependency>
-        <groupId>org.matsim</groupId>
-        <artifactId>pt2matsim</artifactId>
-        <version>23.4_r</version>
-    </dependency> 
+<!--<dependency>-->
+<!--        <groupId>org.matsim</groupId>-->
+<!--        <artifactId>pt2matsim</artifactId>-->
+<!--        <version>23.4_r</version>-->
+<!--    </dependency> -->
 <!-- 
 <dependency>
 	    <groupId>com.github.matsim-scenarios</groupId>

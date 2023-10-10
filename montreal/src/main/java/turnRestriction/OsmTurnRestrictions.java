@@ -8,15 +8,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.lanes.Lanes;
 import org.matsim.lanes.LanesFactory;
 import org.matsim.pt2matsim.osm.lib.Osm;
-import org.matsim.pt2matsim.osm.lib.OsmData;
-import org.matsim.pt2matsim.osm.lib.Osm.Way;
 import org.matsim.pt2matsim.osm.lib.Osm.Relation;
+import org.matsim.pt2matsim.osm.lib.Osm.Way;
+import org.matsim.pt2matsim.osm.lib.OsmData;
 
 public class OsmTurnRestrictions {
  private Map<Id<OsmTurnRestriction>, OsmTurnRestriction> restrictions = new HashMap<>();
