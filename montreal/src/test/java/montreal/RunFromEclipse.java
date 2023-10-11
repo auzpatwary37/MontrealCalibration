@@ -33,7 +33,8 @@ public class RunFromEclipse {
 				"--facilities", "matsimRun/output_facilities.xml.gz", 
 				"--clearplan", "true",
 				"--household","matsimRun/montreal_households.xml.gz",
-				"--lanes","data/osm/valid1252OSM/testLanes_out.xml"
+				"--lanes","data/osm/valid1252OSM/testLanes_out.xml",
+				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv"
 			};
 		
 		String[] args3 = new String[] {
@@ -41,16 +42,18 @@ public class RunFromEclipse {
 				"--thread", "10",
 				"--scale", ".05", 
 				"--config", "5_percent/newData/configMine.xml",
-				"--network", "5_percent/newData/montreal_network.xml.gz",
-				"--ts", "5_percent/newData/montreal_transitSchedule.xml.gz", 
-				"--tv", "5_percent/newData/montreal_transitVehicles.xml.gz", 
-				"--plan", "5_percent/newData/output_plans_.2LessCar.xml.gz", 
-				"--facilities", "5_percent/newData/output_facilities.xml.gz", 
-				"--clearplan", "false",
-				"--household","5_percent/newData/montreal_households.xml.gz",
-				"--lanes",""
+				"--network", "data/kinan/emMultimodal2041.xml",
+				"--ts", "data/kinan/emTsMapped2041.xml", 
+				"--tv", "data/kinan/emVehicles2041.xml", 
+				"--plan", "matsimRun/output_plans.xml.gz", 
+				"--facilities", "matsimRun/output_facilities.xml.gz", 
+				"--clearplan", "true",
+				"--household","matsimRun/montreal_households.xml.gz",
+				"--lanes","data/kinan/emLanes2041_out.xml",
+				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv",
+				"--output","outputEm2041BasePop"
 			};
-		Run.main(args2);
+		Run.main(args3);
 		
 	}
 }

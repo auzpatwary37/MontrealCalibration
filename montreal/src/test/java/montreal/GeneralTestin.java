@@ -10,11 +10,13 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.lanes.Lanes;
+import org.matsim.lanes.LanesToLinkAssignment;
 import org.matsim.pt.transitSchedule.api.TransitLine;
 import org.matsim.pt.transitSchedule.api.TransitRoute;
 import org.matsim.pt.transitSchedule.api.TransitSchedule;
 import org.matsim.pt.utils.TransitScheduleValidator;
 import org.matsim.pt.utils.TransitScheduleValidator.ValidationResult;
+import org.matsim.pt2matsim.run.CheckMappedSchedulePlausibility;
 import org.matsim.pt2matsim.run.PublicTransitMapper;
 
 import run.Run;
@@ -22,9 +24,15 @@ import run.Run;
 public class GeneralTestin {
 public static void main(String[] args) {
 	
-	String netLocation = "data/osm/8000Restrictions760ArtificialAllmode/osmMultimodal.xml";
-	String lanesLocation = "data/osm/8000Restrictions760ArtificialAllmode/testLanes_out.xml";
-	String tsLocation = "data/osm/8000Restrictions760ArtificialAllmode/osmTsMapped.xml";
+	String netLocation = "data/osm/valid1252OSM/osmMultimodal.xml";
+	String lanesLocation = "data/osm/valid1252OSM/testLanes_out.xml";
+	String tsLocation = "data/osm/valid1252OSM/osmTsMapped.xml";
+	
+	
+//	String netLocation = "data/kinan/emMultimodal.xml";
+//	String lanesLocation = "data/kinan/emLanes.xml";
+//	String tsLocation = "data/kinan/emTsMapped.xml";
+
 	
 //	Network testNet = NetworkUtils.createNetwork();
 //	Node n1 = NetworkUtils.createAndAddNode(testNet, Id.createNodeId("1"), new Coord(1000,1000));
@@ -89,6 +97,18 @@ public static void main(String[] args) {
 	ValidationResult result = TransitScheduleValidator.validateAll(ts, net);
 	PublicTransitMapper.checkConsistensy(net, ts, lanes);
 	
+
+	System.out.println(lanes.getLanesToLinkAssignments().size());
+	
+	int laneNo = 0;
+	for(LanesToLinkAssignment l:lanes.getLanesToLinkAssignments().values()) {
+		laneNo+=l.getLanes().size();
+	}
+	
+	
+	
+	System.out.println(laneNo);
+	
 	Run.runLaneBasedNetworkCleaner(net,lanes, true);
 	new NetworkCleaner().run( net);
 	new NetworkWriter(net).write("testNetCleaned.xml");
@@ -114,5 +134,8 @@ public static void main(String[] args) {
 		}
 	}
 	System.out.println(wrongRoute +"out of "+ total);
+
+	CheckMappedSchedulePlausibility.run(tsLocation, netLocation, "epsg:32188", "data/osm/plausibility");
+
 }
 }

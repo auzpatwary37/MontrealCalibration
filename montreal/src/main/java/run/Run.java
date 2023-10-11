@@ -129,12 +129,10 @@ public final class Run implements Callable<Integer> {
     addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
     config.controler().setOutputDirectory(this.output);
     config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
-    config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
-    config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
     config.controler().setLinkToLinkRoutingEnabled(true);
     config.travelTimeCalculator().setCalculateLinkToLinkTravelTimes(true);
     config.controler().setRoutingAlgorithmType(RoutingAlgorithmType.SpeedyALT);
-    config.transit().setRoutingAlgorithmType(TransitRoutingAlgorithmType.SwissRailRaptor);
+    //config.transit().setRoutingAlgorithmType(TransitRoutingAlgorithmType.DijkstraBased);
     config.travelTimeCalculator().setSeparateModes(false);
     config.travelTimeCalculator().setCalculateLinkTravelTimes(true);
     //config.getModules().remove("swissRailRaptor");
@@ -145,7 +143,9 @@ public final class Run implements Callable<Integer> {
     config.plansCalcRoute().setAccessEgressType(AccessEgressType.accessEgressModeToLink);
     ParamReader pReader = new ParamReader(paramFile);
     config = pReader.SetParamToConfig(config, pReader.getInitialParam());
-    
+    config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
+    config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
+    config.removeModule("swissRailRaptor");
     Scenario scenario = ScenarioUtils.loadScenario(config);
     //new NetworkCleaner().run( scenario.getNetwork());
     checkPtConsistency(scenario.getNetwork(),scenario.getTransitSchedule(), scenario.getLanes());
@@ -166,8 +166,6 @@ public final class Run implements Callable<Integer> {
     		scenario.getPopulation().getPersons().remove(p);
     	}
     });
-    
-   
     
     Map<String,Double> actDuration = new HashMap<>();
     Map<String,Integer> actNum = new HashMap<>();
@@ -221,6 +219,8 @@ public final class Run implements Callable<Integer> {
     }
     if(ifClear.equals("true"))clearPopulationFromRouteAndNetwork(scenario.getPopulation(),scenario.getNetwork(),scenario.getActivityFacilities());
     if(ifClear.equals("true"))assignLinksToFacilities(scenario.getActivityFacilities(),scenario.getNetwork(), problemLinks);
+    ValidationResult r = TransitScheduleValidator.validateAll(scenario.getTransitSchedule(), scenario.getNetwork());
+	System.out.println("transit is valid? "+ r.isValid());
     Controler controler = new Controler(scenario);
     controler.run();
     return Integer.valueOf(0);
@@ -294,7 +294,8 @@ public final class Run implements Callable<Integer> {
 	  }
 	 
 	    fac.getFacilities().values().forEach(f->{
-	    	FacilitiesUtils.setLinkID(f, NetworkUtils.getNearestRightEntryLink(net, f.getCoord()).getId());
+	    	Id<Link> lId =  NetworkUtils.getNearestRightEntryLink(net, f.getCoord()).getId();
+	    	FacilitiesUtils.setLinkID(f, lId);
 	    });
   }
   
@@ -356,6 +357,9 @@ public final class Run implements Callable<Integer> {
 	  });
 	  fac.getFacilities().values().forEach(f->{
 		  Link link = NetworkUtils.getNearestLink(neto, f.getCoord());
+		  if(link==null) {
+			  System.out.println("Debug!!!");
+		  }
 		  FacilitiesUtils.setLinkID(f, link.getId());
 	  });
   }

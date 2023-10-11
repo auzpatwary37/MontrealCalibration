@@ -19,6 +19,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkFactory;
@@ -29,6 +30,7 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkWriter;
+import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.collections.Tuple;
 import org.matsim.lanes.Lane;
 import org.matsim.lanes.Lanes;
@@ -36,6 +38,8 @@ import org.matsim.lanes.LanesFactory;
 import org.matsim.lanes.LanesToLinkAssignment;
 import org.matsim.lanes.LanesUtils;
 import org.matsim.lanes.LanesWriter;
+import org.matsim.pt.utils.TransitScheduleValidator;
+import org.matsim.pt.utils.TransitScheduleValidator.ValidationResult;
 import org.matsim.pt2matsim.config.PublicTransitMappingConfigGroup;
 import org.matsim.pt2matsim.run.CheckMappedSchedulePlausibility;
 import org.matsim.pt2matsim.run.Gtfs2TransitSchedule;
@@ -97,7 +101,7 @@ public static void main(String[] args) throws IOException {
         int laneAm = (int)Double.parseDouble(record.get("@lanam"));
         int lanepm = (int)Double.parseDouble(record.get("@lanpm"));
         int laneoffpeak = (int)Double.parseDouble(record.get("@lanhp"));
-        double capacityTheoretical = Double.parseDouble(record.get("@cam"));
+        double capacityTheoretical = Double.parseDouble(record.get("@caphl"));
         int type = Integer.parseInt(record.get("TYPE"));
         String modes = record.get("MODES");
         int cam = (int)Double.parseDouble(record.get("@cam"));
@@ -106,6 +110,33 @@ public static void main(String[] args) throws IOException {
         link.setCapacity(capacityTheoretical*laneAm);
         link.setNumberOfLanes(laneAm);
         link.getAttributes().putAttribute("type_em", type);
+        switch(type) {
+        case 7:
+        	link.setFreespeed(40*1000/3600);
+        	break;
+        case 6:
+        	link.setFreespeed(50*1000/3600);
+        	break;
+        case 5:
+        	link.setFreespeed(60*1000/3600);
+        	break;
+        case 4:
+        	link.setFreespeed(70*1000/3600);
+        	break;
+        case 3:
+        	link.setFreespeed(90*1000/3600);
+        	break;
+        case 2:
+        	link.setFreespeed(100*1000/3600);
+        	break;
+        case 1:
+        	link.setFreespeed(100*1000/3600);
+        	break;
+        default:
+        	link.setFreespeed(100*1000/3600);
+        	break;
+        }
+
         link.getAttributes().putAttribute("cam", cam);
         link.getAttributes().putAttribute("modes", modes);
         link.getAttributes().putAttribute("lanes_am", laneAm);
@@ -114,6 +145,7 @@ public static void main(String[] args) throws IOException {
         Set<String> modeString = new HashSet<>();
         modeString.add("car");
         modeString.add("bus");
+        modeString.add("car_passenger");
         link.setAllowedModes(modeString);
         outNet.addLink(link);
 	}
@@ -183,10 +215,12 @@ public static void main(String[] args) throws IOException {
 	configPt.setOutputScheduleFile("data/kinan/emTsMapped.xml");
 	
 	
+
 	configPt.setCandidateDistanceMultiplier(5);
-	configPt.setMaxLinkCandidateDistance(150);
+	configPt.setMaxLinkCandidateDistance(60);
 	configPt.setMaxTravelCostFactor(300);
 	configPt.setNLinkThreshold(5);
+
 	configPt.setNumOfThreads(10);
 	
 	Map<String,Set<String>> modes = new HashMap<>();
@@ -220,6 +254,12 @@ public static void main(String[] args) throws IOException {
 	PublicTransitMapper.run(config, configPt);
 	Network outNetFinal = NetworkUtils.readNetwork("data/kinan/emMultimodal.xml");
 	CheckMappedSchedulePlausibility.run("data/kinan/emTsMapped.xml", "data/kinan/emMultimodal.xml", "epsg:32188", "data/kinan/plausibility");
+	Config cc = ConfigUtils.createConfig();
+	cc.transit().setTransitScheduleFile("data/kinan/emTsMapped.xml");
+	cc.network().setInputFile("data/kinan/emMultimodal.xml");
+	Scenario scn = ScenarioUtils.loadScenario(cc);
+	ValidationResult r = TransitScheduleValidator.validateAll(scn.getTransitSchedule(), scn.getNetwork());
+	System.out.println("transit is valid? "+ r.isValid());;
 	
 }
 /**

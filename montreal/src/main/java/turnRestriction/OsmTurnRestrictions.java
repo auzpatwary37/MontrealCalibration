@@ -19,6 +19,7 @@ import org.matsim.pt2matsim.osm.lib.Osm.Relation;
 import org.matsim.pt2matsim.osm.lib.Osm.Way;
 import org.matsim.pt2matsim.osm.lib.OsmData;
 
+
 public class OsmTurnRestrictions {
  private Map<Id<OsmTurnRestriction>, OsmTurnRestriction> restrictions = new HashMap<>();
 	public OsmTurnRestrictions() {

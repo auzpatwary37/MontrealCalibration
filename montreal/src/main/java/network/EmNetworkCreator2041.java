@@ -19,6 +19,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkFactory;
@@ -29,6 +30,7 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.ConfigWriter;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkWriter;
+import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.collections.Tuple;
 import org.matsim.lanes.Lane;
 import org.matsim.lanes.Lanes;
@@ -36,6 +38,8 @@ import org.matsim.lanes.LanesFactory;
 import org.matsim.lanes.LanesToLinkAssignment;
 import org.matsim.lanes.LanesUtils;
 import org.matsim.lanes.LanesWriter;
+import org.matsim.pt.utils.TransitScheduleValidator;
+import org.matsim.pt.utils.TransitScheduleValidator.ValidationResult;
 import org.matsim.pt2matsim.config.PublicTransitMappingConfigGroup;
 import org.matsim.pt2matsim.run.CheckMappedSchedulePlausibility;
 import org.matsim.pt2matsim.run.Gtfs2TransitSchedule;
@@ -57,8 +61,8 @@ public static void main(String[] args) throws IOException {
 	Reader emTurnsIn = new FileReader(emTurns);
 	
 	String[] headerNode = "ID,X,Y,DATA1,DATA2,DATA3,ISZONE,ISINTERSEC,LABEL".split(",");
-	String[] headerLink = "ID,INODE,JNODE,LENGTH,TYPE,MODES,@cam,@caphl,@ftim,@jur,@lanam,@lanhp,@lanpm,@moves,@peage_v,@peage_w,@peage_y,@peage_z,@sm,@tau0,@tau1,@tau10,@tau11,@tau12,@tau13,@tau14,@tau15,@tau16,@tau17,@tau18,@tau19,@tau2,@tau20,@tau21,@tau22,@tau23,@tau3,@tau4,@tau5,@tau6,@tau7,@tau8,@tau9,@tauff_0,@tauff_1,@tauff_10,@tauff_11,@tauff_12,@tauff_13,@tauff_14,@tauff_15,@tauff_16,@tauff_17,@tauff_18,@tauff_19,@tauff_2,@tauff_20,@tauff_21,@tauff_22,@tauff_23,@tauff_3,@tauff_4,@tauff_5,@tauff_6,@tauff_7,@tauff_8,@tauff_9,@vdfam,@vdfhp,@vdfpm,@vlc0,@vlc1,@vlc10,@vlc11,@vlc12,@vlc13,@vlc14,@vlc15,@vlc16,@vlc17,@vlc18,@vlc19,@vlc2,@vlc20,@vlc21,@vlc22,@vlc23,@vlc3,@vlc4,@vlc5,@vlc6,@vlc7,@vlc8,@vlc9,@vlo0,@vlo1,@vlo10,@vlo11,@vlo12,@vlo13,@vlo14,@vlo15,@vlo16,@vlo17,@vlo18,@vlo19,@vlo2,@vlo20,@vlo21,@vlo22,@vlo23,@vlo3,@vlo4,@vlo5,@vlo6,@vlo7,@vlo8,@vlo9,@vlp0,@vlp1,@vlp10,@vlp11,@vlp12,@vlp13,@vlp14,@vlp15,@vlp16,@vlp17,@vlp18,@vlp19,@vlp2,@vlp20,@vlp21,@vlp22,@vlp23,@vlp3,@vlp4,@vlp5,@vlp6,@vlp7,@vlp8,@vlp9,@vrg0,@vrg1,@vrg10,@vrg11,@vrg12,@vrg13,@vrg14,@vrg15,@vrg16,@vrg17,@vrg18,@vrg19,@vrg2,@vrg20,@vrg21,@vrg22,@vrg23,@vrg3,@vrg4,@vrg5,@vrg6,@vrg7,@vrg8,@vrg9".split(",");
-	String[] headerTurn = "ID,JNODE,INODE,KNODE,TPF,DATA1,DATA2,DATA3".split(",");
+	String[] headerLink = "ID,INODE,JNODE,LENGTH,TYPE,MODES,LANES,VDF,DATA1,DATA2,DATA3,VOLAU,VOLAD,TIMAU,@cam,@caphl,@dfah,@dfah0,@dfah1,@dfah10,@dfah11,@dfah12,@dfah13,@dfah14,@dfah15,@dfah16,@dfah17,@dfah18,@dfah19,@dfah2,@dfah20,@dfah21,@dfah22,@dfah23,@dfah3,@dfah4,@dfah5,@dfah6,@dfah7,@dfah8,@dfah9,@ftim,@jur,@lanam,@lanhp,@lanpm,@moves,@peage_v,@peage_w,@peage_y,@peage_z,@sm,@tau0,@tau1,@tau10,@tau11,@tau12,@tau13,@tau14,@tau15,@tau16,@tau17,@tau18,@tau19,@tau2,@tau20,@tau21,@tau22,@tau23,@tau3,@tau4,@tau5,@tau6,@tau7,@tau8,@tau9,@tauff_0,@tauff_1,@tauff_10,@tauff_11,@tauff_12,@tauff_13,@tauff_14,@tauff_15,@tauff_16,@tauff_17,@tauff_18,@tauff_19,@tauff_2,@tauff_20,@tauff_21,@tauff_22,@tauff_23,@tauff_3,@tauff_4,@tauff_5,@tauff_6,@tauff_7,@tauff_8,@tauff_9,@vdfam,@vdfhp,@vdfpm,@vlc0,@vlc1,@vlc10,@vlc11,@vlc12,@vlc13,@vlc14,@vlc15,@vlc16,@vlc17,@vlc18,@vlc19,@vlc2,@vlc20,@vlc21,@vlc22,@vlc23,@vlc3,@vlc4,@vlc5,@vlc6,@vlc7,@vlc8,@vlc9,@vlo0,@vlo1,@vlo10,@vlo11,@vlo12,@vlo13,@vlo14,@vlo15,@vlo16,@vlo17,@vlo18,@vlo19,@vlo2,@vlo20,@vlo21,@vlo22,@vlo23,@vlo3,@vlo4,@vlo5,@vlo6,@vlo7,@vlo8,@vlo9,@vlp0,@vlp1,@vlp10,@vlp11,@vlp12,@vlp13,@vlp14,@vlp15,@vlp16,@vlp17,@vlp18,@vlp19,@vlp2,@vlp20,@vlp21,@vlp22,@vlp23,@vlp3,@vlp4,@vlp5,@vlp6,@vlp7,@vlp8,@vlp9,@vrg0,@vrg1,@vrg10,@vrg11,@vrg12,@vrg13,@vrg14,@vrg15,@vrg16,@vrg17,@vrg18,@vrg19,@vrg2,@vrg20,@vrg21,@vrg22,@vrg23,@vrg3,@vrg4,@vrg5,@vrg6,@vrg7,@vrg8,@vrg9".split(",");
+	String[] headerTurn = "ID,JNODE,INODE,KNODE,TPF,DATA1,DATA2,DATA3,VOLAU,VOLAD,TIMAU".split(",");
 	
 	CSVFormat csvFormatNode = CSVFormat.DEFAULT.builder()
 	        .setHeader(headerNode)
@@ -97,15 +101,45 @@ public static void main(String[] args) throws IOException {
         int laneAm = (int)Double.parseDouble(record.get("@lanam"));
         int lanepm = (int)Double.parseDouble(record.get("@lanpm"));
         int laneoffpeak = (int)Double.parseDouble(record.get("@lanhp"));
-        double capacityTheoretical = Double.parseDouble(record.get("@cam"));
+        double capacityTheoretical = Double.parseDouble(record.get("@caphl"));
         int type = Integer.parseInt(record.get("TYPE"));
         String modes = record.get("MODES");
         int cam = (int)Double.parseDouble(record.get("@cam"));
         Link link = netFac.createLink(linkId, outNet.getNodes().get(fromNodeId), outNet.getNodes().get(toNodeId));
         link.setLength(length);
+        if(laneAm==0) {
+        	System.out.println("Number of lane zero");
+        }
         link.setCapacity(capacityTheoretical*laneAm);
         link.setNumberOfLanes(laneAm);
         link.getAttributes().putAttribute("type_em", type);
+        switch(type) {
+        case 7:
+        	link.setFreespeed(40*1000/3600);
+        	break;
+        case 6:
+        	link.setFreespeed(50*1000/3600);
+        	break;
+        case 5:
+        	link.setFreespeed(60*1000/3600);
+        	break;
+        case 4:
+        	link.setFreespeed(70*1000/3600);
+        	break;
+        case 3:
+        	link.setFreespeed(90*1000/3600);
+        	break;
+        case 2:
+        	link.setFreespeed(100*1000/3600);
+        	break;
+        case 1:
+        	link.setFreespeed(100*1000/3600);
+        	break;
+        default:
+        	link.setFreespeed(100*1000/3600);
+        	break;
+        }
+
         link.getAttributes().putAttribute("cam", cam);
         link.getAttributes().putAttribute("modes", modes);
         link.getAttributes().putAttribute("lanes_am", laneAm);
@@ -114,6 +148,7 @@ public static void main(String[] args) throws IOException {
         Set<String> modeString = new HashSet<>();
         modeString.add("car");
         modeString.add("bus");
+        modeString.add("car_passenger");
         link.setAllowedModes(modeString);
         outNet.addLink(link);
 	}
@@ -162,7 +197,7 @@ public static void main(String[] args) throws IOException {
 	
 	
 	
-	Gtfs2TransitSchedule.run("data/kinan/gtfsData/out/", "dayWithMostTrips", "epsg:32188", "data/kinan/emTs.xml", "data/kinan/emVehicles.xml");
+	Gtfs2TransitSchedule.run("data/kinan/gtfsData/out/", "dayWithMostTrips", "epsg:32188", "data/kinan/emTs.xml", "data/kinan/emVehicles2041.xml");
 	
 	Config config = ConfigUtils.createConfig();
 	//CreateDefaultPTMapperConfig.main(new String[]{"data/kinan/ptMapperConfig.xml"});
@@ -185,9 +220,9 @@ public static void main(String[] args) throws IOException {
 	
 	
 	configPt.setCandidateDistanceMultiplier(5);
-	configPt.setMaxLinkCandidateDistance(150);
-	configPt.setMaxTravelCostFactor(300);
-	configPt.setNLinkThreshold(5);
+	configPt.setMaxLinkCandidateDistance(60);
+	configPt.setMaxTravelCostFactor(400);
+	configPt.setNLinkThreshold(4);
 	configPt.setNumOfThreads(10);
 	
 	Map<String,Set<String>> modes = new HashMap<>();
@@ -221,6 +256,14 @@ public static void main(String[] args) throws IOException {
 	PublicTransitMapper.run(config, configPt);
 	Network outNetFinal = NetworkUtils.readNetwork("data/kinan/emMultimodal2041.xml");
 	CheckMappedSchedulePlausibility.run("data/kinan/emTsMapped2041.xml", "data/kinan/emMultimodal2041.xml", "epsg:32188", "data/kinan/plausibility");
+	
+	Config cc = ConfigUtils.createConfig();
+	cc.transit().setTransitScheduleFile("data/kinan/emTsMapped2041.xml");
+	cc.network().setInputFile( "data/kinan/emMultimodal2041.xml");
+	Scenario scn = ScenarioUtils.loadScenario(cc);
+	
+	ValidationResult r = TransitScheduleValidator.validateAll(scn.getTransitSchedule(), scn.getNetwork());
+	System.out.println("transit is valid? "+ r.isValid());
 	
 }
 /**
