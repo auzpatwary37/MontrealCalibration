@@ -7,6 +7,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.lanes.Lanes;
@@ -28,6 +29,12 @@ public static void main(String[] args) {
 	String lanesLocation = "data/osm/valid1252OSM/testLanes_out.xml";
 	String tsLocation = "data/osm/valid1252OSM/osmTsMapped.xml";
 	
+	String emNet = "data/kinan/emMultimodal.xml";
+	String emNetOut = "data/kinan/emMultimodalTagged.xml";
+	String emNet2041 = "data/kinan/emMultimodal2041.xml";
+	String emNet2041Out = "data/kinan/emMultimodal2041Tagged.xml";
+	
+	identifyChanges(emNet,emNet2041,emNetOut,emNet2041Out);
 	
 //	String netLocation = "data/kinan/emMultimodal.xml";
 //	String lanesLocation = "data/kinan/emLanes.xml";
@@ -86,56 +93,115 @@ public static void main(String[] args) {
 //		System.out.println(rights);
 //		System.out.println(straight);
 //	}
-	Config config = ConfigUtils.createConfig();
-	config.network().setInputFile(netLocation);
-	config.transit().setTransitScheduleFile(tsLocation);
-	config.network().setLaneDefinitionsFile(lanesLocation);
-	Scenario scn = ScenarioUtils.loadScenario(config);
-	Network net = scn.getNetwork();
-	Lanes lanes = scn.getLanes();
-	TransitSchedule ts = scn.getTransitSchedule();
-	ValidationResult result = TransitScheduleValidator.validateAll(ts, net);
-	PublicTransitMapper.checkConsistensy(net, ts, lanes);
-	
-
-	System.out.println(lanes.getLanesToLinkAssignments().size());
-	
-	int laneNo = 0;
-	for(LanesToLinkAssignment l:lanes.getLanesToLinkAssignments().values()) {
-		laneNo+=l.getLanes().size();
-	}
-	
-	
-	
-	System.out.println(laneNo);
-	
-	Run.runLaneBasedNetworkCleaner(net,lanes, true);
-	new NetworkCleaner().run( net);
-	new NetworkWriter(net).write("testNetCleaned.xml");
-	double wrongRoute = 0;
-	double total = 0;
-	for(TransitLine tl:ts.getTransitLines().values()){
-		for(TransitRoute tr:tl.getRoutes().values()) {
-			total++;
-			if(!net.getLinks().containsKey(tr.getRoute().getStartLinkId())){
-				wrongRoute++;
-				//continue;
-			}
-			if(!net.getLinks().containsKey(tr.getRoute().getEndLinkId())){
-				wrongRoute++;
-				//continue;
-			}
-			for(Id<Link> l: tr.getRoute().getLinkIds()) {
-				if(!net.getLinks().containsKey(l)){
-					wrongRoute++;
-					//continue;
-				}	
-			}
-		}
-	}
-	System.out.println(wrongRoute +"out of "+ total);
-
-	CheckMappedSchedulePlausibility.run(tsLocation, netLocation, "epsg:32188", "data/osm/plausibility");
+//	Config config = ConfigUtils.createConfig();
+//	config.network().setInputFile(netLocation);
+//	config.transit().setTransitScheduleFile(tsLocation);
+//	config.network().setLaneDefinitionsFile(lanesLocation);
+//	Scenario scn = ScenarioUtils.loadScenario(config);
+//	Network net = scn.getNetwork();
+//	Lanes lanes = scn.getLanes();
+//	TransitSchedule ts = scn.getTransitSchedule();
+//	ValidationResult result = TransitScheduleValidator.validateAll(ts, net);
+//	PublicTransitMapper.checkConsistensy(net, ts, lanes);
+//	
+//
+//	System.out.println(lanes.getLanesToLinkAssignments().size());
+//	
+//	int laneNo = 0;
+//	for(LanesToLinkAssignment l:lanes.getLanesToLinkAssignments().values()) {
+//		laneNo+=l.getLanes().size();
+//	}
+//	
+//	
+//	
+//	System.out.println(laneNo);
+//	
+//	Run.runLaneBasedNetworkCleaner(net,lanes, true);
+//	new NetworkCleaner().run( net);
+//	new NetworkWriter(net).write("testNetCleaned.xml");
+//	double wrongRoute = 0;
+//	double total = 0;
+//	for(TransitLine tl:ts.getTransitLines().values()){
+//		for(TransitRoute tr:tl.getRoutes().values()) {
+//			total++;
+//			if(!net.getLinks().containsKey(tr.getRoute().getStartLinkId())){
+//				wrongRoute++;
+//				//continue;
+//			}
+//			if(!net.getLinks().containsKey(tr.getRoute().getEndLinkId())){
+//				wrongRoute++;
+//				//continue;
+//			}
+//			for(Id<Link> l: tr.getRoute().getLinkIds()) {
+//				if(!net.getLinks().containsKey(l)){
+//					wrongRoute++;
+//					//continue;
+//				}	
+//			}
+//		}
+//	}
+//	System.out.println(wrongRoute +"out of "+ total);
+//
+//	CheckMappedSchedulePlausibility.run(tsLocation, netLocation, "epsg:32188", "data/osm/plausibility");
 
 }
+
+public static void identifyChanges(String net1In,String n2In, String outNet1, String outNet2) {
+	Network net1 = NetworkUtils.readNetwork(net1In);
+	Network n2 = NetworkUtils.readNetwork(n2In);
+	net1.getLinks().values().forEach(l->{
+		if(!l.getId().toString().contains("pt") && n2.getLinks().get(l.getId())==null) {
+			l.getAttributes().putAttribute("changed", true);
+			return;
+		}else {
+			Link l2 = n2.getLinks().get(l.getId());
+			if(l.getId().toString().contains("pt"))return;
+			if(l.getNumberOfLanes()!=l2.getNumberOfLanes()) {
+				l.getAttributes().putAttribute("changed", true);
+				return;
+			}
+			if(Math.abs(l.getCapacity()-l2.getCapacity())>.01) {
+				l.getAttributes().putAttribute("changed", true);
+				return;
+			}
+
+			if(Math.abs(l.getLength()-l2.getLength())>0.01) {
+				l.getAttributes().putAttribute("changed", true);
+				return;
+			}
+
+		}
+		l.getAttributes().putAttribute("changed", false);
+	});
+
+	n2.getLinks().values().forEach(l->{
+		if(net1.getLinks().get(l.getId())==null) {
+			l.getAttributes().putAttribute("changed", true);
+			return;
+		}else {
+			Link l2 = net1.getLinks().get(l.getId());
+			if(l.getNumberOfLanes()!=l2.getNumberOfLanes()) {
+				l.getAttributes().putAttribute("changed", true);
+				return;
+			}
+			if(Math.abs(l.getCapacity()-l2.getCapacity())>.01) {
+				l.getAttributes().putAttribute("changed", true);
+				return;
+			}
+
+			if(Math.abs(l.getLength()-l2.getLength())>0.01) {
+				l.getAttributes().putAttribute("changed", true);
+				return;
+			}
+
+		}
+		l.getAttributes().putAttribute("changed", false);
+	});
+	new NetworkWriter(net1).write(outNet1);
+	new NetworkWriter(n2).write(outNet2);
+
+}
+
+
+
 }

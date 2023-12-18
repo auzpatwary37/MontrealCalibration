@@ -53,7 +53,24 @@ public class RunFromEclipse {
 				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv",
 				"--output","outputEm2041BasePop"
 			};
-		Run.main(args3);
+		
+		String[] args4 = new String[] {
+				"--iterations","250",
+				"--thread", "10",
+				"--scale", ".05", 
+				"--config", "5_percent/newData/configMine.xml",
+				"--network", "data/kinan/emMultimodal.xml",
+				"--ts", "data/kinan/emTsMapped.xml", 
+				"--tv", "data/kinan/emVehicles.xml", 
+				"--plan", "matsimRun/output_plans.xml.gz", 
+				"--facilities", "matsimRun/output_facilities.xml.gz", 
+				"--clearplan", "true",
+				"--household","matsimRun/montreal_households.xml.gz",
+				"--lanes","data/kinan/emLanes_out.xml",
+				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv",
+				"--output","outputEmBasePop"
+			};
+		Run.main(args4);
 		
 	}
 }

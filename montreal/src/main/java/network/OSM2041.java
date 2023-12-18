@@ -27,6 +27,12 @@ import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.population.routes.RouteUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.collections.Tuple;
+import org.matsim.lanes.Lane;
+import org.matsim.lanes.Lanes;
+import org.matsim.lanes.LanesFactory;
+import org.matsim.lanes.LanesReader;
+import org.matsim.lanes.LanesToLinkAssignment;
+import org.matsim.lanes.LanesWriter;
 import org.matsim.pt.transitSchedule.api.Departure;
 import org.matsim.pt.transitSchedule.api.TransitLine;
 import org.matsim.pt.transitSchedule.api.TransitRoute;
@@ -39,9 +45,92 @@ import org.matsim.pt.transitSchedule.api.TransitStopFacility;
 import org.matsim.pt.utils.TransitScheduleValidator;
 import org.matsim.pt.utils.TransitScheduleValidator.ValidationResult;
 import org.matsim.pt2matsim.run.Gtfs2TransitSchedule;
+import org.matsim.vehicles.MatsimVehicleReader;
+import org.matsim.vehicles.MatsimVehicleWriter;
+import org.matsim.vehicles.Vehicle;
+import org.matsim.vehicles.VehicleType;
+import org.matsim.vehicles.VehicleUtils;
+import org.matsim.vehicles.Vehicles;
 
-public class MaximeNetworkNew {
-
+public class OSM2041 {
+	public static void main(String[] args) {
+		Network osmNet = NetworkUtils.readNetwork("data/osm/valid1252OSM/osmMultimodal.xml");
+		Network changes = NetworkUtils.readNetwork("data/osm/valid1252OSM/emNetChange.xml");
+		String net2041Connections = "data/osm/valid1252OSM/changesToOSM2041.csv";
+		Scenario scnLane = ScenarioUtils.createScenario(ConfigUtils.createConfig());
+		new LanesReader(scnLane).readFile("data/osm/valid1252OSM/testLanes_out.xml");
+		new TransitScheduleReader(scnLane).readFile("data/osm/valid1252OSM/osmTsMapped.xml");
+		TransitSchedule totalTs = scnLane.getTransitSchedule();
+		Vehicles tv = VehicleUtils.createVehiclesContainer();
+		new MatsimVehicleReader(tv).readFile("data/osm/valid1252OSM/osmVehicles.xml");
+		Lanes lanes = scnLane.getLanes();
+		NetworkFactory netFac = osmNet.getFactory();
+		
+		changes.getNodes().values().forEach(n->{
+			Node nn = netFac.createNode(n.getId(), n.getCoord());
+			osmNet.addNode(nn);
+		});
+		
+		changes.getLinks().entrySet().forEach(l->{
+			Node fromNode = osmNet.getNodes().get(l.getValue().getFromNode().getId());
+			Node toNode = osmNet.getNodes().get(l.getValue().getToNode().getId());
+			Link ll = netFac.createLink(l.getKey(), fromNode, toNode);
+			ll.setAllowedModes(l.getValue().getAllowedModes());
+			ll.setCapacity(l.getValue().getCapacity());
+			ll.setFreespeed(l.getValue().getFreespeed());
+			ll.setLength(l.getValue().getLength());
+			ll.setNumberOfLanes(l.getValue().getNumberOfLanes());
+			l.getValue().getAttributes().getAsMap().entrySet().forEach(a->{
+				ll.getAttributes().putAttribute(a.getKey(), a.getValue());
+			});
+			osmNet.addLink(ll);
+		});
+		Set<String> modes = new HashSet<>();
+		modes.add("car");
+		modes.add("car_passenger");
+		modes.add("bus");
+		modes.add("pt");
+		
+		try {
+			BufferedReader bf = new BufferedReader(new FileReader(new File(net2041Connections)));
+			bf.readLine();
+			String line = "";
+			while((line = bf.readLine())!=null) {
+				String[] parts = line.split(",");
+				
+				if(parts.length==3) {
+					osmNet.removeLink(Id.createLinkId(parts[2]));
+				}
+				Link l = netFac.createLink(Id.createLinkId(parts[0]+"_"+parts[1]), osmNet.getNodes().get(Id.createNodeId(parts[0])), osmNet.getNodes().get(Id.createNodeId(parts[1])));
+				l.setAllowedModes(modes);
+				l.setLength(NetworkUtils.getEuclideanDistance(l.getFromNode().getCoord(), l.getToNode().getCoord()));
+				l.setCapacity(1800*2);
+				l.setNumberOfLanes(2);
+				l.setFreespeed(60*1000/3600);
+				osmNet.addLink(l);
+				fixLinkToLinkConnectionsUpstream(l, lanes);
+			}
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//Fix the lane connections
+		
+		addMaximeTransit(osmNet, totalTs, tv);
+		
+		new LanesWriter(lanes).write("data/osm/valid1252OSM/testLanes_out.xml");
+		new NetworkWriter(osmNet).write("data/osm/valid1252OSM/osmMultimodal2041.xml");
+		new TransitScheduleWriter(totalTs).writeFile("data/osm/valid1252OSM/osmTsMapped2041.xml");
+		new MatsimVehicleWriter(tv).writeFile("data/osm/valid1252OSM/osmVehicles2041.xml");
+		
+	}
+	
 	private static double handleTime(String time) {
 		double t = Double.parseDouble(time);
 		double out = (int)t/100*3600+(t%100)*60;
@@ -84,7 +173,7 @@ public class MaximeNetworkNew {
 		return nearestLine;
 	}
 
-	public static void main(String[] args) {
+	public static void addMaximeTransit(Network originalNet, TransitSchedule totalTs, Vehicles tv) {
 		Gtfs2TransitSchedule.run("data/maxime/newData23/gtfs_transit_projects_2041", "dayWithMostTrips", "epsg:32188", "data/maxime/additionalTs23.xml", "data/maxime/additionalVehicles23.xml");
 		String lines = "data/maxime/newLines.csv";
 		String line = null;
@@ -217,6 +306,8 @@ public class MaximeNetworkNew {
 		Scenario scn = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 		new TransitScheduleReader(scn).readFile("data/maxime/additionalTs23.xml");
 		TransitSchedule rawTs = scn.getTransitSchedule();
+		Vehicles rawTv = VehicleUtils.createVehiclesContainer();
+		new MatsimVehicleReader(rawTv).readFile("data/maxime/additionalVehicles23.xml");
 		TransitSchedule ts = ScenarioUtils.createScenario(ConfigUtils.createConfig()).getTransitSchedule();
 		TransitScheduleFactory tf = ts.getFactory();
 		//_________hardcode to fix the error in the given data from MAXIME
@@ -405,8 +496,15 @@ public class MaximeNetworkNew {
 				TransitRoute tr = tf.createTransitRoute(ee.getKey(), r, stops, ee.getValue().getTransportMode());
 				tl.addRoute(tr);
 				ee.getValue().getDepartures().entrySet().forEach(d->{
+					Id<Vehicle> vId = d.getValue().getVehicleId();
+					if(tv.getVehicles().containsKey(d.getValue().getVehicleId())) {
+						Vehicle v = rawTv.getVehicles().get(vId);
+						rawTv.removeVehicle(vId);
+						vId = Id.createVehicleId(vId.toString()+"_new");
+						rawTv.addVehicle(VehicleUtils.createVehicle(vId, v.getType()));
+					}
 					Departure dep = tf.createDeparture(d.getKey(),d.getValue().getDepartureTime());
-					dep.setVehicleId(d.getValue().getVehicleId());
+					dep.setVehicleId(vId);
 					tr.addDeparture(dep);
 				});
 			});
@@ -428,9 +526,6 @@ public class MaximeNetworkNew {
 		}
 		
 		scn = ScenarioUtils.createScenario(ConfigUtils.createConfig());
-		new TransitScheduleReader(scn).readFile("data/kinan/emTsMapped2041.xml");
-		Network originalNet = NetworkUtils.readNetwork("data/kinan/emMultimodal2041Tagged.xml");
-		TransitSchedule totalTs = scn.getTransitSchedule();
 		TransitLine old5 = totalTs.getTransitLines().get(Id.create("c-5",TransitLine.class));
 		totalTs.removeTransitLine(old5);
 		
@@ -475,11 +570,41 @@ public class MaximeNetworkNew {
 			totalTs.addTransitLine(tl);
 		});
 		
-		new NetworkWriter(originalNet).write("data/kinan/emMultimodalWithMaximeTransit2041.xml");
-		new TransitScheduleWriter(totalTs).writeFile("data/kinan/emTsMappedWithMaximeTransit2041.xml");
 		
 		r = TransitScheduleValidator.validateAll(totalTs,originalNet);
 		System.out.println("transit is valid? "+ r.isValid());
+		for(VehicleType vt:rawTv.getVehicleTypes().values()){
+			if(tv.getVehicleTypes().get(vt.getId())==null)tv.addVehicleType(vt);
+		}
+		
 		
 	}
+	
+	public static void fixLinkToLinkConnectionsUpstream(Link link, Lanes lanes) {
+		Node fromNode = link.getFromNode();
+		boolean haveLaneUpstream = false;
+		for(Link inLink:fromNode.getInLinks().values()) {
+			if(lanes.getLanesToLinkAssignments().containsKey(inLink.getId())) {
+				haveLaneUpstream = true;
+				break;
+			}
+		}
+		if(haveLaneUpstream) {
+			LanesFactory lf = lanes.getFactory();
+			for(Link inLink:fromNode.getInLinks().values()) {
+				LanesToLinkAssignment l2l = lanes.getLanesToLinkAssignments().get(inLink.getId());
+				if(l2l == null) {
+					l2l = lf.createLanesToLinkAssignment(inLink.getId());
+					lanes.addLanesToLinkAssignment(l2l);
+				}
+				Lane lane = lf.createLane(Id.create(inLink.getId()+"___"+link.getId(),Lane.class));
+				lane.addToLinkId(link.getId());
+				lane.setCapacityVehiclesPerHour(1800);
+				lane.setNumberOfRepresentedLanes(1);
+				lane.setStartsAtMeterFromLinkEnd(50);
+				l2l.addLane(lane);
+			}
+		}
+	}
+
 }
