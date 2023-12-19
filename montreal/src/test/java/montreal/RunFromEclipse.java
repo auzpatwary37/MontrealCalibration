@@ -76,7 +76,7 @@ public class RunFromEclipse {
 				"--iterations","250",
 				"--thread", "10",
 				"--scale", ".25", 
-				"--config", "5_percent/newData/configMine.xml",
+				"--config", "matsimRun/configMine.xml",
 				"--network", "data\\osm\\valid1252OSM\\osmMultimodal2041.xml",
 				"--ts", "data\\osm\\valid1252OSM\\osmTsMapped2041.xml", 
 				"--tv", "data\\osm\\valid1252OSM\\osmVehicles2041.xml", 
