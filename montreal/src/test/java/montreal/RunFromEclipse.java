@@ -39,15 +39,18 @@ public class RunFromEclipse {
 		String[] args3 = new String[] {
 				"--iterations","250",
 				"--thread", "10",
-				"--scale", ".05", 
+				"--scale", ".25", 
 				"--config", "5_percent/newData/configMine.xml",
-				"--network", "5_percent/newData/montreal_network.xml.gz",
-				"--ts", "5_percent/newData/montreal_transitSchedule.xml.gz", 
-				"--tv", "5_percent/newData/montreal_transitVehicles.xml.gz", 
-				"--plan", "5_percent/newData/output_plans_.2LessCar.xml.gz", 
-				"--facilities", "5_percent/newData/output_facilities.xml.gz", 
-				"--clearplan", "false",
-				"--household","5_percent/newData/montreal_households.xml.gz"
+				"--network", "data\\osm\\valid1252OSM\\osmMultimodal2041.xml",
+				"--ts", "data\\osm\\valid1252OSM\\osmTsMapped2041.xml", 
+				"--tv", "data\\osm\\valid1252OSM\\osmVehicles2041.xml", 
+				"--lanes","data\\osm\\valid1252OSM\\testLanes_out2041.xml",
+				"--plan", "data\\outputODPopulation_41_0.25.xml.gz", 
+				"--facilities", "data\\outputODFacilities41_0.25.xml.gz",
+				"--household","data\\outputODHouseholds_41_0.25.xml.gz",
+				"--clearplan", "true",
+				"--output","output41.25",
+				"--vehicles","data\\outputODVehicle_41_0.25.xml.gz"
 			};
 		Run.main(args3);
 		
