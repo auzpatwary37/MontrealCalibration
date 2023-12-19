@@ -15,6 +15,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.network.NetworkWriter;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -23,16 +24,27 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
+import org.matsim.core.config.groups.PlansCalcRouteConfigGroup.AccessEgressType;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.collections.Tuple;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.FacilitiesUtils;
+import org.matsim.lanes.Lane;
+import org.matsim.lanes.Lanes;
+import org.matsim.lanes.LanesFactory;
+import org.matsim.lanes.LanesToLinkAssignment;
+import org.matsim.pt.transitSchedule.api.TransitRouteStop;
 import org.matsim.pt.transitSchedule.api.TransitSchedule;
+import org.matsim.pt.utils.TransitScheduleValidator;
+import org.matsim.pt.utils.TransitScheduleValidator.ValidationResult;
 import org.matsim.vehicles.VehicleCapacity;
 
 import picocli.CommandLine;
@@ -111,22 +123,36 @@ public final class Run implements Callable<Integer> {
     if(!laneFile.equals("null"))config.network().setLaneDefinitionsFile(laneFile);
     config.vehicles().setVehiclesFile(this.vehiclesFile);
     config.controler().setLastIteration(this.maxIterations);
-    config.strategy().clearStrategySettings();
     addStrategy(config, "SubtourModeChoice", null, 0.05D, 0 * this.maxIterations);
     addStrategy(config, "ReRoute", null, 0.1D, 0 * this.maxIterations);
     addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
     config.controler().setOutputDirectory(this.output);
     config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
-   
-    
+    config.controler().setLinkToLinkRoutingEnabled(true);
+    config.travelTimeCalculator().setCalculateLinkToLinkTravelTimes(true);
+    config.controler().setRoutingAlgorithmType(RoutingAlgorithmType.SpeedyALT);
+    //config.transit().setRoutingAlgorithmType(TransitRoutingAlgorithmType.DijkstraBased);
+    config.travelTimeCalculator().setSeparateModes(false);
+    config.travelTimeCalculator().setCalculateLinkTravelTimes(true);
+    //config.getModules().remove("swissRailRaptor");
+    config.qsim().setRemoveStuckVehicles(false);
+    config.qsim().setUseLanes(true);
+    config.qsim().setStuckTime(4*3600);
+    //config.plansCalcRoute().setAccessEgressType(AccessEgressType.walkConstantTimeToLink);
+    config.plansCalcRoute().setAccessEgressType(AccessEgressType.accessEgressModeToLink);
     ParamReader pReader = new ParamReader(paramFile);
     config = pReader.SetParamToConfig(config, pReader.getInitialParam());
     config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
     config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
-    
+    config.removeModule("swissRailRaptor");
     Scenario scenario = ScenarioUtils.loadScenario(config);
-    checkPtConsistency(scenario.getNetwork(),scenario.getTransitSchedule());
-    scenario.getTransitVehicles().getVehicleTypes().values().stream().forEach(vt -> {
+    //new NetworkCleaner().run( scenario.getNetwork());
+    checkPtConsistency(scenario.getNetwork(),scenario.getTransitSchedule(), scenario.getLanes());
+    Set<Id<Link>> problemLinks = runLaneBasedNetworkCleaner(scenario.getNetwork(),scenario.getLanes(), true);
+    checkNetworkCapacityLengthAndLanes(scenario.getNetwork(),scenario.getLanes());
+//    problemLinks.add(Id.createLinkId("34221"));//203299
+//    problemLinks.add(Id.createLinkId("95049"));
+     scenario.getTransitVehicles().getVehicleTypes().values().stream().forEach(vt -> {
     	vt.setPcuEquivalents(vt.getPcuEquivalents()*this.scale.doubleValue());
         VehicleCapacity vc = vt.getCapacity();
         vc.setSeats(Integer.valueOf((int)Math.ceil(vc.getSeats().intValue() * this.scale.doubleValue())));
@@ -139,8 +165,6 @@ public final class Run implements Callable<Integer> {
     		scenario.getPopulation().getPersons().remove(p);
     	}
     });
-    
-   
     
     Map<String,Double> actDuration = new HashMap<>();
     Map<String,Integer> actNum = new HashMap<>();
@@ -193,6 +217,9 @@ public final class Run implements Callable<Integer> {
     	}
     }
     if(ifClear.equals("true"))clearPopulationFromRouteAndNetwork(scenario.getPopulation(),scenario.getNetwork(),scenario.getActivityFacilities());
+    if(ifClear.equals("true"))assignLinksToFacilities(scenario.getActivityFacilities(),scenario.getNetwork(), problemLinks);
+    ValidationResult r = TransitScheduleValidator.validateAll(scenario.getTransitSchedule(), scenario.getNetwork());
+	System.out.println("transit is valid? "+ r.isValid());
     Controler controler = new Controler(scenario);
     controler.run();
     return Integer.valueOf(0);
@@ -266,11 +293,16 @@ public final class Run implements Callable<Integer> {
 	  }
 	 
 	    fac.getFacilities().values().forEach(f->{
-	    	FacilitiesUtils.setLinkID(f, NetworkUtils.getNearestRightEntryLink(net, f.getCoord()).getId());
+	    	Id<Link> lId =  NetworkUtils.getNearestRightEntryLink(net, f.getCoord()).getId();
+	    	FacilitiesUtils.setLinkID(f, lId);
 	    });
   }
   
-  public static void checkPtConsistency(Network net,TransitSchedule ts) {
+  public static void checkPtConsistency(Network net,TransitSchedule ts, Lanes lanes) {
+	  ValidationResult res = TransitScheduleValidator.validateAll(ts, net);
+	  res.getErrors().forEach(e->System.out.println(e));
+	  res.getWarnings().forEach(w->System.out.println(w));
+	  //res.getIssues().forEach(i->System.out.println(i));
 	  ts.getTransitLines().values().forEach(tl->{
 		  tl.getRoutes().values().forEach(tr->{
 			  List<Id<Link>> links = new ArrayList<>();
@@ -283,9 +315,199 @@ public final class Run implements Callable<Integer> {
 				  if(net.getLinks().get(links.get(i-1)).getToNode().getId()!=net.getLinks().get(links.get(i)).getFromNode().getId()) {
 					  throw new IllegalArgumentException("Inconsistent route!!!");
 				  }
+				  if(lanes.getLanesToLinkAssignments().get(links.get(i-1))!=null) {
+					  LanesToLinkAssignment l2l  = lanes.getLanesToLinkAssignments().get(links.get(i-1));
+					  boolean hasLane = false;
+					  for(Lane lane:l2l.getLanes().values()) {
+						  if(lane.getToLinkIds().contains(links.get(i))) {
+							  hasLane = true;
+							  break;
+						  }
+					  }
+					  if(!hasLane) {
+						  System.out.println("Route is not connected.");
+					  }
+				  }
 			  }
+			  int lastInd = -1;
+			  for(TransitRouteStop st:tr.getStops()){
+				 int ind = 1+ lastInd + links.subList(lastInd+1, links.size()).indexOf(st.getStopFacility().getLinkId());
+				 
+				 if(ind<0 || ind<lastInd) {
+					 System.out.println("Route is not consistant with stop order.");
+				 }else {
+					 lastInd = ind;
+				 }
+			  }
+			  
 		  });
 	  });
+  }
+  
+  
+  
+  public static void assignLinksToFacilities(ActivityFacilities fac,Network net) {
+	  new NetworkWriter(net).write("temp.xml");
+	  Network neto = NetworkUtils.readNetwork("temp.xml");
+	  new NetworkCleaner().run(neto);
+	  new HashSet<>(neto.getLinks().keySet()).stream().forEach(l->{
+		  if(l.toString().contains("pt"))neto.removeLink(l);
+		  if(!neto.getLinks().get(l).getAllowedModes().contains("car"))neto.removeLink(l);
+	  });
+	  fac.getFacilities().values().forEach(f->{
+		  Link link = NetworkUtils.getNearestLink(neto, f.getCoord());
+		  if(link==null) {
+			  System.out.println("Debug!!!");
+		  }
+		  FacilitiesUtils.setLinkID(f, link.getId());
+	  });
+  }
+  
+  public static void assignLinksToFacilities(ActivityFacilities fac,Network net, Set<Id<Link>> blackListedLinks) {
+	  new NetworkWriter(net).write("temp.xml");
+	  Network neto = NetworkUtils.readNetwork("temp.xml");
+	  new NetworkCleaner().run(neto);
+	  blackListedLinks.forEach(l->neto.removeLink(l));
+	  fac.getFacilities().values().forEach(f->{
+		  Link link = NetworkUtils.getNearestLink(neto, f.getCoord());
+		  FacilitiesUtils.setLinkID(f, link.getId());
+	  });
+  }
+  
+  public static Set<Id<Link>> runLaneBasedNetworkCleaner(Network net, Lanes lanes, boolean ifAddelseDelete) {
+	  LanesFactory lFac = lanes.getFactory();
+	  int problematicLink = 0;
+	  int problematicLinkDueToLane = 0;
+	  int addedLanes = 0; 
+	  int deletedLinks = 0;
+	  Set<Id<Link>> problemLinks = new HashSet<>();
+	  
+	  for(Link l:net.getLinks().values()){
+		  // First check the forward connection, i.e., people can get out
+		  LanesToLinkAssignment l2l = lanes.getLanesToLinkAssignments().get(l.getId());
+		  if(!l.getId().toString().contains("pt") && l.getToNode().getOutLinks().isEmpty()) {
+			  problematicLink++;
+			  problemLinks.add(l.getId());
+		  }else if(!l.getId().toString().contains("pt") && !l.getToNode().getOutLinks().isEmpty() && l2l!=null) {
+			  if(l2l.getLanes().size()==0 || ifOnlyConnectedToSelf(l, l2l, net)) {
+				  problematicLinkDueToLane++;
+				  for(Link ol:l.getToNode().getOutLinks().values()){
+					  Lane lane = lFac.createLane(Id.create(l.getId()+"_"+ol.getId(),Lane.class));
+					  lane.addToLinkId(ol.getId());
+					  lane.setCapacityVehiclesPerHour(1800);
+					  lane.setNumberOfRepresentedLanes(1);
+					  lane.setStartsAtMeterFromLinkEnd(50);
+					  l2l.addLane(lane);
+					  addedLanes++;
+					
+				  }
+			  }else if(l2l.getLanes().size()==1) {
+				  l2l.getLanes().values().forEach(lane->{
+					
+				  });
+			  }
+		  }
+		  
+		  //Lets check for backward connection
+		  Map<Id<Link>, LanesToLinkAssignment> incomingL2l = new HashMap<>();
+		  if(!l.getId().toString().contains("pt") && l.getFromNode().getInLinks().size()==0) {
+			  problematicLink++;
+			  problemLinks.add(l.getId());
+		  }
+		  boolean hasLane = false;
+		  for(Link il:l.getFromNode().getInLinks().values()) {
+			  if(ifInverseLink(il,l))continue;
+			  LanesToLinkAssignment l2lin = lanes.getLanesToLinkAssignments().get(il.getId());
+			  if(l.getId().toString().contains("pt") || l2lin==null) {
+				  hasLane = true;
+				  break;
+			  }
+			  for(Lane lane:l2lin.getLanes().values()) {
+				  if(lane.getToLinkIds().contains(l.getId())) {
+					  hasLane = true;
+					  break;
+				  } 
+			  }
+			  incomingL2l.put(il.getId(), l2lin);
+			  if(hasLane) break;
+			  
+		  }
+		  if(!hasLane) {
+			  problematicLinkDueToLane++;
+			  for(LanesToLinkAssignment ll2in:incomingL2l.values()) {
+				  Lane lane = lFac.createLane(Id.create(ll2in.getLinkId()+"_"+l.getId(),Lane.class));
+				  lane.setCapacityVehiclesPerHour(1800);
+				  lane.addToLinkId(l.getId());
+				  lane.setNumberOfRepresentedLanes(1);
+				  lane.setStartsAtMeterFromLinkEnd(50);
+				  ll2in.addLane(lane);
+				  addedLanes++;
+				  
+			  }
+		  }
+	  }
+	  
+	  System.out.println("Problematic links = " + problematicLink );
+	  System.out.println("Problematic links due to lanes = " + problematicLinkDueToLane );
+	  System.out.println("Added lanes = " + addedLanes );
+	  return problemLinks;
+  }
+  
+  public static boolean ifInverseLink(Id<Link> link1, Id<Link> link2, Network net) {
+	  if(Math.abs(getAngle(net.getLinks().get(link1), net.getLinks().get(link2)))==180)return true;
+	  else return false;
+  }
+  
+  public static boolean ifInverseLink(Link link1, Link link2) {
+	  if(Math.abs(getAngle(link1,link2))==180)return true;
+	  else return false;
+  }
+  public static double getAngle(Link l1, Link l2) {
+		
+		Tuple<Double,Double> vec1 = new Tuple<>(l1.getToNode().getCoord().getX()-l1.getFromNode().getCoord().getX(),l1.getToNode().getCoord().getY()-l1.getFromNode().getCoord().getY());
+		Tuple<Double,Double> vec2 = new Tuple<>(l2.getToNode().getCoord().getX()-l2.getFromNode().getCoord().getX(),l2.getToNode().getCoord().getY()-l2.getFromNode().getCoord().getY());
+		
+		double dot = vec1.getFirst()*vec2.getFirst()+vec1.getSecond()*vec2.getSecond();
+		
+		double det = vec1.getFirst()*vec2.getSecond() - vec1.getSecond()*vec2.getFirst();    
+		double angle = Math.toDegrees(Math.atan2(det, dot));  
+		
+		return angle;
+	}
+
+  
+  public static boolean ifOnlyConnectedToSelf(Link link,LanesToLinkAssignment l2l, Network net) {
+	  Set<Id<Link>> outLinks = new HashSet<>();
+	  l2l.getLanes().values().forEach(lane->{
+		  outLinks.addAll(lane.getToLinkIds());
+	  });
+	  if(outLinks.size()==1 && ifInverseLink(link.getId(),outLinks.stream().findFirst().get(),net))return true;
+	  return false;
+  }
+  
+  public static void checkNetworkCapacityLengthAndLanes(Network net, Lanes lanes) {
+	  net.getLinks().values().forEach(l->{
+		  if(l.getCapacity()<300) {
+			  l.setCapacity(300);
+			  
+		  }
+		  if(l.getNumberOfLanes()==0) {
+			  l.setNumberOfLanes(1);
+		  }
+		  if(l.getFreespeed()<8.33) {
+			  l.setFreespeed(8.33);
+			  
+		  }
+		  
+		  if(l.getLength()==0) {
+			  l.setLength(10);
+		  }
+		  LanesToLinkAssignment l2l = lanes.getLanesToLinkAssignments().get(l.getId());
+		  if(l2l!=null) {
+			  l2l.getLanes().values().forEach(lane->lane.setStartsAtMeterFromLinkEnd(l.getLength()));
+		  }
+	  });
+	  
   }
   
 }
