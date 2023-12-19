@@ -5,6 +5,9 @@ import java.util.Set;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.utils.geometry.CoordinateTransformation;
 
 public class Trip {
 	
@@ -35,13 +38,20 @@ public class Trip {
 	
 	private double newExpFac;
 	
+	@SuppressWarnings("removal")
 	public Trip(String tripId, Member member, Double oX, Double oY, Double dX, Double dY, 
 			double departureTime, Double tripExpFactor, Double originCt, Double destinationCT,
-			String motive, int mobile, String[]modes, String day) {
+			String motive, int mobile, String[]modes, String day, CoordinateTransformation tsf, Network odNet) {
+		
 		this.tripId = Id.create(tripId, Trip.class);
 		this.member = member;
-		this.originalOCoord = new Coord(oX,oY);
-		this.originalDCoord = new Coord(dX,dY);
+		if(tsf!=null) {
+			this.originalOCoord = tsf.transform(new Coord(oX,oY));
+			this.originalDCoord = tsf.transform(new Coord(dX,dY));
+		}else {
+			this.originalOCoord = new Coord(oX,oY);
+			this.originalDCoord = new Coord(dX,dY);
+		}
 		if(originCt!=null && Double.compare(originCt, 0.0)!=0) {
 			this.originCT = originCt;
 			this.originalOCT = originCt;
@@ -49,6 +59,14 @@ public class Trip {
 		if(destinationCT!=null && Double.compare(destinationCT, 0.0)!=0) {
 			this.destinationCT = destinationCT;
 			this.originalDCT = destinationCT;
+		}
+		if(odNet!=null && this.originCT==null && this.originalOCoord!=null && Double.compare(this.originalOCoord.getX(), 0.0)!=0 && Double.compare(this.originalOCoord.getY(), 0.0)!=0) {
+			this.originCT = Double.parseDouble(NetworkUtils.getNearestNode(odNet, this.originalOCoord).getId().toString());
+			this.originalOCT = Double.valueOf(this.originCT);
+		}
+		if(odNet!=null && this.destinationCT==null && this.originalDCoord!=null && Double.compare(this.originalDCoord.getX(), 0.0)!=0 && Double.compare(this.originalDCoord.getY(), 0.0)!=0) {
+			this.destinationCT = Double.parseDouble(NetworkUtils.getNearestNode(odNet, this.originalDCoord).getId().toString());
+			this.originalDCT = Double.valueOf(this.destinationCT);
 		}
 		this.departureTime = departureTime;
 		this.motive = motive;

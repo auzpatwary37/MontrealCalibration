@@ -124,7 +124,7 @@ public class OSM2041 {
 		
 		addMaximeTransit(osmNet, totalTs, tv);
 		
-		new LanesWriter(lanes).write("data/osm/valid1252OSM/testLanes_out.xml");
+		new LanesWriter(lanes).write("data/osm/valid1252OSM/testLanes_out2041.xml");
 		new NetworkWriter(osmNet).write("data/osm/valid1252OSM/osmMultimodal2041.xml");
 		new TransitScheduleWriter(totalTs).writeFile("data/osm/valid1252OSM/osmTsMapped2041.xml");
 		new MatsimVehicleWriter(tv).writeFile("data/osm/valid1252OSM/osmVehicles2041.xml");
@@ -509,21 +509,10 @@ public class OSM2041 {
 				});
 			});
 		});
-		new TransitScheduleWriter(ts).writeFile("data/maxime/mappedTs23.xml");
+	
 		ValidationResult r = TransitScheduleValidator.validateAll(ts,net);
 		System.out.println("transit is valid? "+ r.isValid());
-		try {
-			FileWriter fw = new FileWriter(new File("data/maxime/mappedStops23.csv"));
-			fw.append("stopId,x,y,linkId\n");
-			for(TransitStopFacility tsf:ts.getFacilities().values()) {
-				fw.append(tsf.getId().toString()+","+tsf.getCoord().getX()+","+tsf.getCoord().getY()+","+tsf.getLinkId().toString()+"\n");
-				fw.flush();
-			}
-			fw.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
 		
 		scn = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 		TransitLine old5 = totalTs.getTransitLines().get(Id.create("c-5",TransitLine.class));
@@ -576,8 +565,19 @@ public class OSM2041 {
 		for(VehicleType vt:rawTv.getVehicleTypes().values()){
 			if(tv.getVehicleTypes().get(vt.getId())==null)tv.addVehicleType(vt);
 		}
-		
-		
+		//new TransitScheduleWriter(ts).writeFile("data/maxime/mappedTs23.xml");
+//		try {
+//			FileWriter fw = new FileWriter(new File("data/maxime/mappedStops23.csv"));
+//			fw.append("stopId,x,y,linkId\n");
+//			for(TransitStopFacility tsf:ts.getFacilities().values()) {
+//				fw.append(tsf.getId().toString()+","+tsf.getCoord().getX()+","+tsf.getCoord().getY()+","+tsf.getLinkId().toString()+"\n");
+//				fw.flush();
+//			}
+//			fw.close();
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 	}
 	
 	public static void fixLinkToLinkConnectionsUpstream(Link link, Lanes lanes) {

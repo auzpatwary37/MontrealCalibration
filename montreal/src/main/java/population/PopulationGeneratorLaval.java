@@ -26,6 +26,8 @@ import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.ActivityFacility;
 import org.matsim.facilities.FacilitiesWriter;
@@ -141,16 +143,16 @@ public class PopulationGeneratorLaval {
 			if(tripNo!=null && !tripNo.equals("")) {
 				double timehhmm = Double.parseDouble(record.get("hredep"));
 				double time = (int)timehhmm/100*3600+timehhmm%100*60;
+				CoordinateTransformation tsf = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "epsg:32188");
 
-
-				Trip trip = new Trip(tripId.toString(), member, record.get("xmtmori").equals("")?0:Double.parseDouble(record.get("xmtmori")), record.get("ymtmori").equals("")?0:Double.parseDouble(record.get("ymtmori")), record.get("xmtmdes").equals("")?0:Double.parseDouble(record.get("xmtmdes")), 
-						record.get("ymtmdes").equals("")?0:Double.parseDouble(record.get("ymtmdes")),
+				Trip trip = new Trip(tripId.toString(), member, record.get("xlonori").equals("")?0:Double.parseDouble(record.get("xlonori")), record.get("ylatori").equals("")?0:Double.parseDouble(record.get("ylatori")), record.get("xlondes").equals("")?0:Double.parseDouble(record.get("xlondes")), 
+						record.get("ylatdes").equals("")?0:Double.parseDouble(record.get("ylatdes")),
 						time,record.get("facdep").equals("")?member.getPersonExFac():Double.parseDouble(record.get("facdep").replace(",", ".")), 
 								record.get("srori").equals("")?null:Double.parseDouble(record.get("srori"))*1000, 
 										record.get("srdes").equals("")?null:Double.parseDouble(record.get("srdes"))*1000,
 												extractActivity(record),
 												Integer.parseInt(record.get("mobil")),
-												extractModes(record), record.get("jour"));
+												extractModes(record), record.get("jour"), tsf,null);
 				member.addTrip(trip);
 			}
 

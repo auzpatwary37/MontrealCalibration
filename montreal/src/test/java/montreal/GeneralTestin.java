@@ -1,5 +1,8 @@
 package montreal;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -8,33 +11,24 @@ import org.matsim.api.core.v01.network.NetworkWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.lanes.Lane;
 import org.matsim.lanes.Lanes;
-import org.matsim.lanes.LanesToLinkAssignment;
-import org.matsim.pt.transitSchedule.api.TransitLine;
-import org.matsim.pt.transitSchedule.api.TransitRoute;
-import org.matsim.pt.transitSchedule.api.TransitSchedule;
-import org.matsim.pt.utils.TransitScheduleValidator;
-import org.matsim.pt.utils.TransitScheduleValidator.ValidationResult;
-import org.matsim.pt2matsim.run.CheckMappedSchedulePlausibility;
-import org.matsim.pt2matsim.run.PublicTransitMapper;
-
-import run.Run;
+import org.matsim.lanes.LanesWriter;
 
 public class GeneralTestin {
 public static void main(String[] args) {
 	
-	String netLocation = "data/osm/valid1252OSM/osmMultimodal.xml";
-	String lanesLocation = "data/osm/valid1252OSM/testLanes_out.xml";
-	String tsLocation = "data/osm/valid1252OSM/osmTsMapped.xml";
-	
-	String emNet = "data/kinan/emMultimodal.xml";
-	String emNetOut = "data/kinan/emMultimodalTagged.xml";
-	String emNet2041 = "data/kinan/emMultimodal2041.xml";
-	String emNet2041Out = "data/kinan/emMultimodal2041Tagged.xml";
-	
-	identifyChanges(emNet,emNet2041,emNetOut,emNet2041Out);
+String netLocation = "data/osm/valid1252OSM/osmMultimodal.xml";
+String lanesLocation = "data/osm/valid1252OSM/testLanes_out2041.xml";
+//	String tsLocation = "data/osm/valid1252OSM/osmTsMapped.xml";
+//	
+//	String emNet = "data/kinan/emMultimodal.xml";
+//	String emNetOut = "data/kinan/emMultimodalTagged.xml";
+//	String emNet2041 = "data/kinan/emMultimodal2041.xml";
+//	String emNet2041Out = "data/kinan/emMultimodal2041Tagged.xml";
+//	
+//	identifyChanges(emNet,emNet2041,emNetOut,emNet2041Out);
 	
 //	String netLocation = "data/kinan/emMultimodal.xml";
 //	String lanesLocation = "data/kinan/emLanes.xml";
@@ -93,13 +87,32 @@ public static void main(String[] args) {
 //		System.out.println(rights);
 //		System.out.println(straight);
 //	}
-//	Config config = ConfigUtils.createConfig();
-//	config.network().setInputFile(netLocation);
+Config config = ConfigUtils.createConfig();
+config.network().setInputFile(netLocation);
 //	config.transit().setTransitScheduleFile(tsLocation);
-//	config.network().setLaneDefinitionsFile(lanesLocation);
-//	Scenario scn = ScenarioUtils.loadScenario(config);
-//	Network net = scn.getNetwork();
-//	Lanes lanes = scn.getLanes();
+config.network().setLaneDefinitionsFile(lanesLocation);
+Scenario scn = ScenarioUtils.loadScenario(config);
+Network net = scn.getNetwork();
+Lanes lanes = scn.getLanes();
+
+new HashSet<>(lanes.getLanesToLinkAssignments().keySet()).forEach(l->{
+	if(!net.getLinks().containsKey(l)) {
+		lanes.getLanesToLinkAssignments().remove(l);
+		return;
+	}
+	for(Lane lane:lanes.getLanesToLinkAssignments().get(l).getLanes().values()) {
+		for(Id<Link> lid:new ArrayList<>(lane.getToLinkIds())) {
+			if(!net.getLinks().containsKey(lid)) {
+				lane.getToLinkIds().remove(lid);
+			}
+		}
+		if(lane.getToLinkIds().isEmpty())lanes.getLanesToLinkAssignments().get(l).getLanes().remove(lane.getId());
+	}
+	if(lanes.getLanesToLinkAssignments().get(l).getLanes().size()==0)lanes.getLanesToLinkAssignments().remove(l);
+});
+
+new LanesWriter(lanes).write("data/osm/valid1252OSM/testLanes_out.xml");
+
 //	TransitSchedule ts = scn.getTransitSchedule();
 //	ValidationResult result = TransitScheduleValidator.validateAll(ts, net);
 //	PublicTransitMapper.checkConsistensy(net, ts, lanes);

@@ -128,7 +128,7 @@ public static void main(String[] args) throws IOException{
         			record.get("srdes").equals("")?null:Double.parseDouble(record.get("srdes")),
         			extractActivity(record),
         			Integer.parseInt(record.get("mobil")),
-        			extractModes(record), record.get("jour_dpl"));
+        			extractModes(record), record.get("jour_dpl"),null,null);
         	member.addTrip(trip);
         }
         
