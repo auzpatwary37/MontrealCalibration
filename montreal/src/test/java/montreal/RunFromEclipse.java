@@ -34,7 +34,8 @@ public class RunFromEclipse {
 				"--clearplan", "true",
 				"--household","matsimRun/montreal_households.xml.gz",
 				"--lanes","data/osm/valid1252OSM/testLanes_out.xml",
-				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv"
+				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv",
+				"--output","outputosm21"
 			};
 		
 		String[] args3 = new String[] {
@@ -70,7 +71,40 @@ public class RunFromEclipse {
 				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv",
 				"--output","outputEmBasePop"
 			};
-		Run.main(args4);
+		
+		String[] args5 = new String[] {
+				"--iterations","250",
+				"--thread", "10",
+				"--scale", ".25", 
+				"--config", "5_percent/newData/configMine.xml",
+				"--network", "data\\osm\\valid1252OSM\\osmMultimodal2041.xml",
+				"--ts", "data\\osm\\valid1252OSM\\osmTsMapped2041.xml", 
+				"--tv", "data\\osm\\valid1252OSM\\osmVehicles2041.xml", 
+				"--lanes","data\\osm\\valid1252OSM\\testLanes_out2041.xml",
+				"--plan", "data\\outputODPopulation_41_0.25.xml.gz", 
+				"--facilities", "data\\outputODFacilities41_0.25.xml.gz",
+				"--household","data\\outputODHouseholds_41_0.25.xml.gz",
+				"--clearplan", "true",
+				"--output","output41.25",
+				"--vehicles","data\\outputODVehicle_41_0.25.xml.gz"
+			};
+		String[] args6 = new String[] {
+				"--iterations","250",
+				"--thread", "10",
+				"--scale", ".25", 
+				"--config", "matsimRun/configMine.xml",
+				"--network", "data\\osm\\valid1252OSM\\osmMultimodal.xml",
+				"--ts", "data\\osm\\valid1252OSM\\osmTsMapped.xml", 
+				"--tv", "data\\osm\\valid1252OSM\\osmVehicles.xml", 
+				"--lanes","data\\osm\\valid1252OSM\\testLanes_out.xml",
+				"--plan", "data\\outputODPopulation_21_0.25.xml.gz", 
+				"--facilities", "data\\outputODFacilities21_0.25.xml.gz",
+				"--household","data\\outputODHouseholds_21_0.25.xml.gz",
+				"--clearplan", "true",
+				"--output","output21.25",
+				"--vehicles","data\\outputODVehicle_21_0.25.xml.gz"
+			};
+		Run.main(args6);
 		
 	}
 }
