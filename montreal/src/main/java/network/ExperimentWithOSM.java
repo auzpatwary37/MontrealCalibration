@@ -27,6 +27,7 @@ import org.matsim.pt2matsim.osm.lib.OsmDataImpl;
 import org.matsim.pt2matsim.osm.lib.OsmFileReader;
 import org.matsim.pt2matsim.tools.NetworkTools;
 
+import run.Run;
 import turnRestriction.OsmTurnRestrictions;
 
 public class ExperimentWithOSM {
@@ -78,10 +79,23 @@ public class ExperimentWithOSM {
 		restrictions.writeToFile("data/osm/restrictions.csv");
 		new NetworkCleaner().run(net);
 		
-		NetworkTools.writeNetwork(net, "data/osm/testNet.xml");
-		Lanes lanes = addLanes(net);
-		restrictions.applyRestrictions(net, lanes);
-		new LanesWriter(lanes).write("data/osm/testLanes.xml");
+		
+		//Lanes lanes = addLanes(net);// change this to add the lanes from the osm way tag lanes 
+		Lanes lanes = LanesUtils.createLanesContainer();
+		restrictions.applyRestrictions(net, lanes);// This on the other hand apply only the restrictions
+		new ArrayList<>(lanes.getLanesToLinkAssignments().values()).forEach(l2l->{
+			if(l2l.getLanes().isEmpty()) {
+				lanes.getLanesToLinkAssignments().remove(l2l.getLinkId());
+				return;
+			}else {
+				new ArrayList<>(l2l.getLanes().values()).forEach(lane->{
+					if(lane.getToLinkIds().isEmpty())l2l.getLanes().remove(lane.getId());
+				});
+				if(l2l.getLanes().isEmpty())lanes.getLanesToLinkAssignments().remove(l2l.getLinkId());
+			}
+			
+		});
+		
 		
 		Set<String> modes =  new HashSet<>();
 		for(Link link:net.getLinks().values()) {
@@ -90,8 +104,15 @@ public class ExperimentWithOSM {
 				modes.add("pt");
 				modes.add("bus");
 			}
+			if(modes.contains("car")) {
+				modes.add("car_passenger");
+			}
 			modes.addAll(link.getAllowedModes());
 		}
+		
+		Run.invertedNetworkCleaner(net, lanes);
+		NetworkTools.writeNetwork(net, "data/osm/testNet.xml");
+		new LanesWriter(lanes).write("data/osm/testLanes.xml");
 		System.out.println(modes);
 	}
 	

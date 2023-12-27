@@ -54,15 +54,15 @@ import org.matsim.vehicles.Vehicles;
 
 public class OSM2041 {
 	public static void main(String[] args) {
-		Network osmNet = NetworkUtils.readNetwork("data/osm/valid1252OSM/osmMultimodal.xml");
+		Network osmNet = NetworkUtils.readNetwork("data/osm/newOSM/osmMultimodal.xml");
 		Network changes = NetworkUtils.readNetwork("data/osm/valid1252OSM/emNetChange.xml");
 		String net2041Connections = "data/osm/valid1252OSM/changesToOSM2041.csv";
 		Scenario scnLane = ScenarioUtils.createScenario(ConfigUtils.createConfig());
-		new LanesReader(scnLane).readFile("data/osm/valid1252OSM/testLanes_out.xml");
-		new TransitScheduleReader(scnLane).readFile("data/osm/valid1252OSM/osmTsMapped.xml");
+		new LanesReader(scnLane).readFile("data/osm/newOSM/testLanes_out.xml");
+		new TransitScheduleReader(scnLane).readFile("data/osm/newOSM/osmTsMapped.xml");
 		TransitSchedule totalTs = scnLane.getTransitSchedule();
 		Vehicles tv = VehicleUtils.createVehiclesContainer();
-		new MatsimVehicleReader(tv).readFile("data/osm/valid1252OSM/osmVehicles.xml");
+		new MatsimVehicleReader(tv).readFile("data/osm/newOSM/osmVehicles.xml");
 		Lanes lanes = scnLane.getLanes();
 		NetworkFactory netFac = osmNet.getFactory();
 		
@@ -120,14 +120,30 @@ public class OSM2041 {
 			e.printStackTrace();
 		}
 		
+		
+		
+		
 		//Fix the lane connections
+		Scenario scnEm = ScenarioUtils.createScenario(ConfigUtils.createConfig());
+		Network emNet2041 = NetworkUtils.readNetwork("data\\kinan\\emMultimodal2041.xml");
+		new TransitScheduleReader(scnEm).readFile("data\\kinan\\emTsMapped2041.xml");
+		TransitSchedule emMapped2041 = scnEm.getTransitSchedule();
+		
+		Vehicles emTV2041 = scnEm.getTransitVehicles();
+		new MatsimVehicleReader(emTV2041).readFile("data\\kinan\\emVehicles2041.xml");
+		
+		addMaximeTransit(emNet2041,emMapped2041,emTV2041);
 		
 		addMaximeTransit(osmNet, totalTs, tv);
 		
-		new LanesWriter(lanes).write("data/osm/valid1252OSM/testLanes_out2041.xml");
-		new NetworkWriter(osmNet).write("data/osm/valid1252OSM/osmMultimodal2041.xml");
-		new TransitScheduleWriter(totalTs).writeFile("data/osm/valid1252OSM/osmTsMapped2041.xml");
-		new MatsimVehicleWriter(tv).writeFile("data/osm/valid1252OSM/osmVehicles2041.xml");
+		new LanesWriter(lanes).write("data/osm/newOSM/testLanes_out2041.xml");
+		new NetworkWriter(osmNet).write("data/osm/newOSM/osmMultimodal2041.xml");
+		new TransitScheduleWriter(totalTs).writeFile("data/osm/newOSM/osmTsMapped2041.xml");
+		new MatsimVehicleWriter(tv).writeFile("data/osm/newOSM/osmVehicles2041.xml");
+		
+		new NetworkWriter(osmNet).write("data\\kinan\\emMultimodal2041Maxime.xml");
+		new TransitScheduleWriter(emMapped2041).writeFile("data\\kinan\\emTsMapped2041Maxime.xml");
+		new MatsimVehicleWriter(emTV2041).writeFile("data\\kinan\\emVehicles2041Maxime.xml");
 		
 	}
 	
@@ -564,6 +580,9 @@ public class OSM2041 {
 		System.out.println("transit is valid? "+ r.isValid());
 		for(VehicleType vt:rawTv.getVehicleTypes().values()){
 			if(tv.getVehicleTypes().get(vt.getId())==null)tv.addVehicleType(vt);
+		}
+		for(Vehicle v:rawTv.getVehicles().values()) {
+			tv.addVehicle(v);
 		}
 		//new TransitScheduleWriter(ts).writeFile("data/maxime/mappedTs23.xml");
 //		try {

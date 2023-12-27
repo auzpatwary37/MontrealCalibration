@@ -216,10 +216,10 @@ public static void main(String[] args) throws IOException {
 	
 	
 
-	configPt.setCandidateDistanceMultiplier(5);
-	configPt.setMaxLinkCandidateDistance(60);
-	configPt.setMaxTravelCostFactor(300);
-	configPt.setNLinkThreshold(5);
+	configPt.setCandidateDistanceMultiplier(10);
+	configPt.setMaxLinkCandidateDistance(85);
+	configPt.setMaxTravelCostFactor(1000);
+	configPt.setNLinkThreshold(7);
 
 	configPt.setNumOfThreads(10);
 	

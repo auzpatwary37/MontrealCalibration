@@ -1,26 +1,55 @@
 package montreal;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 
-import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkWriter;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.lanes.Lane;
-import org.matsim.lanes.Lanes;
-import org.matsim.lanes.LanesWriter;
+import org.matsim.core.population.PopulationUtils;
 
 public class GeneralTestin {
 public static void main(String[] args) {
 	
-String netLocation = "data/osm/valid1252OSM/osmMultimodal.xml";
-String lanesLocation = "data/osm/valid1252OSM/testLanes_out2041.xml";
+ Population oldPop = PopulationUtils.readPopulation("outputEm2041BasePop\\output_plans.xml.gz");
+ Population newPop = PopulationUtils.readPopulation("data\\population\\outputODPopulation_18_0.05.xml.gz");
+ 
+ System.out.println("number of person in old OD = "+oldPop.getPersons().size());
+ System.out.println("number of person in new OD = "+newPop.getPersons().size());
+ 
+ int tripPerson = 0;
+ int noTripPerson = 0;
+ int tripMakingPopulation = 0;
+ 
+ for(Person p:newPop.getPersons().values()) {
+	 if(p.getSelectedPlan().getPlanElements().size()<=1) {
+		 noTripPerson++;
+	 }else if(p.getSelectedPlan().getPlanElements().size()==3){
+		tripPerson++; 
+	 }else {
+		 tripMakingPopulation++;
+	 }
+ }
+ 
+ System.out.println("tripPerson = "+tripPerson);
+ System.out.println("noTripPerson = "+noTripPerson);
+ System.out.println("tripMakingPopulation = "+tripMakingPopulation);
+// 
+// Config c;
+ 
+// Network net = NetworkUtils.readNetwork("data\\emDetails\\emMultimodal.xml");
+// Network net41 = NetworkUtils.readNetwork("data\\emDetails\\emMultimodal2041Maxime.xml");
+// double[] maxOld = NetworkUtils.getBoundingBox(net.getNodes().values());
+// double[] maxNew = NetworkUtils.getBoundingBox(net41.getNodes().values());
+// 
+// System.out.println(Arrays.toString(maxOld));
+// System.out.println(Arrays.toString(maxNew));
+	
+//String netLocation = "data/osm/valid1252OSM/osmMultimodal.xml";
+//String lanesLocation = "data/osm/valid1252OSM/testLanes_out2041.xml";
 //	String tsLocation = "data/osm/valid1252OSM/osmTsMapped.xml";
 //	
 //	String emNet = "data/kinan/emMultimodal.xml";
@@ -87,31 +116,31 @@ String lanesLocation = "data/osm/valid1252OSM/testLanes_out2041.xml";
 //		System.out.println(rights);
 //		System.out.println(straight);
 //	}
-Config config = ConfigUtils.createConfig();
-config.network().setInputFile(netLocation);
-//	config.transit().setTransitScheduleFile(tsLocation);
-config.network().setLaneDefinitionsFile(lanesLocation);
-Scenario scn = ScenarioUtils.loadScenario(config);
-Network net = scn.getNetwork();
-Lanes lanes = scn.getLanes();
-
-new HashSet<>(lanes.getLanesToLinkAssignments().keySet()).forEach(l->{
-	if(!net.getLinks().containsKey(l)) {
-		lanes.getLanesToLinkAssignments().remove(l);
-		return;
-	}
-	for(Lane lane:lanes.getLanesToLinkAssignments().get(l).getLanes().values()) {
-		for(Id<Link> lid:new ArrayList<>(lane.getToLinkIds())) {
-			if(!net.getLinks().containsKey(lid)) {
-				lane.getToLinkIds().remove(lid);
-			}
-		}
-		if(lane.getToLinkIds().isEmpty())lanes.getLanesToLinkAssignments().get(l).getLanes().remove(lane.getId());
-	}
-	if(lanes.getLanesToLinkAssignments().get(l).getLanes().size()==0)lanes.getLanesToLinkAssignments().remove(l);
-});
-
-new LanesWriter(lanes).write("data/osm/valid1252OSM/testLanes_out.xml");
+//Config config = ConfigUtils.createConfig();
+//config.network().setInputFile(netLocation);
+////	config.transit().setTransitScheduleFile(tsLocation);
+//config.network().setLaneDefinitionsFile(lanesLocation);
+//Scenario scn = ScenarioUtils.loadScenario(config);
+//Network net = scn.getNetwork();
+//Lanes lanes = scn.getLanes();
+//
+//new HashSet<>(lanes.getLanesToLinkAssignments().keySet()).forEach(l->{
+//	if(!net.getLinks().containsKey(l)) {
+//		lanes.getLanesToLinkAssignments().remove(l);
+//		return;
+//	}
+//	for(Lane lane:lanes.getLanesToLinkAssignments().get(l).getLanes().values()) {
+//		for(Id<Link> lid:new ArrayList<>(lane.getToLinkIds())) {
+//			if(!net.getLinks().containsKey(lid)) {
+//				lane.getToLinkIds().remove(lid);
+//			}
+//		}
+//		if(lane.getToLinkIds().isEmpty())lanes.getLanesToLinkAssignments().get(l).getLanes().remove(lane.getId());
+//	}
+//	if(lanes.getLanesToLinkAssignments().get(l).getLanes().size()==0)lanes.getLanesToLinkAssignments().remove(l);
+//});
+//
+//new LanesWriter(lanes).write("data/osm/valid1252OSM/testLanes_out.xml");
 
 //	TransitSchedule ts = scn.getTransitSchedule();
 //	ValidationResult result = TransitScheduleValidator.validateAll(ts, net);

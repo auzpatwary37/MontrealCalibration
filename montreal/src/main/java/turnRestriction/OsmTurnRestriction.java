@@ -245,54 +245,57 @@ public class OsmTurnRestriction {
 	
 	public void applyRestriction(Network net, Lanes lanes, LanesFactory lFac) {
 		if(active == true) {
-		List<Id<Link>> chain = new ArrayList<>();
-		chain.add(fromLinkId);
-		chain.addAll(viaLinkIds);
-		chain.add(toLinkId);
-		for(int i = 0;i<chain.size()-1;i++) {
-			if(i==chain.size()-1) {//The restriction
-				LanesToLinkAssignment l2l = lanes.getLanesToLinkAssignments().get(chain.get(i));
-				if(l2l==null) {
-					l2l = lFac.createLanesToLinkAssignment(chain.get(i));
-					Link fromLink = net.getLinks().get(chain.get(i));
-					Link toLink = net.getLinks().get(chain.get(i+1));
-					for(Link l:fromLink.getToNode().getOutLinks().values()){
-						if(!l.getId().equals(toLink.getId())) {
-							Lane lane = lFac.createLane(Id.create(fromLink.getId().toString()+"_"+l.getId().toString(), Lane.class));
+			List<Id<Link>> chain = new ArrayList<>();
+			chain.add(fromLinkId);
+			chain.addAll(viaLinkIds);
+			chain.add(toLinkId);
+			for(int i = 0;i<chain.size()-1;i++) {
+				if(i==chain.size()-2) {//The restriction
+					LanesToLinkAssignment l2l = lanes.getLanesToLinkAssignments().get(chain.get(i));
+					if(l2l==null) {
+						l2l = lFac.createLanesToLinkAssignment(chain.get(i));
+						Link fromLink = net.getLinks().get(chain.get(i));
+						Link toLink = net.getLinks().get(chain.get(i+1));
+						if(fromLink.getToNode().getOutLinks()!=null) {
+						for(Link l:fromLink.getToNode().getOutLinks().values()){
+							if(!l.getId().equals(toLink.getId())) {
+								Lane lane = lFac.createLane(Id.create(fromLink.getId().toString()+"_"+l.getId().toString(), Lane.class));
+								lane.setCapacityVehiclesPerHour(1800);
+								lane.setStartsAtMeterFromLinkEnd(50);
+								lane.addToLinkId(l.getId());
+								l2l.addLane(lane);
+							}
+						}
+						}
+						if(l2l.getLanes()!=null) {
+							lanes.addLanesToLinkAssignment(l2l);
+						}
+					}else {
+						Id<Link> toLink = chain.get(i+1);
+						for(Lane l:new HashSet<>(l2l.getLanes().values())){
+							if(l.getToLinkIds().contains(toLink))l.getToLinkIds().remove(toLink);
+							if(l.getToLinkIds().isEmpty())l2l.getLanes().remove(l.getId());
+						}
+					}
+				}else{//the continuation
+					LanesToLinkAssignment l2l = lanes.getLanesToLinkAssignments().get(chain.get(i));
+					if(l2l!=null){
+						boolean connected = false;
+						for(Lane l:l2l.getLanes().values()){
+							if(l.getToLinkIds().contains(chain.get(i+1))) {
+								connected = true;
+							}
+						}
+						if(!connected) {
+							Lane lane = lFac.createLane(Id.create(chain.get(i).toString()+"_"+chain.get(i+1).toString(), Lane.class));
 							lane.setCapacityVehiclesPerHour(1800);
 							lane.setStartsAtMeterFromLinkEnd(50);
-							lane.getToLinkIds().add(l.getId());
+							lane.addToLinkId(chain.get(i+1));
 							l2l.addLane(lane);
 						}
 					}
-					if(l2l.getLanes()!=null) {
-						lanes.addLanesToLinkAssignment(l2l);
-					}
-				}else {
-					Id<Link> toLink = chain.get(i+1);
-					l2l.getLanes().values().forEach(l->{
-						if(l.getToLinkIds().contains(toLink))l.getToLinkIds().remove(toLink);
-					});
-				}
-			}else{//the continuation
-				LanesToLinkAssignment l2l = lanes.getLanesToLinkAssignments().get(chain.get(i));
-				if(l2l!=null){
-					boolean connected = false;
-					for(Lane l:l2l.getLanes().values()){
-						if(l.getToLinkIds().contains(chain.get(i+1))) {
-							connected = true;
-						}
-					}
-					if(!connected) {
-						Lane lane = lFac.createLane(Id.create(chain.get(i).toString()+"_"+chain.get(i+1).toString(), Lane.class));
-						lane.setCapacityVehiclesPerHour(1800);
-						lane.setStartsAtMeterFromLinkEnd(50);
-						lane.addToLinkId(chain.get(i+1));
-						l2l.addLane(lane);
-					}
 				}
 			}
-		}
 		}
 	}
 

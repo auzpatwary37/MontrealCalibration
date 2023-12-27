@@ -34,8 +34,10 @@ public class OsmTurnRestrictions {
 			 }
 		 });
 		 relation.entrySet().forEach(r->{
-			 OsmTurnRestriction res = new OsmTurnRestriction(r.getValue());
-			 this.restrictions.put(res.getRestrictionId(), res);
+			 if(r.getValue().getTags().get(Osm.Key.RESTRICTION)!=null) {
+				 OsmTurnRestriction res = new OsmTurnRestriction(r.getValue());
+				 this.restrictions.put(res.getRestrictionId(), res);
+			 }
 		 });
 	}
 	
@@ -93,7 +95,7 @@ public class OsmTurnRestrictions {
 		for(OsmTurnRestriction r:this.restrictions.values()) {
 			boolean out = r.extractLinkIds(net, mapping);
 			if(out)totalActive++;
-			System.out.println("Total restrictions active = "+totalActive+" out of "+ this.restrictions.size());
+			//System.out.println("Total restrictions active = "+totalActive+" out of "+ this.restrictions.size());
 		}
 		System.out.println("Total restrictions active = "+totalActive+" out of "+ this.restrictions.size());
 	}

@@ -327,7 +327,8 @@ public class HouseHold {
 											tripPerson.addPlan(tripPlan);
 											tripPerson.getAttributes().putAttribute("personTyp", "tripPerson");
 											Activity startTrip = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(),"home", "home_"+trip.getTripId()+"_O_"+l));
-											startTrip.setEndTime(trip.getDepartureTime());
+											double dTime = trip.getDepartureTime()-15*3600+Math.random()*(2*15*3600);
+											startTrip.setEndTime(dTime);
 											tripPlan.addActivity(startTrip);
 											tripPlan.addLeg(popFac.createLeg(trip.getMode()));
 											tripPlan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+l)));
@@ -352,15 +353,17 @@ public class HouseHold {
 										System.out.println("Discontinueous chain!!!");
 
 										Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
-										previousAct.setEndTime(trip.getDepartureTime());
-										if(member.isIfHaveLicense()) {
-											plan.addLeg(popFac.createLeg("car"));
-											if(ifCarRequired==false)ifCarRequired = true;
-										}else {
-											plan.addLeg(popFac.createLeg("pt"));
-										}
+										double dTime = trip.getDepartureTime()-15*3600+Math.random()*(2*15*3600);
+										previousAct.setEndTime(dTime);
+										plan.addLeg(popFac.createLeg("walk"));
+//										if(member.isIfHaveLicense()) {
+//											plan.addLeg(popFac.createLeg("car"));
+//											if(ifCarRequired==false)ifCarRequired = true;
+//										}else {
+//											plan.addLeg(popFac.createLeg("pt"));
+//										}
 										Activity a = popFac.createActivityFromActivityFacilityId(previousAct.getType(), drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(), previousAct.getType(), previousAct.getType()+trip.getTripId()+"_O_"+i));
-										a.setEndTime(trip.getDepartureTime());
+										a.setEndTime(dTime);
 										plan.addActivity(a);
 
 										plan.addLeg(popFac.createLeg(trip.getMode()));
@@ -369,13 +372,14 @@ public class HouseHold {
 
 									}else {
 										Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
-										previousAct.setEndTime(trip.getDepartureTime());
+										double dTime = trip.getDepartureTime()-15*3600+Math.random()*(2*15*3600);
+										previousAct.setEndTime(dTime);
 										plan.addLeg(popFac.createLeg(trip.getMode()));
 										if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
 										plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_"+trip.getTripId()+"_D_"+i)));
 									}
 									int extraTrips = 0;
-									if(i==0 && k==0 && (extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor-addionalMember)))>0){// check for additional trips left
+									if(i==0 && k==0 && (extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor)-addionalMember))>0){// check for additional trips left
 										for(int l = 0;l<extraTrips;l++) {
 											Person tripPerson = popFac.createPerson(Id.createPersonId(trip.getTripId().toString()+"_"+l));
 											tripPerson.getAttributes().putAttribute("age", member.getAgeGroup());
@@ -388,7 +392,8 @@ public class HouseHold {
 											tripPerson.addPlan(tripPlan);
 											String previousActType = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1)).getType();
 											Activity previousAct =  popFac.createActivityFromActivityFacilityId(previousActType, drawRandomFacility(facilities, matsimFacilities, facilityFac,previousDCoord,previousCT, previousActType,trip.getMotive()+"_O_"+trip.getTripId()+"_"+l));
-											previousAct.setEndTime(trip.getDepartureTime());
+											double dTime = trip.getDepartureTime()-15*3600+Math.random()*(2*15*3600);
+											previousAct.setEndTime(dTime);
 											tripPlan.addActivity(previousAct);
 											tripPlan.addLeg(popFac.createLeg(trip.getMode()));
 											tripPlan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_D_"+trip.getTripId()+"_"+l)));
@@ -503,7 +508,9 @@ public class HouseHold {
 			return null;
 		}
 		int num = (int) (Math.random() * collection.size());
-	    for(T t: collection) if (--num < 0) return t;
+	    for(T t: collection) {
+	    	if (--num < 0) return t;
+	    }
 	    return null;
 	}
 	

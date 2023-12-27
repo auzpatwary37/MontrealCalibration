@@ -45,11 +45,11 @@ import org.matsim.vehicles.Vehicles;
 public class PopulationGeneratorEnhanced {
 public static void main(String[] args) throws IOException{
 	String facilityFileLoc = "data/output_facilities.xml.gz";
-	String odFileLocation = "EOD_from_Louiselle/EOD/enhancedOd.csv";
+	String odFileLocation = "EOD_from_Louiselle/enhancedOd.csv";
 	String facilityWriteCsvLocation = "newData/facCoord.csv";
-	String facilityToCTUIDMap = "data/facToCTUID.csv";
+	String facilityToCTUIDMap = "EOD_from_Louiselle/facToDAUID.csv";
 	String populationWriteLocation = "data/outputPopulation.xml";
-	String ctCentroidFile = "EOD_from_Louiselle/EOD/lct_000b21a_e_centroid.csv";
+	String ctCentroidFile = "EOD_from_Louiselle/dessiminationAreaCentroid.csv";
 	int year = 41;
 	String hhEFKey = "facmen18";
 	String mmEFKey = "facper18";
@@ -67,8 +67,8 @@ public static void main(String[] args) throws IOException{
 	Network odNet = NetworkUtils.createNetwork();
 	NetworkFactory netFac = odNet.getFactory();
 	while((line=bf.readLine())!=null) {
-		String[] parts = line.split(";");
-		odNet.addNode(netFac.createNode(Id.createNodeId(parts[0]),new Coord(Double.parseDouble(parts[2]),Double.parseDouble(parts[3]))));
+		String[] parts = line.split(",");
+		odNet.addNode(netFac.createNode(Id.createNodeId(parts[0]),new Coord(Double.parseDouble(parts[1]),Double.parseDouble(parts[2]))));
 	}
 	new NetworkWriter(odNet).write("EOD_from_Louiselle/EOD/CTUNet.xml");
 	
@@ -83,7 +83,7 @@ public static void main(String[] args) throws IOException{
 	Vehicles vehicles = scenario.getVehicles();
 	Households matsimHouseholds = scenario.getHouseholds();
 	
-	double scale = .25;
+	double scale = .05;
 	
 	bf = new BufferedReader(new FileReader(new File(facilityToCTUIDMap)));
 	bf.readLine();
@@ -105,7 +105,7 @@ public static void main(String[] args) throws IOException{
 			
 		});
 	}
-	String h = "ipere,idu,version,media_int,provenance,date_int,deb_interv,nolog,tlog,nbper,nbveh,revenu,langue,nmodif_ass,incaplogi,xmtmlog,ymtmlog,r6log,r8log,rmrlog,arrlog,sdrlog,srlog,sdomi65,smlog,cplog,agr_domi,jour,sem,facmen,facmen18,noper,tper,clepersonne,sexe,age,grpage,incap,percond,abon_ap,abon_vls,passetc,occper,tele_trav,lieuocc,xmtmocc,ymtmocc,rmrocc,arrocc,sdrocc,srocc,smocc,cpocc,l_id_local,mobil,facper,facper18,facdep18,cledeplacement,nodep,no_rep,hredep,ghredep,motif,motif_grp,date_dpl,jour_dpl,mode1,mode2,mode3,mode4,mode5,mode6,mode7,mode8,seq_modes,covoiturage,pers_auto,auto_ap,velo_ls,station_p,pont1,pont2,mode_exclu,lig1,lig2,lig3,lig4,lig5,lig_imp,metro1,metro2,metro3,metro4,gare1,gare2,gare3,gare4,aut1,aut2,aut3,aut4,aut5,aut6,aut7,aut8,aut9,aut10,aut11,aut12,trace1,trace2,trace3,trace4,trace5,dist,agr_ori,xmtmori,ymtmori,xlonori,ylatori,r6orig,r8orig,arrori,sdrori,srori,sorig65,smori,cpori,o_id_local,inodo,loccodeo,xyo,agr_des,xmtmdes,ymtmdes,xlondes,ylatdes,r6dest,r8dest,arrdes,sdrdes,srdes,sdest65,smdes,cpdes,d_id_local,inodd,loccoded,xyd,Depl_Excl,nbjct,typjct1,typjct1_98,stajct1,agr_jct1,j_id_local1,xmtmjct1,ymtmjct1,xlonjct1,ylatjct1,r6jct1,r8jct1,arrjct1,sdrjct1,srjct1,sjonc65_1,smjct1,inodj1,loccodej1,nchangzone1,xmtmjct2,ymtmjct2,xlonjct2,ylatjct2,r6jct2,r8jct2,arrjct2,sdrjct2,srjct2,sjonc652,smjct2,inodj2,loccodej2,nchangzone2,tc,actif,autre_mot,motorise,metro,stm,rtl,stl,auto,autop,autoc,mauto,autrebus,busscol,taxi,train,a_pied,moto,velo,cit,au_mode,tr_adap,indet1,IPERE,FMEN18E,FPER18E,FPER18MCE,FDEP18E,FMEN21,FMEN26,FMEN31,FMEN36,FMEN41,FMEN46,FMEN51,FMEN56,FMEN61,FPER21,FPER21MC,FDEP21,FPER26,FPER26MC,FDEP26,FPER31,FPER31MC,FDEP31,FPER36,FPER36MC,FDEP36,FPER41,FPER41MC,FDEP41,REGDEMO";
+	String h = "ipere;idu;version;media_int;provenance;date_int;deb_interv;nolog;tlog;nbper;nbveh;revenu;langue;nmodif_ass;incaplogi;xmtmlog;ymtmlog;r6log;r8log;rmrlog;arrlog;sdrlog;srlog;sdomi65;smlog;cplog;agr_domi;jour;sem;facmen;facmen18;noper;tper;clepersonne;sexe;age;grpage;incap;percond;abon_ap;abon_vls;passetc;occper;tele_trav;lieuocc;xmtmocc;ymtmocc;rmrocc;arrocc;sdrocc;srocc;smocc;cpocc;l_id_local;mobil;facper;facper18;facdep18;cledeplacement;nodep;no_rep;hredep;ghredep;motif;motif_grp;date_dpl;jour_dpl;mode1;mode2;mode3;mode4;mode5;mode6;mode7;mode8;seq_modes;covoiturage;pers_auto;auto_ap;velo_ls;station_p;pont1;pont2;mode_exclu;lig1;lig2;lig3;lig4;lig5;lig_imp;metro1;metro2;metro3;metro4;gare1;gare2;gare3;gare4;aut1;aut2;aut3;aut4;aut5;aut6;aut7;aut8;aut9;aut10;aut11;aut12;trace1;trace2;trace3;trace4;trace5;dist;agr_ori;xmtmori;ymtmori;xlonori;ylatori;r6orig;r8orig;arrori;sdrori;srori;sorig65;smori;cpori;o_id_local;inodo;loccodeo;xyo;agr_des;xmtmdes;ymtmdes;xlondes;ylatdes;r6dest;r8dest;arrdes;sdrdes;srdes;sdest65;smdes;cpdes;d_id_local;inodd;loccoded;xyd;Depl_Excl;nbjct;typjct1;typjct1_98;stajct1;agr_jct1;j_id_local1;xmtmjct1;ymtmjct1;xlonjct1;ylatjct1;r6jct1;r8jct1;arrjct1;sdrjct1;srjct1;sjonc65_1;smjct1;inodj1;loccodej1;nchangzone1;xmtmjct2;ymtmjct2;xlonjct2;ylatjct2;r6jct2;r8jct2;arrjct2;sdrjct2;srjct2;sjonc652;smjct2;inodj2;loccodej2;nchangzone2;tc;actif;autre_mot;motorise;metro;stm;rtl;stl;auto;autop;autoc;mauto;autrebus;busscol;taxi;train;a_pied;moto;velo;cit;au_mode;tr_adap;indet1;IPERE;FMEN18E;FPER18E;FPER18MCE;FDEP18E;FMEN21;FMEN26;FMEN31;FMEN36;FMEN41;FMEN46;FMEN51;FMEN56;FMEN61;FPER21;FPER21MC;FDEP21;FPER26;FPER26MC;FDEP26;FPER31;FPER31MC;FDEP31;FPER36;FPER36MC;FDEP36;FPER41;FPER41MC;FDEP41;REGDEMO;dalog;daocc;daori;daodes";
 	String[] header = h.split(",");
 	//String h ="ipere;idu;version;media_int;provenance;date_int;deb_interv;nolog;tlog;nbper;nbveh;revenu;langue;nmodif_ass;incaplogi;xmtmlog;ymtmlog;r6log;r8log;rmrlog;arrlog;sdrlog;srlog;sdomi65;smlog;cplog;agr_domi;jour;sem;facmen;facmen18;noper;tper;clepersonne;sexe;age;grpage;incap;percond;abon_ap;abon_vls;passetc;occper;tele_trav;lieuocc;xmtmocc;ymtmocc;rmrocc;arrocc;sdrocc;srocc;smocc;cpocc;l_id_local;mobil;facper;facper18;facdep18;cledeplacement;nodep;no_rep;hredep;ghredep;motif;motif_grp;date_dpl;jour_dpl;mode1;mode2;mode3;mode4;mode5;mode6;mode7;mode8;seq_modes;covoiturage;pers_auto;auto_ap;velo_ls;station_p;pont1;pont2;mode_exclu;lig1;lig2;lig3;lig4;lig5;lig_imp;metro1;metro2;metro3;metro4;gare1;gare2;gare3;gare4;aut1;aut2;aut3;aut4;aut5;aut6;aut7;aut8;aut9;aut10;aut11;aut12;trace1;trace2;trace3;trace4;trace5;dist;agr_ori;xmtmori;ymtmori;xlonori;ylatori;r6orig;r8orig;arrori;sdrori;srori;sorig65;smori;cpori;o_id_local;inodo;loccodeo;xyo;agr_des;xmtmdes;ymtmdes;xlondes;ylatdes;r6dest;r8dest;arrdes;sdrdes;srdes;sdest65;smdes;cpdes;d_id_local;inodd;loccoded;xyd;Depl_Excl;nbjct;typjct1;typjct1_98;stajct1;agr_jct1;j_id_local1;xmtmjct1;ymtmjct1;xlonjct1;ylatjct1;r6jct1;r8jct1;arrjct1;sdrjct1;srjct1;sjonc65_1;smjct1;inodj1;loccodej1;nchangzone1;xmtmjct2;ymtmjct2;xlonjct2;ylatjct2;r6jct2;r8jct2;arrjct2;sdrjct2;srjct2;sjonc652;smjct2;inodj2;loccodej2;nchangzone2;tc;actif;autre_mot;motorise;metro;stm;rtl;stl;auto;autop;autoc;mauto;autrebus;busscol;taxi;train;a_pied;moto;velo;cit;au_mode;tr_adap;indet1";
 	//String[] header = h.split(";");
@@ -131,7 +131,7 @@ public static void main(String[] args) throws IOException{
         	HouseHold hh = new HouseHold(hhId.toString(), Integer.parseInt(record.get("revenu")), 
         			record.get("xmtmlog").equals("")?null:Double.parseDouble(record.get("xmtmlog")), 
         			record.get("ymtmlog").equals("")?null:Double.parseDouble(record.get("ymtmlog")), 
-        			record.get("srlog").equals("")?null:Double.parseDouble(record.get("srlog")), 
+        			record.get("dalog").equals("")?null:Double.parseDouble(record.get("dalog")), 
         			Double.parseDouble(record.get(hhEFKey).replace(",", ".")), 
         			false, Integer.parseInt(record.get("nbveh")));
         	households.put(hh.getHhId(), hh);
@@ -143,7 +143,7 @@ public static void main(String[] args) throws IOException{
         if(member==null) {
         	member = new Member(memId.toString(), hh, Integer.parseInt(record.get("age")),Integer.parseInt(record.get("percond"))==1, Double.parseDouble(record.get(mmEFKey).replace(",", ".")),
         			hh.getIncomeGroup(), Integer.parseInt(record.get("sexe")), Integer.parseInt(record.get("occper")), Integer.parseInt(record.get("tele_trav"))==1, 
-        			record.get("xmtmocc").equals("")?null:Double.parseDouble(record.get("xmtmocc")), record.get("ymtmocc").equals("")?null:Double.parseDouble(record.get("ymtmocc")),record.get("srocc").equals("")?null:Double.parseDouble(record.get("srocc")));
+        			record.get("xmtmocc").equals("")?null:Double.parseDouble(record.get("xmtmocc")), record.get("ymtmocc").equals("")?null:Double.parseDouble(record.get("ymtmocc")),record.get("daocc").equals("")?null:Double.parseDouble(record.get("daocc")));
         	hh.addMember(member);
         	if(member.getAgeGroup()<15)hh.setIfKids(true);
         }
@@ -154,8 +154,8 @@ public static void main(String[] args) throws IOException{
         	Trip trip = new Trip(tripId.toString(), member, Double.parseDouble(record.get("xlonori").replace(",", ".")), Double.parseDouble(record.get("ylatori").replace(",", ".")), Double.parseDouble(record.get("xlondes").replace(",", ".")), 
         			Double.parseDouble(record.get("ylatdes").replace(",", ".")),
         			time,record.get(tpEFKey).equals("")?member.getPersonExFac():Double.parseDouble(record.get(tpEFKey).replace(",", ".")), 
-        			record.get("srori").equals("")?null:Double.parseDouble(record.get("srori")), 
-        			record.get("srdes").equals("")?null:Double.parseDouble(record.get("srdes")),
+        			record.get("daori").equals("")?null:Double.parseDouble(record.get("daori")), 
+        			record.get("dades").equals("")?null:Double.parseDouble(record.get("dades")),
         			extractActivity(record),
         			Integer.parseInt(record.get("mobil")),
         			extractModes(record), record.get("jour_dpl"), tsf,odNet);

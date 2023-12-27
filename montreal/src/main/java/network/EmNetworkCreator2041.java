@@ -219,9 +219,9 @@ public static void main(String[] args) throws IOException {
 	configPt.setOutputScheduleFile("data/kinan/emTsMapped2041.xml");
 	
 	
-	configPt.setCandidateDistanceMultiplier(5);
-	configPt.setMaxLinkCandidateDistance(60);
-	configPt.setMaxTravelCostFactor(400);
+	configPt.setCandidateDistanceMultiplier(7);
+	configPt.setMaxLinkCandidateDistance(85);
+	configPt.setMaxTravelCostFactor(1000);
 	configPt.setNLinkThreshold(4);
 	configPt.setNumOfThreads(10);
 	

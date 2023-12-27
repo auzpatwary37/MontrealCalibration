@@ -60,16 +60,17 @@ public class RunFromEclipse {
 				"--thread", "10",
 				"--scale", ".05", 
 				"--config", "5_percent/newData/configMine.xml",
-				"--network", "data/kinan/emMultimodal.xml",
-				"--ts", "data/kinan/emTsMapped.xml", 
-				"--tv", "data/kinan/emVehicles.xml", 
-				"--plan", "matsimRun/output_plans.xml.gz", 
-				"--facilities", "matsimRun/output_facilities.xml.gz", 
+				"--network", "data\\emDetails\\emMultimodal.xml",
+				"--ts", "data\\emDetails\\emTsMapped.xml", 
+				"--tv", "data\\emDetails\\emVehicles.xml", 
+				"--plan", "data\\population\\outputODPopulation_18_0.05.xml.gz", 
+				"--facilities", "data\\population\\outputODFacilities18_0.05.xml.gz", 
 				"--clearplan", "true",
-				"--household","matsimRun/montreal_households.xml.gz",
-				"--lanes","data/kinan/emLanes_out.xml",
+				"--household","data\\population\\outputODHouseholds_18_0.05.xml.gz",
+				"--lanes","data\\emDetails\\emLanes_out.xml",
 				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv",
-				"--output","outputEmBasePop"
+				"--output","outputEmBasePop",
+				"--vehicles","data\\population\\outputODVehicle_18_0.05.xml.gz"
 			};
 		
 		String[] args5 = new String[] {
@@ -91,20 +92,38 @@ public class RunFromEclipse {
 		String[] args6 = new String[] {
 				"--iterations","250",
 				"--thread", "10",
-				"--scale", ".25", 
+				"--scale", ".05", 
 				"--config", "matsimRun/configMine.xml",
-				"--network", "data\\osm\\valid1252OSM\\osmMultimodal.xml",
-				"--ts", "data\\osm\\valid1252OSM\\osmTsMapped.xml", 
-				"--tv", "data\\osm\\valid1252OSM\\osmVehicles.xml", 
-				"--lanes","data\\osm\\valid1252OSM\\testLanes_out.xml",
-				"--plan", "data\\outputODPopulation_21_0.25.xml.gz", 
-				"--facilities", "data\\outputODFacilities21_0.25.xml.gz",
-				"--household","data\\outputODHouseholds_21_0.25.xml.gz",
+				"--network", "data\\osm\\valid1252OSM\\osmMultimodal2041.xml",
+				"--ts", "data\\osm\\valid1252OSM\\osmTsMapped2041.xml", 
+				"--tv", "data\\osm\\valid1252OSM\\osmVehicles2041.xml", 
+				"--lanes","data\\osm\\valid1252OSM\\testLanes_out2041.xml",
+				"--plan", "data\\outputODPopulation_41_0.05.xml.gz", 
+				"--facilities", "data\\outputODFacilities41_0.05.xml.gz",
+				"--household","data\\outputODHouseholds_41_0.05.xml.gz",
 				"--clearplan", "true",
-				"--output","output21.25",
-				"--vehicles","data\\outputODVehicle_21_0.25.xml.gz"
+				"--output","output41.05",
+				"--vehicles","data\\outputODVehicle_41_0.05.xml.gz"
 			};
-		Run.main(args6);
+		
+		String[] args7 = new String[] {
+				"--iterations","250",
+				"--thread", "10",
+				"--scale", ".05", 
+				"--config", "matsimRun/configMine.xml",
+				"--network", "data\\emDetails\\emMultimodal2041Maxime.xml",
+				"--ts", "data\\emDetails\\emTsMapped2041Maxime.xml", 
+				"--tv", "data\\emDetails\\emVehicles2041Maxime.xml", 
+				"--plan", "data\\population\\outputODPopulation_41_0.05.xml.gz", 
+				"--facilities", "data\\population\\outputODFacilities41_0.05.xml.gz", 
+				"--clearplan", "true",
+				"--household","data\\population\\outputODHouseholds_41_0.05.xml.gz",
+				"--lanes","data\\emDetails\\emLanes2041_out.xml",
+				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv",
+				"--output","outputEm2041Maxime",
+				"--vehicles","data\\population\\outputODVehicle_41_0.05.xml.gz"
+			};
+		Run.main(args4);
 		
 	}
 }
