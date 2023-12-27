@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
@@ -26,6 +27,7 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.ActivityFacility;
@@ -143,9 +145,11 @@ public static void main(String[] args) throws IOException{
 	});
 	handleNullOriginAndDestination(households);
 	writeTreatedCTForTrips(households,"data/stat");
+	Random random = MatsimRandom.getRandom();
+
     households.values().forEach(hh->{
 
-    	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, fac, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare);
+    	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, fac, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare,5*60, MatsimRandom.getRandom());
     });
     
     

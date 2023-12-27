@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.matsim.api.core.v01.Coord;
@@ -222,7 +223,7 @@ public class HouseHold {
 	}
 	
 	public void loadClonedHouseHoldPersonAndVehicle(Population population, Vehicles vehicles, Households houseHolds, ActivityFacilities matsimFacilities, Map<String,Map<Double,Set<Id<ActivityFacility>>>>facilities, double scale,
-			Map<String,Map<Id<HouseHold>,Double>>hhSpare,Map<String,Map<Id<Member>,Double>>memberSpare, Map<String,Map<Id<Trip>,Double>>tripSpare) {
+			Map<String,Map<Id<HouseHold>,Double>>hhSpare,Map<String,Map<Id<Member>,Double>>memberSpare, Map<String,Map<Id<Trip>,Double>>tripSpare, double timeToSpread, Random random) {
 		PopulationFactory popFac = population.getFactory();
 		HouseholdsFactory hhFac = houseHolds.getFactory();
 		VehiclesFactory vFac = vehicles.getFactory();
@@ -302,7 +303,9 @@ public class HouseHold {
 										System.out.println("First trip origin is not home. Setting as home trip nonetheless.");
 									}
 									Activity start = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(), "home", "home_"+this.hhId+"_"+i));
-									start.setEndTime(trip.getDepartureTime());
+									double dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
+									if(dTime<0)dTime=0;
+									start.setEndTime(dTime);
 
 									plan.addActivity(start);
 
@@ -327,7 +330,8 @@ public class HouseHold {
 											tripPerson.addPlan(tripPlan);
 											tripPerson.getAttributes().putAttribute("personTyp", "tripPerson");
 											Activity startTrip = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(),"home", "home_"+trip.getTripId()+"_O_"+l));
-											double dTime = trip.getDepartureTime()-15*3600+Math.random()*(2*15*3600);
+											dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
+											if(dTime<0)dTime=0;
 											startTrip.setEndTime(dTime);
 											tripPlan.addActivity(startTrip);
 											tripPlan.addLeg(popFac.createLeg(trip.getMode()));
@@ -353,7 +357,8 @@ public class HouseHold {
 										System.out.println("Discontinueous chain!!!");
 
 										Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
-										double dTime = trip.getDepartureTime()-15*3600+Math.random()*(2*15*3600);
+										double dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
+										if(dTime<0)dTime=0;
 										previousAct.setEndTime(dTime);
 										plan.addLeg(popFac.createLeg("walk"));
 //										if(member.isIfHaveLicense()) {
@@ -372,7 +377,8 @@ public class HouseHold {
 
 									}else {
 										Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
-										double dTime = trip.getDepartureTime()-15*3600+Math.random()*(2*15*3600);
+										double dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
+										if(dTime<0)dTime=0;
 										previousAct.setEndTime(dTime);
 										plan.addLeg(popFac.createLeg(trip.getMode()));
 										if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
@@ -392,7 +398,8 @@ public class HouseHold {
 											tripPerson.addPlan(tripPlan);
 											String previousActType = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1)).getType();
 											Activity previousAct =  popFac.createActivityFromActivityFacilityId(previousActType, drawRandomFacility(facilities, matsimFacilities, facilityFac,previousDCoord,previousCT, previousActType,trip.getMotive()+"_O_"+trip.getTripId()+"_"+l));
-											double dTime = trip.getDepartureTime()-15*3600+Math.random()*(2*15*3600);
+											double dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
+											if(dTime<0)dTime=0;
 											previousAct.setEndTime(dTime);
 											tripPlan.addActivity(previousAct);
 											tripPlan.addLeg(popFac.createLeg(trip.getMode()));

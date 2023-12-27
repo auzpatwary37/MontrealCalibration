@@ -30,6 +30,7 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
@@ -50,7 +51,8 @@ public static void main(String[] args) throws IOException{
 	String facilityToCTUIDMap = "EOD_from_Louiselle/facToDAUID.csv";
 	String populationWriteLocation = "data/outputPopulation.xml";
 	String ctCentroidFile = "EOD_from_Louiselle/dessiminationAreaCentroid.csv";
-	int year = 41;
+	double timeToSpread = 5*60;
+	int year = 21;
 	String hhEFKey = "facmen18";
 	String mmEFKey = "facper18";
 	String tpEFKey = "facdep18";
@@ -184,7 +186,7 @@ public static void main(String[] args) throws IOException{
 	writeTreatedCTForTrips(households,"data/stat");
     households.values().forEach(hh->{
 
-    	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, fac, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare);
+    	hh.loadClonedHouseHoldPersonAndVehicle(population, vehicles, matsimHouseholds, fac, ctuidToFacilityMap, scale, hhSpare, memberSpare, tripSpare, timeToSpread, MatsimRandom.getRandom());
     });
     
     
