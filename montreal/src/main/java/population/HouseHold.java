@@ -43,6 +43,7 @@ public class HouseHold {
 	private int memSize = 0;
 	private double newExpFac = 0;
 	private double limitingFactor = 0;
+	private int cloneHouseHold = 0;
 	
 	public HouseHold(String id, int income, double x, double y, Double ct, double hhExFac, boolean ifKids, int numofCar) {
 		hhId = Id.create(id, HouseHold.class);
@@ -68,9 +69,9 @@ public class HouseHold {
 		for(Member member:this.members.values()) {
 			if(member.getPersonExFac()<this.limitingFactor) {
 				this.limitingFactor = member.getPersonExFac();
-				member.getTrips().values().forEach(t->{
-					if(t.getTripExpFactror()<this.limitingFactor)this.limitingFactor = t.getTripExpFactror();
-				});
+			}
+			for(Trip t:member.getTrips().values()){
+				if(t.getTripExpFactror()<this.limitingFactor)this.limitingFactor = t.getTripExpFactror();
 			}
 		}
 		for(Member m:this.members.values()) {
@@ -234,7 +235,7 @@ public class HouseHold {
 		carType.setPcuEquivalents(1);
 		if(!vehicles.getVehicleTypes().containsKey(Id.create("car",VehicleType.class)))vehicles.addVehicleType(carType);
 
-		double maxClone = (int)this.limitingFactor*scale;
+		double maxClone = (int)Math.round((this.limitingFactor*scale));
 
 		if(this.hhExFac-this.limitingFactor!=0) {
 			hhSpare.compute(this.generateBehavioralKey(), (k,v)->v==null?new HashMap<>():v);
@@ -242,6 +243,7 @@ public class HouseHold {
 		}
 
 		for(int i=0;i<maxClone;i++) {
+			this.cloneHouseHold++;
 			Household hh = hhFac.createHousehold(Id.create(hhId.toString()+"_"+i, Household.class));
 			hh.getAttributes().putAttribute("income_class", this.incomeGroup);
 			hh.getAttributes().putAttribute("ifHasKid", this.isIfKids());
@@ -254,11 +256,11 @@ public class HouseHold {
 			int carCreated = 0;
 
 			for(Member member:this.members.values()) {
-				int addionalMember = (int)(member.getAdditionalMemberExpansionFactor()*scale);
-				if(i!=0)addionalMember = 0;
+				int addionalMember = (int)Math.round((member.getAdditionalMemberExpansionFactor(scale)*scale));
+				if(i!=0)addionalMember = -1;
 
 				for(int k = 0;k<=addionalMember;k++) {
-
+					member.clonedMember++;
 					Person person = popFac.createPerson(Id.createPersonId(member.getMemId().toString()+"_i"+i+"_k"+k));
 					person.getAttributes().putAttribute("age", member.getAgeGroup());
 					person.getAttributes().putAttribute("gender", member.getGender());
@@ -275,7 +277,7 @@ public class HouseHold {
 
 					if(member.getPersonExFac()-this.limitingFactor!=0) {
 						memberSpare.compute(member.generateBehavioralKey(), (kk,v)->v==null?new HashMap<>():v);
-						memberSpare.get(member.generateBehavioralKey()).put(member.getMemId(), scale*(member.getPersonExFac()-this.limitingFactor-addionalMember));			
+						memberSpare.get(member.generateBehavioralKey()).put(member.getMemId(), scale*(member.getPersonExFac()-this.limitingFactor)-addionalMember);			
 					}
 
 					
@@ -296,7 +298,7 @@ public class HouseHold {
 						Coord previousDCoord = null;
 
 						for(Trip trip:member.getTrips().values()) {
-
+							trip.clonedTrip++;
 							if(trip.getOriginCT()!=null && trip.getDestinationCT()!=null) {
 								if(j==0) {
 									if(this.ct!=null && Double.compare(trip.getOriginCT(),this.ct)!=0) {
@@ -316,9 +318,10 @@ public class HouseHold {
 
 									if(trip.getDay()!=null && !trip.getDay().equals(""))plan.getAttributes().putAttribute("dayOfWeek", trip.getDay());
 
-									int extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor)-addionalMember);
+									int extraTrips = (int)Math.round((scale*trip.getTripExpFactror()-Math.round(scale*this.limitingFactor))-addionalMember);
 									if(i==0 && k==0 && extraTrips>0){// check for additional trips left
 										for(int l = 0;l<extraTrips;l++) {
+											trip.clonedTrip++;
 											Person tripPerson = popFac.createPerson(Id.createPersonId(trip.getTripId().toString()+"_"+l));
 											tripPerson.getAttributes().putAttribute("age", member.getAgeGroup());
 											tripPerson.getAttributes().putAttribute("gender", member.getGender());
@@ -385,8 +388,9 @@ public class HouseHold {
 										plan.addActivity(popFac.createActivityFromActivityFacilityId(trip.getMotive(), drawRandomFacility(facilities, matsimFacilities, facilityFac,trip.getOriginalDCoord(),trip.getDestinationCT(),trip.getMotive(),trip.getMotive()+"_"+trip.getTripId()+"_D_"+i)));
 									}
 									int extraTrips = 0;
-									if(i==0 && k==0 && (extraTrips = (int) (scale*(trip.getTripExpFactror()-this.limitingFactor)-addionalMember))>0){// check for additional trips left
+									if(i==0 && k==0 && (extraTrips = (int)Math.round((scale*trip.getTripExpFactror()-Math.round(scale*this.limitingFactor))-addionalMember))>0){// check for additional trips left
 										for(int l = 0;l<extraTrips;l++) {
+											trip.clonedTrip++;
 											Person tripPerson = popFac.createPerson(Id.createPersonId(trip.getTripId().toString()+"_"+l));
 											tripPerson.getAttributes().putAttribute("age", member.getAgeGroup());
 											tripPerson.getAttributes().putAttribute("gender", member.getGender());
@@ -429,6 +433,9 @@ public class HouseHold {
 								break;
 							}
 							j++;
+							if(trip.clonedTrip>(int)Math.round((trip.getTripExpFactror()*scale))) {
+								System.out.println();
+							}
 						}
 						if(shouldAdd) {
 							person.addPlan(plan);
@@ -464,12 +471,15 @@ public class HouseHold {
 					}else {
 						PersonUtils.setCarAvail(person, "never");
 					}
-
+					if(member.clonedMember>(int)Math.round((member.getPersonExFac()*scale))) {
+						System.out.println();
+					}
 				}
+				
 			}
 
 		}
-
+		System.out.println();
 	}
 	
 	
@@ -514,7 +524,7 @@ public class HouseHold {
 		if(collection==null || collection.isEmpty()) {
 			return null;
 		}
-		int num = (int) (Math.random() * collection.size());
+		int num = (int)(Math.random() * collection.size());
 	    for(T t: collection) {
 	    	if (--num < 0) return t;
 	    }

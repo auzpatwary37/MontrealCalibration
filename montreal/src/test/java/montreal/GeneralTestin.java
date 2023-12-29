@@ -1,15 +1,21 @@
 package montreal;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkWriter;
+import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.router.TripStructureUtils;
+import org.matsim.core.router.TripStructureUtils.Trip;
+import org.matsim.facilities.ActivityFacility;
 
 public class GeneralTestin {
 public static void main(String[] args) {
@@ -33,10 +39,36 @@ public static void main(String[] args) {
 		 tripMakingPopulation++;
 	 }
  }
- 
+Map<Id<ActivityFacility>,Integer> totalTrips = new HashMap<>();
+oldPop.getPersons().values().forEach(p->{
+	List<Trip> trips = TripStructureUtils.getTrips(p.getSelectedPlan());
+	trips.forEach(tp->{
+		if(!totalTrips.containsKey(tp.getOriginActivity().getFacilityId()))totalTrips.put(tp.getOriginActivity().getFacilityId(),0);
+		if(!getMode(tp).equals("non mechanical"))totalTrips.compute(tp.getOriginActivity().getFacilityId(),(k,v)->v=v+1);
+	});
+});
+
+Map<Id<ActivityFacility>,Integer> totalTripsNew = new HashMap<>();
+newPop.getPersons().values().forEach(p->{
+	List<Trip> trips = TripStructureUtils.getTrips(p.getSelectedPlan());
+	trips.forEach(tp->{
+		if(!totalTripsNew.containsKey(tp.getOriginActivity().getFacilityId()))totalTripsNew.put(tp.getOriginActivity().getFacilityId(),0);
+		if(!getMode(tp).equals("non mechanical"))totalTripsNew.compute(tp.getOriginActivity().getFacilityId(),(k,v)->v=v+1);
+	});
+});
+int oldTrip = 0;
+for(int i:totalTrips.values()) {
+	oldTrip+=i;
+}
+int newTrip = 0;
+for(int i:totalTripsNew.values()) {
+	newTrip+=i;
+}
  System.out.println("tripPerson = "+tripPerson);
  System.out.println("noTripPerson = "+noTripPerson);
  System.out.println("tripMakingPopulation = "+tripMakingPopulation);
+ System.out.println("total old Trips = "+oldTrip);
+ System.out.println("total new Trips = "+newTrip);
 // 
 // Config c;
  
@@ -186,6 +218,15 @@ public static void main(String[] args) {
 //
 //	CheckMappedSchedulePlausibility.run(tsLocation, netLocation, "epsg:32188", "data/osm/plausibility");
 
+}
+
+public static String getMode(Trip trip) {
+	for(Leg l:trip.getLegsOnly()) {
+		if(l.getMode().contains("pt"))return "pt";
+		if(l.getMode().contains("car"))return "car";
+		if(l.getMode().contains("car_passenger"))return "car_passenger";
+	}
+	return "non mechanical";
 }
 
 public static void identifyChanges(String net1In,String n2In, String outNet1, String outNet2) {

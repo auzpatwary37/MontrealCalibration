@@ -52,7 +52,7 @@ public static void main(String[] args) throws IOException{
 	String populationWriteLocation = "data/outputPopulation.xml";
 	String ctCentroidFile = "EOD_from_Louiselle/dessiminationAreaCentroid.csv";
 	double timeToSpread = 5*60;
-	int year = 21;
+	int year = 18;
 	String hhEFKey = "facmen18";
 	String mmEFKey = "facper18";
 	String tpEFKey = "facdep18";

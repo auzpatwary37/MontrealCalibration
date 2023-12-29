@@ -37,6 +37,7 @@ public class Trip {
 	private String day;
 	
 	private double newExpFac;
+	public int clonedTrip = 0;
 	
 	@SuppressWarnings("removal")
 	public Trip(String tripId, Member member, Double oX, Double oY, Double dX, Double dY, 

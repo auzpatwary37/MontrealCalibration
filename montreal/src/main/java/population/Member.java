@@ -23,6 +23,7 @@ public class Member {
 	private Id<Trip> lastTripKey = null;
 	private double newExpFac;
 	private double limitingFactor;
+	public int clonedMember = 0;
 	
 	
 	public Member(String id, HouseHold hh, int ageGroup, boolean haveLicense,double personExFac,int incomeGroup,int gender, int occupation
@@ -182,7 +183,7 @@ public class Member {
 		return key;
 	}
 	
-	public double getAdditionalMemberExpansionFactor() {
+	public double getAdditionalMemberExpansionFactor(double scale) {
 		double addFactor = this.personExFac;
 		
 		for(Trip trip:this.trips.values()) {
@@ -191,7 +192,7 @@ public class Member {
 		
 		
 		
-		return Math.max(0,addFactor-this.limitingFactor);
+		return Math.max(0,(addFactor*scale-Math.round(this.limitingFactor*scale))/scale);
 	}
 
 

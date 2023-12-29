@@ -135,7 +135,7 @@ public final class Run implements Callable<Integer> {
     addStrategy(config, "SubtourModeChoice", null, 0.05D, 0 * this.maxIterations);
     addStrategy(config, "ReRoute", null, 0.1D, 0 * this.maxIterations);
     addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
-    addStrategy(config, DefaultStrategy.TimeAllocationMutator_ReRoute, null, 0.05D, (int) (.85 * this.maxIterations));
+    addStrategy(config, DefaultStrategy.TimeAllocationMutator_ReRoute, null, 0.15D, (int) (.85 * this.maxIterations));
     config.controler().setOutputDirectory(this.output);
     config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
     config.controler().setLinkToLinkRoutingEnabled(true);
