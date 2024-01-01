@@ -45,6 +45,8 @@ import org.matsim.pt2matsim.run.CheckMappedSchedulePlausibility;
 import org.matsim.pt2matsim.run.Gtfs2TransitSchedule;
 import org.matsim.pt2matsim.run.PublicTransitMapper;
 
+import run.Run;
+
 public class EmNetworkCreator {
 public static void main(String[] args) throws IOException {
 	String mathildeOsmConverterConfig = "data/osm/osm_config.xml";
@@ -186,7 +188,7 @@ public static void main(String[] args) throws IOException {
 			if(!l2l.getLanes().isEmpty())lanes.addLanesToLinkAssignment(l2l);
 		}
 	}
-	NetworkUtils.runNetworkCleaner(outNet);
+	Run.invertedNetworkCleaner(outNet, lanes);
 	
 	new LanesWriter(lanes).write("data/kinan/emLanes.xml");
 	new NetworkWriter(outNet).write("data/kinan/emNetworkAm.xml");
@@ -259,7 +261,8 @@ public static void main(String[] args) throws IOException {
 	cc.network().setInputFile("data/kinan/emMultimodal.xml");
 	Scenario scn = ScenarioUtils.loadScenario(cc);
 	ValidationResult r = TransitScheduleValidator.validateAll(scn.getTransitSchedule(), scn.getNetwork());
-	System.out.println("transit is valid? "+ r.isValid());;
+	System.out.println("transit is valid? "+ r.isValid());
+	Run.checkPtConsistency(scn.getNetwork(), scn.getTransitSchedule(), lanes);
 	
 }
 /**

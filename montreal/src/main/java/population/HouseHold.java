@@ -307,6 +307,7 @@ public class HouseHold {
 									Activity start = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(), "home", "home_"+this.hhId+"_"+i));
 									double dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
 									if(dTime<0)dTime=0;
+									dTime = trip.getDepartureTime();
 									start.setEndTime(dTime);
 
 									plan.addActivity(start);
@@ -335,6 +336,7 @@ public class HouseHold {
 											Activity startTrip = popFac.createActivityFromActivityFacilityId("home", drawRandomFacility(facilities, matsimFacilities, facilityFac, trip.getOriginalOCoord(), trip.getOriginCT(),"home", "home_"+trip.getTripId()+"_O_"+l));
 											dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
 											if(dTime<0)dTime=0;
+											dTime = trip.getDepartureTime();
 											startTrip.setEndTime(dTime);
 											tripPlan.addActivity(startTrip);
 											tripPlan.addLeg(popFac.createLeg(trip.getMode()));
@@ -362,6 +364,7 @@ public class HouseHold {
 										Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
 										double dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
 										if(dTime<0)dTime=0;
+										dTime = trip.getDepartureTime();
 										previousAct.setEndTime(dTime);
 										plan.addLeg(popFac.createLeg("walk"));
 //										if(member.isIfHaveLicense()) {
@@ -382,6 +385,7 @@ public class HouseHold {
 										Activity previousAct = ((Activity)plan.getPlanElements().get(plan.getPlanElements().size()-1));
 										double dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
 										if(dTime<0)dTime=0;
+										dTime = trip.getDepartureTime();
 										previousAct.setEndTime(dTime);
 										plan.addLeg(popFac.createLeg(trip.getMode()));
 										if(trip.getMode().equals("car") && ifCarRequired==false)ifCarRequired = true;
@@ -404,6 +408,7 @@ public class HouseHold {
 											Activity previousAct =  popFac.createActivityFromActivityFacilityId(previousActType, drawRandomFacility(facilities, matsimFacilities, facilityFac,previousDCoord,previousCT, previousActType,trip.getMotive()+"_O_"+trip.getTripId()+"_"+l));
 											double dTime = trip.getDepartureTime()+random.nextGaussian(0,timeToSpread);
 											if(dTime<0)dTime=0;
+											dTime = trip.getDepartureTime();
 											previousAct.setEndTime(dTime);
 											tripPlan.addActivity(previousAct);
 											tripPlan.addLeg(popFac.createLeg(trip.getMode()));

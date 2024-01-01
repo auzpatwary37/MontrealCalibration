@@ -11,6 +11,7 @@ import java.util.Set;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.lanes.Lane;
 import org.matsim.lanes.Lanes;
@@ -77,7 +78,7 @@ public class ExperimentWithOSM {
 		
 		
 		restrictions.writeToFile("data/osm/restrictions.csv");
-		new NetworkCleaner().run(net);
+		
 		
 		
 		//Lanes lanes = addLanes(net);// change this to add the lanes from the osm way tag lanes 
@@ -99,13 +100,19 @@ public class ExperimentWithOSM {
 		
 		Set<String> modes =  new HashSet<>();
 		for(Link link:net.getLinks().values()) {
-			if(modes.contains("pt,bus")) {
-				modes.remove("pt,bus");
-				modes.add("pt");
-				modes.add("bus");
+			if(link.getAllowedModes().contains("pt,bus")) {
+				Set<String> modesNew = new HashSet<>();
+				modesNew.addAll(link.getAllowedModes());
+				modesNew.remove("pt,bus");
+				modesNew.add("pt");
+				modesNew.add("bus");
+				link.setAllowedModes(modesNew);
 			}
-			if(modes.contains("car")) {
-				modes.add("car_passenger");
+			if(link.getAllowedModes().contains("car")) {
+				Set<String> modesNew = new HashSet<>();
+				modesNew.addAll(link.getAllowedModes());
+				modesNew.add("car_passenger");
+				link.setAllowedModes(modesNew);
 			}
 			modes.addAll(link.getAllowedModes());
 		}
@@ -113,6 +120,14 @@ public class ExperimentWithOSM {
 		Run.invertedNetworkCleaner(net, lanes);
 		NetworkTools.writeNetwork(net, "data/osm/testNet.xml");
 		new LanesWriter(lanes).write("data/osm/testLanes.xml");
+		int subway = 0;
+		int rail = 0;
+		for(Link link:net.getLinks().values()) {
+			if(link.getAllowedModes().contains("subway"))subway++;
+			if(link.getAllowedModes().contains("rail"))rail++;
+		}
+		System.out.println(subway);
+		System.out.println(rail);
 		System.out.println(modes);
 	}
 	

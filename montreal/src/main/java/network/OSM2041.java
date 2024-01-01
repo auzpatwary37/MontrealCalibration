@@ -190,6 +190,7 @@ public class OSM2041 {
 	}
 
 	public static void addMaximeTransit(Network originalNet, TransitSchedule totalTs, Vehicles tv) {
+		
 		Gtfs2TransitSchedule.run("data/maxime/newData23/gtfs_transit_projects_2041", "dayWithMostTrips", "epsg:32188", "data/maxime/additionalTs23.xml", "data/maxime/additionalVehicles23.xml");
 		String lines = "data/maxime/newLines.csv";
 		String line = null;
@@ -529,7 +530,6 @@ public class OSM2041 {
 		ValidationResult r = TransitScheduleValidator.validateAll(ts,net);
 		System.out.println("transit is valid? "+ r.isValid());
 		
-		
 		scn = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 		TransitLine old5 = totalTs.getTransitLines().get(Id.create("c-5",TransitLine.class));
 		totalTs.removeTransitLine(old5);
@@ -542,7 +542,11 @@ public class OSM2041 {
 			linksToRemove.add(tr.getRoute().getEndLinkId());
 			linksToRemove.addAll(tr.getRoute().getLinkIds());
 		});
-		linksToRemove.forEach(l->originalNet.removeLink(l));
+		
+		r = TransitScheduleValidator.validateAll(totalTs,originalNet);
+		System.out.println("transit is valid? "+ r.isValid());
+		
+		//linksToRemove.forEach(l->originalNet.removeLink(l));
 		NetworkFactory nf = originalNet.getFactory();
 		net.getNodes().values().forEach(n->{
 			Node nn = nf.createNode(n.getId(), n.getCoord());

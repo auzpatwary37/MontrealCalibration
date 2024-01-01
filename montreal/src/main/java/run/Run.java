@@ -28,7 +28,10 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.PlansCalcRouteConfigGroup.AccessEgressType;
+import org.matsim.core.config.groups.QSimConfigGroup.LinkDynamics;
+import org.matsim.core.config.groups.QSimConfigGroup.SnapshotStyle;
 import org.matsim.core.config.groups.StrategyConfigGroup;
+import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.network.NetworkUtils;
@@ -46,6 +49,7 @@ import org.matsim.lanes.Lanes;
 import org.matsim.lanes.LanesFactory;
 import org.matsim.lanes.LanesToLinkAssignment;
 import org.matsim.lanes.LanesWriter;
+import org.matsim.pt.config.TransitConfigGroup.TransitRoutingAlgorithmType;
 import org.matsim.pt.transitSchedule.api.MinimalTransferTimes.MinimalTransferTimesIterator;
 import org.matsim.pt.transitSchedule.api.TransitRoute;
 import org.matsim.pt.transitSchedule.api.TransitRouteStop;
@@ -130,18 +134,20 @@ public final class Run implements Callable<Integer> {
     config.global().setNumberOfThreads(thread);
     config.qsim().setNumberOfThreads(thread);
     if(!laneFile.equals("null"))config.network().setLaneDefinitionsFile(laneFile);
-    config.vehicles().setVehiclesFile(this.vehiclesFile);
+    config.vehicles().setVehiclesFile(this.vehiclesFile);//not from
+    
     config.controler().setLastIteration(this.maxIterations);
     addStrategy(config, "SubtourModeChoice", null, 0.05D, 0 * this.maxIterations);
     addStrategy(config, "ReRoute", null, 0.1D, 0 * this.maxIterations);
     addStrategy(config, "ChangeExpBeta", null, 0.85D, this.maxIterations);
-    addStrategy(config, DefaultStrategy.TimeAllocationMutator_ReRoute, null, 0.15D, (int) (.85 * this.maxIterations));
+    addStrategy(config, DefaultStrategy.TimeAllocationMutator_ReRoute, null, 0.05D, (int) (.85 * this.maxIterations));
+    config.planCalcScore().setFractionOfIterationsToStartScoreMSA(null);
     config.controler().setOutputDirectory(this.output);
     config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
     config.controler().setLinkToLinkRoutingEnabled(true);
     config.travelTimeCalculator().setCalculateLinkToLinkTravelTimes(true);
     config.controler().setRoutingAlgorithmType(RoutingAlgorithmType.SpeedyALT);
-    //config.transit().setRoutingAlgorithmType(TransitRoutingAlgorithmType.DijkstraBased);
+    config.transit().setRoutingAlgorithmType(TransitRoutingAlgorithmType.SwissRailRaptor);
     //config.transit().setRoutingAlgorithmType(TransitRoutingAlgorithmType.DijkstraBased);
     config.travelTimeCalculator().setSeparateModes(false);
     config.travelTimeCalculator().setCalculateLinkTravelTimes(true);
@@ -149,18 +155,28 @@ public final class Run implements Callable<Integer> {
     config.qsim().setRemoveStuckVehicles(false);
     config.qsim().setUseLanes(true);
     config.qsim().setStuckTime(4*3600);
+    config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles(false);
+    config.qsim().setLinkDynamics(LinkDynamics.PassingQ);
+    config.qsim().setSnapshotStyle(SnapshotStyle.queue);
+    config.qsim().setUsingFastCapacityUpdate(false);
+    //config.qsim().setVehiclesSource(VehiclesSource.fromVehiclesData);
+    config.qsim().setUsePersonIdForMissingVehicleId(true);
     config.subtourModeChoice().setModes(new String[] {"car","bike","pt","walk"});
     config.subtourModeChoice().setChainBasedModes(new String[] {"car","bike"});
     config.subtourModeChoice().setConsiderCarAvailability(true);
+    config.timeAllocationMutator().setAffectingDuration(true);
     //config.plansCalcRoute().setAccessEgressType(AccessEgressType.walkConstantTimeToLink);
-    config.plansCalcRoute().setAccessEgressType(AccessEgressType.accessEgressModeToLink);
+
+    config.plansCalcRoute().setAccessEgressType(AccessEgressType.none);
     ParamReader pReader = new ParamReader(paramFile);
     config = pReader.SetParamToConfig(config, pReader.getInitialParam());
     config.qsim().setFlowCapFactor(this.scale.doubleValue() * 1.2D);
     config.qsim().setStorageCapFactor(this.scale.doubleValue() * 1.4D);
-    //config.removeModule("swissRailRaptor");
+    config.removeModule("swissRailRaptor");
     Scenario scenario = ScenarioUtils.loadScenario(config);
+    removeNonExistantLanes(scenario.getNetwork(),scenario.getLanes());
     increaseLaneCapacity(scenario.getLanes(), 5600);
+    setMinimumCapacity(500, scenario.getNetwork());
     //new NetworkCleaner().run( scenario.getNetwork());
     checkPtConsistency(scenario.getNetwork(),scenario.getTransitSchedule(), scenario.getLanes());
     Set<Id<Link>> problemLinks = runLaneBasedNetworkCleaner(scenario.getNetwork(),scenario.getLanes(), true);
@@ -264,6 +280,15 @@ public final class Run implements Callable<Integer> {
     ValidationResult r = TransitScheduleValidator.validateAll(scenario.getTransitSchedule(), scenario.getNetwork());
 	System.out.println("transit is valid? "+ r.isValid());
     Controler controler = new Controler(scenario);
+//    controler.addOverridingModule(new AbstractModule() {
+//
+//		@Override
+//		public void install() {
+//			this.addControlerListenerBinding().to(RouteConsistencyChecker.class);
+//			this.bind(RouteConsistencyChecker.class).asEagerSingleton();
+//		}
+//		
+//	});
     controler.run();
     return Integer.valueOf(0);
   }
@@ -367,7 +392,7 @@ public final class Run implements Callable<Integer> {
 							  break;
 						  }
 					  }
-					  if(!hasLane) {
+					  if(!hasLane && !links.get(i).toString().contains("pt")) {
 						  System.out.println("Route is not connected.");
 					  }
 				  }
@@ -411,12 +436,34 @@ public final class Run implements Callable<Integer> {
 	  Network neto = NetworkUtils.readNetwork("temp.xml");
 	  new NetworkCleaner().run(neto);
 	  blackListedLinks.forEach(l->neto.removeLink(l));
+	  for(Link l:new HashSet<>(neto.getLinks().values())) {
+		  if(!l.getAllowedModes().contains("car"))neto.removeLink(l.getId());
+	  }
+	  for(Node n: new HashSet<>(neto.getNodes().values())) {
+		  if(n.getOutLinks().isEmpty())neto.removeNode(n.getId());
+	  }
 	  fac.getFacilities().values().forEach(f->{
 		  Link link = NetworkUtils.getNearestLink(neto, f.getCoord());
 		  FacilitiesUtils.setLinkID(f, link.getId());
 	  });
   }
-  
+  public static void removeNonExistantLanes(Network net,Lanes lanes) {
+	  new HashSet<>(lanes.getLanesToLinkAssignments().keySet()).forEach(l->{
+			if(!net.getLinks().containsKey(l)) {
+				lanes.getLanesToLinkAssignments().remove(l);
+				return;
+			}
+			for(Lane lane:new HashSet<>(lanes.getLanesToLinkAssignments().get(l).getLanes().values())) {
+				for(Id<Link> lid:new ArrayList<>(lane.getToLinkIds())) {
+					if(!net.getLinks().containsKey(lid)) {
+						lane.getToLinkIds().remove(lid);
+					}
+				}
+				if(lane.getToLinkIds().isEmpty())lanes.getLanesToLinkAssignments().get(l).getLanes().remove(lane.getId());
+			}
+			if(lanes.getLanesToLinkAssignments().get(l).getLanes().size()==0)lanes.getLanesToLinkAssignments().remove(l);
+		});
+  }
   public static Set<Id<Link>> runLaneBasedNetworkCleaner(Network net, Lanes lanes, boolean ifAddelseDelete) {
 	  LanesFactory lFac = lanes.getFactory();
 	  int problematicLink = 0;
@@ -500,7 +547,11 @@ public final class Run implements Callable<Integer> {
 	  if(Math.abs(EmNetworkCreator.getAngle(net.getLinks().get(link1), net.getLinks().get(link2)))==180)return true;
 	  else return false;
   }
-  
+  public static void setMinimumCapacity(double minCap,Network net) {
+	  for(Link l:net.getLinks().values()) {
+		  if(l.getCapacity()<minCap)l.setCapacity(minCap);
+	  }
+  }
   public static boolean ifInverseLink(Link link1, Link link2) {
 	  if(Math.abs(EmNetworkCreator.getAngle(link1,link2))==180)return true;
 	  else return false;

@@ -205,16 +205,18 @@ public class NetworkWithLanesTrial {
 		Map<Long,NodeOSM> osmNodes = new HashMap<>();
 		osmNodes.putAll(reader.getGeneralNodes());
 		osmNodes.putAll(reader.getTaggedNodes());
-		
+		int subwayLink = 0;
+		int railLink = 0;
 		for(String type:types) {
-		reader.getWaysByType().get(type).forEach(a->{
+		for(Way a:reader.getWaysByType().get(type)){
 			if(a.getAttributes().get("service")==null &&(a.getAttributes().get("usage")==null ||a.getAttributes().get("usage").equals("main")||a.getAttributes().get("usage").equals("branch"))) {
 			NodeOSM fromNode = osmNodes.get(a.getNodeIds().get(0));
 			if(!net.getNodes().containsKey(Id.createNodeId(fromNode.getId())))net.addNode(netFac.createNode(Id.createNodeId(fromNode.getId()),fromNode.getCoordinate()));
+			
 			for(int i = 1;i<a.getNodeIds().size();i++) {
 				if(true || NetworkUtils.getEuclideanDistance(osmNodes.get(a.getNodeIds().get(i)).getCoordinate(),fromNode.getCoordinate())>250) {
 					if(!net.getNodes().containsKey(Id.createNodeId(a.getNodeIds().get(i))))net.addNode(netFac.createNode(Id.createNodeId(a.getNodeIds().get(i)),osmNodes.get(a.getNodeIds().get(i)).getCoordinate()));
-					Id<Link> lId = Id.createLinkId(Long.toString(fromNode.getId())+"_"+a.getNodeIds().get(i));
+					Id<Link> lId = Id.createLinkId(Long.toString(fromNode.getId())+"_"+a.getNodeIds().get(i)+"_"+type);
 					if(!net.getLinks().containsKey(lId)) {
 						net.addLink(netFac.createLink(lId,net.getNodes().get(Id.createNodeId(fromNode.getId())), net.getNodes().get(Id.createNodeId(a.getNodeIds().get(i)))));
 						Link link = net.getLinks().get(lId);
@@ -222,10 +224,14 @@ public class NetworkWithLanesTrial {
 						link.setFreespeed(21);
 						Set<String> modes = new HashSet<>();
 						modes.add("pt");
-						if(type.equals("subway"))modes.add("subway");
+						if(type.equals("subway")) {
+							modes.add("subway");
+							subwayLink++;
+						}
 						else if(type.equals("rail")) {
 							modes.add("light_rail");
 							modes.add("rail");
+							railLink++;
 							//modes.add("subway");
 						}
 						link.setAllowedModes(modes);
@@ -235,8 +241,10 @@ public class NetworkWithLanesTrial {
 				}
 			}
 			}
-		});
 		}
+		}
+		System.out.println(railLink);
+		System.out.println(subwayLink);
 	}
 	
 }

@@ -45,6 +45,8 @@ import org.matsim.pt2matsim.run.CheckMappedSchedulePlausibility;
 import org.matsim.pt2matsim.run.Gtfs2TransitSchedule;
 import org.matsim.pt2matsim.run.PublicTransitMapper;
 
+import run.Run;
+
 public class EmNetworkCreator2041 {
 public static void main(String[] args) throws IOException {
 	String mathildeOsmConverterConfig = "data/osm/osm_config.xml";
@@ -190,7 +192,7 @@ public static void main(String[] args) throws IOException {
 			if(!l2l.getLanes().isEmpty())lanes.addLanesToLinkAssignment(l2l);
 		}
 	}
-	NetworkUtils.runNetworkCleaner(outNet);
+	Run.invertedNetworkCleaner(outNet, lanes);
 	
 	new LanesWriter(lanes).write("data/kinan/emLanes2041.xml");
 	new NetworkWriter(outNet).write("data/kinan/emNetworkAm2041.xml");

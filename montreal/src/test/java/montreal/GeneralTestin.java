@@ -44,7 +44,7 @@ oldPop.getPersons().values().forEach(p->{
 	List<Trip> trips = TripStructureUtils.getTrips(p.getSelectedPlan());
 	trips.forEach(tp->{
 		if(!totalTrips.containsKey(tp.getOriginActivity().getFacilityId()))totalTrips.put(tp.getOriginActivity().getFacilityId(),0);
-		if(!getMode(tp).equals("non mechanical"))totalTrips.compute(tp.getOriginActivity().getFacilityId(),(k,v)->v=v+1);
+		totalTrips.compute(tp.getOriginActivity().getFacilityId(),(k,v)->v=v+1);
 	});
 });
 
@@ -53,7 +53,7 @@ newPop.getPersons().values().forEach(p->{
 	List<Trip> trips = TripStructureUtils.getTrips(p.getSelectedPlan());
 	trips.forEach(tp->{
 		if(!totalTripsNew.containsKey(tp.getOriginActivity().getFacilityId()))totalTripsNew.put(tp.getOriginActivity().getFacilityId(),0);
-		if(!getMode(tp).equals("non mechanical"))totalTripsNew.compute(tp.getOriginActivity().getFacilityId(),(k,v)->v=v+1);
+		totalTripsNew.compute(tp.getOriginActivity().getFacilityId(),(k,v)->v=v+1);
 	});
 });
 int oldTrip = 0;
