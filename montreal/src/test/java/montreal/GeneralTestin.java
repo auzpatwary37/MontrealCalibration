@@ -1,8 +1,10 @@
 package montreal;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -17,11 +19,13 @@ import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.router.TripStructureUtils.Trip;
 import org.matsim.facilities.ActivityFacility;
 
+import population.HouseHold;
+
 public class GeneralTestin {
 public static void main(String[] args) {
 	
- Population oldPop = PopulationUtils.readPopulation("outputEm2041BasePop\\output_plans.xml.gz");
- Population newPop = PopulationUtils.readPopulation("data\\population\\outputODPopulation_18_0.05.xml.gz");
+ Population newPop = PopulationUtils.readPopulation("data\\outputODPopulation_18_1.0.xml.gz");
+ Population oldPop = PopulationUtils.readPopulation("data\\population\\outputODPopulation_41_0.05.xml.gz");
  
  System.out.println("number of person in old OD = "+oldPop.getPersons().size());
  System.out.println("number of person in new OD = "+newPop.getPersons().size());
@@ -29,6 +33,10 @@ public static void main(String[] args) {
  int tripPerson = 0;
  int noTripPerson = 0;
  int tripMakingPopulation = 0;
+ int hhPersonOld = 0;
+ int hhPersonNew = 0;
+ Set<String> oldHH = new HashSet<>();
+ Set<String> newHH = new HashSet<>();
  
  for(Person p:newPop.getPersons().values()) {
 	 if(p.getSelectedPlan().getPlanElements().size()<=1) {
@@ -40,22 +48,30 @@ public static void main(String[] args) {
 	 }
  }
 Map<Id<ActivityFacility>,Integer> totalTrips = new HashMap<>();
-oldPop.getPersons().values().forEach(p->{
+for(Person p:oldPop.getPersons().values()){
+	if(p.getAttributes().getAttribute("household id")!=null) {
+		hhPersonOld++;
+		oldHH.add((String) p.getAttributes().getAttribute("household id"));
+	}
 	List<Trip> trips = TripStructureUtils.getTrips(p.getSelectedPlan());
 	trips.forEach(tp->{
 		if(!totalTrips.containsKey(tp.getOriginActivity().getFacilityId()))totalTrips.put(tp.getOriginActivity().getFacilityId(),0);
 		totalTrips.compute(tp.getOriginActivity().getFacilityId(),(k,v)->v=v+1);
 	});
-});
+}
 
 Map<Id<ActivityFacility>,Integer> totalTripsNew = new HashMap<>();
-newPop.getPersons().values().forEach(p->{
+for(Person p:newPop.getPersons().values()){
 	List<Trip> trips = TripStructureUtils.getTrips(p.getSelectedPlan());
+	if(p.getAttributes().getAttribute("household id")!=null) {
+		hhPersonNew++;
+		newHH.add((String) p.getAttributes().getAttribute("household id"));
+	}
 	trips.forEach(tp->{
 		if(!totalTripsNew.containsKey(tp.getOriginActivity().getFacilityId()))totalTripsNew.put(tp.getOriginActivity().getFacilityId(),0);
 		totalTripsNew.compute(tp.getOriginActivity().getFacilityId(),(k,v)->v=v+1);
 	});
-});
+}
 int oldTrip = 0;
 for(int i:totalTrips.values()) {
 	oldTrip+=i;
@@ -66,6 +82,10 @@ for(int i:totalTripsNew.values()) {
 }
  System.out.println("tripPerson = "+tripPerson);
  System.out.println("noTripPerson = "+noTripPerson);
+ System.out.println("hh person old = "+hhPersonOld);
+ System.out.println("hh person new = "+hhPersonNew);
+ System.out.println("hh new = "+newHH.size());
+ System.out.println("hh old = "+oldHH.size());
  System.out.println("tripMakingPopulation = "+tripMakingPopulation);
  System.out.println("total old Trips = "+oldTrip);
  System.out.println("total new Trips = "+newTrip);

@@ -356,6 +356,11 @@
 	    <version>ev-5.5.2-g5d9dd01-144</version>
 	</dependency>
 -->
+	<dependency>
+		<groupId>MATSim-HK</groupId>
+		<artifactId>MATSim-HK</artifactId>
+		<version>11.0</version>
+	</dependency>
 </dependencies>
 
 

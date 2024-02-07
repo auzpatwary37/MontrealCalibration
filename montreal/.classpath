@@ -38,5 +38,14 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/pt2matsim"/>
+	<classpathentry kind="lib" path="C:/Users/Ashraf/.m2/repository/org/matsim/matsim/15.0/matsim-15.0.jar" sourcepath="C:/Users/Ashraf/.m2/repository/org/matsim/matsim/15.0/matsim-15.0-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="org.matsim"/>
+			<attribute name="maven.artifactId" value="matsim"/>
+			<attribute name="maven.version" value="15.0"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

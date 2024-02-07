@@ -52,7 +52,7 @@ public static void main(String[] args) throws IOException{
 	String populationWriteLocation = "data/outputPopulation.xml";
 	String ctCentroidFile = "EOD_from_Louiselle/dessiminationAreaCentroid.csv";
 	double timeToSpread = 5*60;
-	int year = 41;
+	int year = 21;
 	String hhEFKey = "facmen18";
 	String mmEFKey = "facper18";
 	String tpEFKey = "facdep18";
@@ -85,7 +85,7 @@ public static void main(String[] args) throws IOException{
 	Vehicles vehicles = scenario.getVehicles();
 	Households matsimHouseholds = scenario.getHouseholds();
 	
-	double scale = .05;
+	double scale = 1.0;
 	
 	bf = new BufferedReader(new FileReader(new File(facilityToCTUIDMap)));
 	bf.readLine();

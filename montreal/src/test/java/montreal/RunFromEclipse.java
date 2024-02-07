@@ -76,28 +76,29 @@ public class RunFromEclipse {
 		String[] args5 = new String[] {
 				"--iterations","250",
 				"--thread", "10",
-				"--scale", ".25", 
+				"--scale", ".05", 
 				"--config", "matsimRun/configMine.xml",
-				"--network", "data\\osm\\valid1252OSM\\osmMultimodal2041.xml",
-				"--ts", "data\\osm\\valid1252OSM\\osmTsMapped2041.xml", 
-				"--tv", "data\\osm\\valid1252OSM\\osmVehicles2041.xml", 
-				"--lanes","data\\osm\\valid1252OSM\\testLanes_out2041.xml",
-				"--plan", "data\\outputODPopulation_41_0.25.xml.gz", 
-				"--facilities", "data\\outputODFacilities41_0.25.xml.gz",
-				"--household","data\\outputODHouseholds_41_0.25.xml.gz",
+				"--network", "data\\osm\\newOSM\\osmMultimodal2041.xml",
+				"--ts", "data\\osm\\newOSM\\osmTsMapped2041.xml", 
+				"--tv", "data\\osm\\newOSM\\osmVehicles2041.xml", 
+				"--lanes","data\\osm\\newOSM\\testLanes_out2041.xml",
+				"--plan", "data\\population\\outputODPopulation_18_0.05.xml.gz",
+				"--facilities", "data\\population\\outputODFacilities18_0.05.xml.gz", 
+				"--household","data\\population\\outputODHouseholds_18_0.05.xml.gz",
+				"--paramfile","src/main/resources/paramReaderTrial1_newData REsult (1).csv",
 				"--clearplan", "true",
-				"--output","output41.25",
-				"--vehicles","data\\outputODVehicle_41_0.25.xml.gz"
+				"--output","output41.05_osm",
+				"--vehicles","data\\population\\outputODVehicle_18_0.05.xml.gz"
 			};
 		String[] args6 = new String[] {
 				"--iterations","250",
 				"--thread", "10",
 				"--scale", ".05", 
 				"--config", "matsimRun/configMine.xml",
-				"--network", "data\\osm\\valid1252OSM\\osmMultimodal2041.xml",
-				"--ts", "data\\osm\\valid1252OSM\\osmTsMapped2041.xml", 
-				"--tv", "data\\osm\\valid1252OSM\\osmVehicles2041.xml", 
-				"--lanes","data\\osm\\valid1252OSM\\testLanes_out2041.xml",
+				"--network", "data\\osm\\newOSM\\osmMultimodal2041.xml",
+				"--ts", "data\\osm\\newOSM\\osmTsMapped2041.xml", 
+				"--tv", "data\\osm\\newOSM\\osmVehicles2041.xml", 
+				"--lanes","data\\osm\\newOSM\\testLanes_out2041.xml",
 				"--plan", "data\\outputODPopulation_41_0.05.xml.gz", 
 				"--facilities", "data\\outputODFacilities41_0.05.xml.gz",
 				"--household","data\\outputODHouseholds_41_0.05.xml.gz",
@@ -123,7 +124,7 @@ public class RunFromEclipse {
 				"--output","outputEm2041Maxime",
 				"--vehicles","data\\population\\outputODVehicle_41_0.05.xml.gz"
 			};
-		Run.main(args4);
+		Run.main(args5);
 		
 	}
 }

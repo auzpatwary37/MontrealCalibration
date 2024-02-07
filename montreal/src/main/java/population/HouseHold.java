@@ -476,7 +476,7 @@ public class HouseHold {
 					}else {
 						PersonUtils.setCarAvail(person, "never");
 					}
-					if(member.clonedMember>(int)Math.round((member.getPersonExFac()*scale))) {
+					if(member.clonedMember>(int)Math.round((member.getPersonExFac()*scale))||member.clonedMember-(int)Math.round((member.getPersonExFac()*scale))<1) {
 						System.out.println();
 					}
 				}
