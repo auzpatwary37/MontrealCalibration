@@ -252,6 +252,7 @@ public static void writeTreatedCTForTrips(Map<Id<HouseHold>,HouseHold> hhs, Stri
 	
 }
 
+
 public static String[] extractModes(CSVRecord record) {
 	List<String> modes = new ArrayList<>();
 	for(int i = 1;i<9;i++) {
