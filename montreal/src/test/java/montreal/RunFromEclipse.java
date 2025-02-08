@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.NetworkWriter;
+import org.matsim.core.config.Config;
 import org.matsim.core.network.NetworkUtils;
 
 import run.Run;
@@ -125,6 +126,7 @@ public class RunFromEclipse {
 				"--vehicles","data\\population\\outputODVehicle_41_0.05.xml.gz"
 			};
 		Run.main(args5);
-		
+		Config config = null;
+		config.qsim().setEndTime(174*3600);
 	}
 }
